@@ -1,4 +1,6 @@
-import { IStream, TrackType, StreamType } from '@sdk/index';
+import { IStream } from '@sdk';
+import { TrackType, StreamType } from '../utils/constants'
+
 
 export const sinkStreamElement = (
     stream: IStream,

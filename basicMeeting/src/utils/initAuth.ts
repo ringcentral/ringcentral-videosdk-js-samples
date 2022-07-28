@@ -1,4 +1,4 @@
-import { RcvEngine, SYMBOL_RCV_ENGINE } from '@sdk/index';
+import { RcvEngine } from '@sdk';
 
 export function getHttpClient(sdk) {
     const platform = sdk.platform();
