@@ -3,7 +3,6 @@ import { EngineEvent, StreamEvent, IStream } from '@sdk';
 import './index.less';
 import { sinkStreamElement, unSinkStreamElement } from '../utils/streamHandler';
 import { TrackType, StreamType } from '../utils/constants'
-import { Button, Input } from 'antd';
 type Props = {
   rcvEngine: any
 }
@@ -119,10 +118,9 @@ const VideoMeeting = ({ rcvEngine }: Props) => {
   return (
     <div>
       <div className="upper-btn">
-        <Button type="primary" onClick={startMeetingHandler}>start meeting</Button>
-
-        <Button onClick={joinMeetingHandler}>join meeting</Button>
-        <Input placeholder='please input meetingId'></Input>
+        <button type="button" className="btn btn-primary" onClick={startMeetingHandler}>start meeting</button>
+        <button type="button" className="btn btn-primary" onClick={joinMeetingHandler}>join meeting</button>
+        <input placeholder='please input meetingId'></input>
       </div>
 
       <div ref={localVideoWrapper} className="videoWrapper"></div>

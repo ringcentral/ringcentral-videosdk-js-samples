@@ -6,21 +6,22 @@ import { getHttpClient, getInitConfig, initRcvEngine, initRingcentralSDKByPaswor
 import './index.less'
 
 export default function App() {
-    // console.log('test----', RcvEngine)
     const [rcvEngine, setRcvEngine] = useState(null)
 
-    useEffect(async () => {
-        const { rcsdk, authData } = await initRingcentralSDKByPasword();
-        const rcvEngine = new RcvEngine(
-            getHttpClient(rcsdk),
-            getInitConfig(authData)
-        );
+    useEffect(() => {
+        const initSDK = async () => {
+            const { rcsdk, authData } = await initRingcentralSDKByPasword();
+            const rcvEngine = new RcvEngine(
+                getHttpClient(rcsdk),
+                getInitConfig(authData)
+            );
+            setRcvEngine(rcvEngine)
+        }
+        initSDK()
 
-        setRcvEngine(rcvEngine)
     }, [])
 
     return (
-
         <VideoMeeting rcvEngine={rcvEngine} />
     )
 }
