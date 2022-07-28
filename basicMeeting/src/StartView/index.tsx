@@ -1,0 +1,4 @@
+const StartView = () => {
+
+    return
+}

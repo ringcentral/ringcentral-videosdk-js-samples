@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from "react-dom";
-import { RcvEngine } from '@sdk/index';
+import { RcvEngine } from '@sdk';
 import VideoMeeting from './VideoMeeting';
 import { getHttpClient, getInitConfig, initRcvEngine, initRingcentralSDKByPasword } from './utils/initAuth';
 import './index.less'

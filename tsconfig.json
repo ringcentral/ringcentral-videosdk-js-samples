@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react",
+        "baseUrl": ".",
+        "moduleResolution": "node",
+        "paths": {
+            "@constants": ["lib/index.js"],
+            "@interfaces": ["lib/index.js"],
+            "@sdk": ["./lib"],
+            "@config": ["app.config.js"],
+        }
+    }
+}
