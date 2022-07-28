@@ -88,9 +88,11 @@ export default {
     target: 'web',
     devtool: 'source-map',
     resolve: {
-        plugins: [new TsconfigPathsPlugin({
-            configFile: path.join(__dirname, '../tsconfig.json')
-        })],
+        // plugins: [new TsconfigPathsPlugin()], 
+        alias: {
+            '@sdk': path.join(__dirname, '../lib/index.js'),
+            "@config": ["app.config.js"],
+        },
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.css'],
         modules: [path.join(__dirname, '.src'), 'node_modules'],
     },

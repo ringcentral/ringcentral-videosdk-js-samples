@@ -7,9 +7,7 @@
         "baseUrl": ".",
         "moduleResolution": "node",
         "paths": {
-            "@constants": ["lib/index.js"],
-            "@interfaces": ["lib/index.js"],
-            "@sdk": ["./lib"],
+            "@sdk": ["../lib"],
             "@config": ["app.config.js"],
         }
     }

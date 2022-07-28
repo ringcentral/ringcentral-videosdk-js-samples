@@ -1,4 +1,8 @@
+import React from 'react'
+
 const StartView = () => {
 
-    return
+    return (<div>test</div>)
 }
+
+export default StartView

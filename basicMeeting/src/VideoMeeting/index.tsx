@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useCallback, useState } from 'react'
-import { EngineEvent, StreamEvent, StreamType, TrackType, IStream } from '@sdk/index';
+import { EngineEvent, StreamEvent, IStream } from '@sdk';
 import './index.less';
 import { sinkStreamElement, unSinkStreamElement } from '../utils/streamHandler';
+import { TrackType, StreamType } from '../utils/constants'
 import { Button, Input } from 'antd';
 type Props = {
   rcvEngine: any
