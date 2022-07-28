@@ -10,8 +10,6 @@
             "@constants": ["lib/index.js"],
             "@interfaces": ["lib/index.js"],
             "@sdk/*": ["lib/index.js"],
-            // "@config": ["app.config.js"],
-            "@components/*": ["src/components/*"]
         }
     }
 }
