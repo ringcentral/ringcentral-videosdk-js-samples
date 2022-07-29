@@ -20,13 +20,13 @@ export default {
             },
             {
                 test: /\.jsx?$/,
-                 exclude: /node_modules/,
-                 use: {
-                     loader: 'babel-loader',
-                     options: {
-                         cacheDirectory: true,
-                     },
-                 },
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        cacheDirectory: true,
+                    },
+                },
             },
             {
                 test: /\.tsx?$/,
@@ -83,7 +83,7 @@ export default {
                     }
                 ]
             }
-            
+
         ],
     },
     target: 'web',
@@ -91,8 +91,7 @@ export default {
     resolve: {
         // plugins: [new TsconfigPathsPlugin()], 
         alias: {
-            '@sdk': path.join(__dirname, '../lib/index.js'),
-            "@config": ["app.config.js"],
+            '@sdk': path.join(__dirname, '../../lib/index.js'),
         },
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.css'],
         modules: [path.join(__dirname, '.src'), 'node_modules'],
