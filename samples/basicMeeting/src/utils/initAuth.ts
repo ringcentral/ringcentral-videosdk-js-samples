@@ -7,7 +7,7 @@ export function getHttpClient(sdk, origin) {
 }
 
 export async function initRingcentralSDKByPasword(config) {
-    const { server, clientId, clientSecret, username, password } = config
+    const { origin: server, clientId, clientSecret, userName: username, password } = config
     const rcsdk = new (window as any).RingCentral.SDK({
         server,
         clientId,

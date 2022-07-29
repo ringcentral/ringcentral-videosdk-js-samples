@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { RcvEngine } from '@sdk';
 import VideoMeeting from './meeting';
 import { getHttpClient, initRingcentralSDKByPasword } from './utils/initAuth';
+import './index.less';
 declare global {
     interface Window {
         initConfig: Record<string, string>
@@ -30,11 +31,11 @@ export default function App({ config }) {
     )
 }
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
     <React.StrictMode>
         <App config={{
             ...window.initConfig,
         }} />
-    </React.StrictMode>,
-    document.getElementById("root")
-)
+    </React.StrictMode>
+);
