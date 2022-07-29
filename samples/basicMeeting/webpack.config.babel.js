@@ -113,7 +113,7 @@ export default {
         }),
     ],
     devServer: {
-        port: 9001,
+        port: 9000,
         compress: true,
         liveReload: true,
         hot: true,
