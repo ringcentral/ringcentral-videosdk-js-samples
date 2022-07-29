@@ -89,10 +89,10 @@ export default {
     target: 'web',
     devtool: 'source-map',
     resolve: {
-        // plugins: [new TsconfigPathsPlugin()], 
-        alias: {
-            '@sdk': path.join(__dirname, '../../lib/index.js'),
-        },
+        plugins: [new TsconfigPathsPlugin()],
+        // alias: {
+        //     '@sdk': path.join(__dirname, '../../lib/librcv.js'),
+        // },
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.css'],
         modules: [path.join(__dirname, '.src'), 'node_modules'],
     },
@@ -113,7 +113,7 @@ export default {
         }),
     ],
     devServer: {
-        port: 9001,
+        port: 9000,
         compress: true,
         liveReload: true,
         hot: true,
