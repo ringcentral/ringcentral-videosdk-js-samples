@@ -2,16 +2,16 @@
 
 ### Feature List
 
-- start a new meeting
-- join a existed meeting
-- mute/unmute audio in the meeting
-- mute/unmute video in the meeting
-- leave the meeting
-- end the meeting
+- Start a new meeting
+- Join a existed meeting
+- Mute/unmute audio in the meeting
+- Mute/unmute video in the meeting
+- Leave the meeting
+- End the meeting
 
 ### How to Run?
 
-- Please follow `app.config.default.js` template, create a new file named as `app.config.js`(add your app and account information in this file).
+- Please finish configration initialization, refer to [Precondition](/README.md)
 - Run `yarn install`
 - Run `yarn run dev`
 - Open `https://localhost:9001/` in browser

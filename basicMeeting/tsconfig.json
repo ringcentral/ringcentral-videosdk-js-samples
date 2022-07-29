@@ -8,7 +8,6 @@
         "moduleResolution": "node",
         "paths": {
             "@sdk": ["../lib"],
-            "@config": ["app.config.js"],
         }
     }
 }
