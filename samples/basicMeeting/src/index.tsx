@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from "react-dom";
-import { RcvEngine } from '@sdk';
-import VideoMeeting from './meeting';
+import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { RcvEngine, EngineEvent } from '@sdk';
+import StartView from './pages/StartView';
+import InMeeting from './pages/InMeeting';
 import { getHttpClient, initRingcentralSDKByPasword } from './utils/initAuth';
-import './index.less';
 declare global {
     interface Window {
         initConfig: Record<string, string>
@@ -12,6 +13,7 @@ declare global {
 
 export default function App({ config }) {
     const [rcvEngine, setRcvEngine] = useState(null)
+    const navigate = useNavigate();
 
     useEffect(() => {
         const initSDK = async () => {
@@ -20,6 +22,20 @@ export default function App({ config }) {
                 getHttpClient(rcsdk, config.origin),
                 authData
             );
+            if (rcvEngine) {
+                rcvEngine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
+                    navigate(`/meeting/${meetingId}`);
+                });
+                rcvEngine.on(EngineEvent.MEETING_LEFT, () => {
+                    navigate('/', { replace: true });
+                });
+                rcvEngine.on(
+                    EngineEvent.MEETING_STATE_CHANGED,
+                    () => {
+
+                    }
+                );
+            }
             setRcvEngine(rcvEngine)
         }
         initSDK()
@@ -27,15 +43,28 @@ export default function App({ config }) {
     }, [])
 
     return (
-        <VideoMeeting rcvEngine={rcvEngine} />
+
+        <Routes>
+            <Route path='meeting'>
+                <Route
+                    path=':meetingId'
+                    element={<InMeeting rcvEngine={rcvEngine} />
+                    }
+                />
+            </Route>
+            <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
+        </Routes>
+
     )
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <React.StrictMode>
+        <BrowserRouter>
         <App config={{
             ...window.initConfig,
         }} />
+        </BrowserRouter>
     </React.StrictMode>
 );

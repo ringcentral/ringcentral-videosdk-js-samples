@@ -1,12 +1,21 @@
-import React, { FC } from 'react'
+import React, { FC, useCallback } from 'react'
+import { EngineEvent } from '@sdk';
+import './index.less';
 
 interface IProps {
-    startMeetingHandler: () => {}
-    joinMeetingHandler: () => {}
+    rcvEngine: EngineEvent
 }
 
 const StartView: FC<IProps> = (props) => {
-    const { startMeetingHandler, joinMeetingHandler } = props
+    const { rcvEngine } = props
+
+    const startMeetingHandler = useCallback(async () => {
+        rcvEngine.startInstantMeeting();
+    }, [rcvEngine])
+
+    const joinMeetingHandler = useCallback(async () => {
+    }, [rcvEngine])
+
     return (
         <div className='start-view row'>
             <div className="col-4">
