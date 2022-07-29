@@ -5,6 +5,7 @@ import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 
 export default {
     entry: {
+        config: './app.config.js',
         index: './src/index.tsx',
     },
     output: {

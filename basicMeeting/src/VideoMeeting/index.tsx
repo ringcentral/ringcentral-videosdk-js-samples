@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useCallback, useState } from 'react'
 import { EngineEvent, StreamEvent, IStream } from '@sdk';
 import './index.less';
 import { sinkStreamElement, unSinkStreamElement } from '../utils/streamHandler';
-import { TrackType, StreamType } from '../utils/constants'
+import { TrackType } from '../utils/constants'
 type Props = {
   rcvEngine: any
 }
@@ -27,31 +27,15 @@ const VideoMeeting = ({ rcvEngine }: Props) => {
         sinkStreamElement(stream, TrackType.AUDIO, audioWrapper.current);
       });
       streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_ADDED, stream => {
-        if (stream.type === StreamType.VIDEO_SCREENSHARING) {
-          // sinkStreamElement(stream, TrackType.VIDEO, screenSharingRef.current);
-          return;
-        }
         sinkStreamElement(stream, TrackType.VIDEO, remoteVideoWrapper.current);
       });
       streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_REMOVED, stream => {
-        if (stream.type === StreamType.VIDEO_SCREENSHARING) {
-          // unSinkStreamElement(stream, screenSharingRef.current);
-          return;
-        }
         unSinkStreamElement(stream, remoteVideoWrapper.current);
       });
       streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
-        if (stream.type === StreamType.VIDEO_SCREENSHARING) {
-          // sinkStreamElement(stream, TrackType.VIDEO, screenSharingRef.current);
-          return;
-        }
         sinkStreamElement(stream, TrackType.VIDEO, localVideoWrapper.current);
       });
       streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_REMOVED, stream => {
-        if (stream.type === StreamType.VIDEO_SCREENSHARING) {
-          // unSinkStreamElement(stream, screenSharingRef.current);
-          return;
-        }
         unSinkStreamElement(stream, localVideoWrapper.current);
       });
       streamManager?.on(StreamEvent.LOCAL_AUDIO_TRACK_ADDED, stream => {

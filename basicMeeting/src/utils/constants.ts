@@ -1,7 +1,3 @@
-export enum StreamType {
-    VIDEO_MAIN = 'video/main',
-    VIDEO_SCREENSHARING = 'video/screensharing',
-}
 /**
  * @internal
  */

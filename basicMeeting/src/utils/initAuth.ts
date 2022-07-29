@@ -1,9 +1,9 @@
 import { RcvEngine } from '@sdk';
 
-export function getHttpClient(sdk) {
+export function getHttpClient(sdk, origin) {
     const platform = sdk.platform();
     return {
-        origin: 'https://platform.ringcentral.com',
+        origin,
         send: options => platform.send(options),
     };
 }
@@ -14,17 +14,18 @@ export function getInitConfig(authData) {
     };
 }
 
-export async function initRingcentralSDKByPasword() {
+export async function initRingcentralSDKByPasword(config) {
+    const { server, clientId, clientSecret, username, password } = config
     const rcsdk = new (window as any).RingCentral.SDK({
-        server: 'https://platform.ringcentral.com',
-        clientId: 'QGBGV60-RKixEgQ-SFPuyw',
-        clientSecret: 'ICFikaceQ3yUXH7zLHIOlwRUANA0mCR7m3T8g01o5SnA',
+        server,
+        clientId,
+        clientSecret,
     });
     const authData = await rcsdk
         .login({
-            username: 'rene.keyi+002@gmail.com', // phone number in full format
+            username, // phone number in full format
             extension: '', // leave blank if direct number is used
-            password: 'Ring@1920'
+            password
         })
         .then(function (response) {
             return response.json();
