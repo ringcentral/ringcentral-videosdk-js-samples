@@ -1,6 +1,3 @@
-import { ControlClient } from 'libsfu';
-import Librct from 'librct';
-
 /** Indicates the status of the current attendee */
 export declare enum AttendeeStatus {
     /** Not started */
