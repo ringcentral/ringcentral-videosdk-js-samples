@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useRef, useCallback, useState } from 'react'
 import { EngineEvent, StreamEvent, IStream } from '@sdk';
-import './index.less';
 import { sinkStreamElement, unSinkStreamElement } from '../utils/streamHandler';
 import { TrackType } from '../utils/constants'
+import StartView from './StartView'
+import './index.less';
+
 type Props = {
   rcvEngine: any
 }
@@ -83,7 +85,6 @@ const VideoMeeting = ({ rcvEngine }: Props) => {
   }
 
   const joinMeetingHandler = async () => {
-    await rcgEventListen
   }
 
 
@@ -101,14 +102,17 @@ const VideoMeeting = ({ rcvEngine }: Props) => {
 
   return (
     <div>
-      <div className="upper-btn">
-        <button type="button" className="btn btn-primary" onClick={startMeetingHandler}>start meeting</button>
-        <button type="button" className="btn btn-primary" onClick={joinMeetingHandler}>join meeting</button>
-        <input placeholder='please input meetingId'></input>
+      <StartView joinMeetingHandler={joinMeetingHandler} startMeetingHandler={startMeetingHandler} />
+      <div>
+        <div
+          data-lable='localVideoWrapper'
+          ref={localVideoWrapper}
+        />
+        <div
+          data-lable='remoteVideoWrapper'
+          ref={remoteVideoWrapper}
+        />
       </div>
-
-      <div ref={localVideoWrapper} className="videoWrapper"></div>
-      <div></div>
       <div></div>
     </div>
   )

@@ -1,16 +1,8 @@
-import { RcvEngine } from '@sdk';
-
 export function getHttpClient(sdk, origin) {
     const platform = sdk.platform();
     return {
         origin,
         send: options => platform.send(options),
-    };
-}
-
-export function getInitConfig(authData) {
-    return {
-        isGuest: !authData?.owner_id,
     };
 }
 
@@ -35,17 +27,4 @@ export async function initRingcentralSDKByPasword(config) {
         rcsdk,
         authData,
     };
-}
-
-
-export async function initRcvEngine() {
-    const { rcsdk, authData } = await initRingcentralSDKByPasword();
-
-    const rcvEngine = new RcvEngine(
-        getHttpClient(rcsdk),
-        getInitConfig(authData)
-    );
-
-
-    return rcvEngine;
 }
