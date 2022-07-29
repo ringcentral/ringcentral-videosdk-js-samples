@@ -50,9 +50,7 @@ const InMeeting: FC<IProps> = (props) => {
             rcvEngine
                 ?.joinMeeting(meetingId as string)
                 .catch(e => {
-                    enqueueSnackbar(`Error occurs due to :${e.message}`, {
-                        variant: 'error',
-                    });
+
                 });
         }
 
