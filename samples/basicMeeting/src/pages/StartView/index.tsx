@@ -1,4 +1,5 @@
 import React, { FC, useCallback } from 'react'
+import { Button, InputGroup, Form } from 'react-bootstrap';
 import { EngineEvent } from '@sdk';
 import './index.less';
 
@@ -19,13 +20,19 @@ const StartView: FC<IProps> = (props) => {
     return (
         <div className='start-view row'>
             <div className="col-4">
-                <button type="button" className="btn btn-success" onClick={startMeetingHandler}>start meeting</button>
+                <Button variant="success" onClick={startMeetingHandler}>start meeting</Button>
             </div>
             <div className="col-8">
-                <div className='input-group'>
-                    <input type="text" className="form-control" placeholder='please input meeting id' />
-                    <button type="button" className="btn btn-primary" onClick={joinMeetingHandler}>join meeting</button>
-                </div>
+                <InputGroup className="mb-3">
+                    <Form.Control
+                        placeholder="please input meeting id"
+                        aria-label="meeting id"
+                        aria-describedby="meeting id"
+                    />
+                    <Button variant="primary" onClick={joinMeetingHandler}>
+                        join meeting
+                    </Button>
+                </InputGroup>
             </div>
         </div>)
 }

@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useMemo, useRef, useCallback, useState } from 'react'
 import { EngineEvent, StreamEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
+import { Badge } from 'react-bootstrap';
 import { sinkStreamElement, unSinkStreamElement } from '../../utils/streamHandler';
 import { TrackType } from '../../utils/constants'
 import './index.less';
@@ -58,7 +59,7 @@ const InMeeting: FC<IProps> = (props) => {
 
     return (
         <div className='meeting-wrapper'>
-            <p>Meeting Id: <span className="badge bg-secondary">{meetingId}</span></p>
+            <p>Meeting Id: <Badge bg="info">{meetingId}</Badge></p>
             <div className='video-wrapper'>
                 <video
                     className='video-elt'
