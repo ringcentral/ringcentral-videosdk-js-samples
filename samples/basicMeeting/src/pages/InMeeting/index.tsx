@@ -1,18 +1,18 @@
 import React, { FC, useEffect, useMemo, useRef, useCallback, useState } from 'react'
 import { EngineEvent, StreamEvent } from '@sdk';
+import { useParams } from 'react-router-dom';
 import { sinkStreamElement, unSinkStreamElement } from '../../utils/streamHandler';
 import { TrackType } from '../../utils/constants'
-
-
+import './index.less';
 interface IProps {
     rcvEngine: EngineEvent
 }
 
 const InMeeting: FC<IProps> = (props) => {
     const { rcvEngine } = props
-
-    const remoteVideoWrapper = useRef<HTMLDivElement>({} as HTMLDivElement);
-    const localVideoWrapper = useRef<HTMLDivElement>({} as HTMLDivElement);
+    const { meetingId } = useParams();
+    const remoteVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
+    const localVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
     const meetingController = useMemo(
         () => rcvEngine?.getMeetingController(),
         [rcvEngine, rcvEngine?.getMeetingController()]
@@ -34,32 +34,43 @@ const InMeeting: FC<IProps> = (props) => {
     useEffect(() => {
         if (meetingController) {
             streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_ADDED, stream => {
-                sinkStreamElement(stream, TrackType.VIDEO, remoteVideoWrapper.current);
+                sinkStreamElement(stream, TrackType.VIDEO, remoteVideoRef.current);
             });
             streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_REMOVED, stream => {
-                unSinkStreamElement(stream, remoteVideoWrapper.current);
+                unSinkStreamElement(stream, remoteVideoRef.current);
             });
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
-                sinkStreamElement(stream, TrackType.VIDEO, localVideoWrapper.current);
+                sinkStreamElement(stream, TrackType.VIDEO, localVideoRef.current);
             });
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_REMOVED, stream => {
-                unSinkStreamElement(stream, localVideoWrapper.current);
+                unSinkStreamElement(stream, localVideoRef.current);
             });
         }
+        else {
+            rcvEngine
+                ?.joinMeeting(meetingId as string)
+                .catch(e => {
+                    enqueueSnackbar(`Error occurs due to :${e.message}`, {
+                        variant: 'error',
+                    });
+                });
+        }
 
-    }, [meetingController])
+    }, [meetingController, meetingId])
 
     return (
-        <div>
-            <h4>Meeting Id: <b></b></h4>
-            <div
-                data-lable='localVideoWrapper'
-                ref={localVideoWrapper}
+        <div className='meeting-wrapper'>
+            <p>Meeting Id: <span className="badge bg-secondary">{meetingId}</span></p>
+            <div className='video-wrapper'>
+                <video
+                    className='video-elt'
+                    ref={localVideoRef}
             />
-            <div
-                data-lable='remoteVideoWrapper'
-                ref={remoteVideoWrapper}
+                <video
+                    className='video-elt'
+                    ref={remoteVideoRef}
             />
+            </div>
             <div>
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example">
                     <button type="button" className="btn btn-success">unmute Audio</button>
