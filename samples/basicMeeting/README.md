@@ -14,4 +14,4 @@
 - Fill in `app.config.js` with your app and account information
 - Run `yarn install`
 - Run `yarn run dev`
-- Open `https://localhost:9001/` in browser
+- Open `https://localhost:9000/` in browser
