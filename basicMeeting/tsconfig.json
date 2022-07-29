@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react",
+        "baseUrl": ".",
+        "moduleResolution": "node",
+        "paths": {
+            "@sdk": ["../lib"],
+        }
+    }
+}
