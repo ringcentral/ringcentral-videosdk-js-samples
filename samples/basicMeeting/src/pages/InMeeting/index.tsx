@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo, useRef, useCallback, useState } from 'react'
-import { EngineEvent, StreamEvent } from '@sdk';
+import { EngineEvent, StreamEvent, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Badge, Button, ButtonGroup } from 'react-bootstrap';
 import Message, { IAlert } from '../../components/Message'
@@ -60,6 +60,44 @@ const InMeeting: FC<IProps> = (props) => {
 
     }, [meetingController, meetingId])
 
+    // audio handler
+    useEffect(() => {
+        const { isAudioMuted } = userController?.getMyself() || {};
+        setAudioMuted(isAudioMuted || false);
+
+        const audioMuteListener = audioController?.on(
+            AudioEvent.LOCAL_AUDIO_MUTE_CHANGED,
+            setAudioMuted
+        );
+        return () => {
+            audioMuteListener?.();
+        };
+    }, [audioController]);
+
+    // video handler
+    useEffect(() => {
+        const videoLocalMuteListener = videoController?.on(
+            VideoEvent.LOCAL_VIDEO_MUTE_CHANGED,
+            setVideoMute
+        );
+        const videoRemoteMuteListener = videoController?.on(
+            VideoEvent.REMOTE_VIDEO_MUTE_CHANGED,
+        );
+        return () => {
+            videoRemoteMuteListener?.();
+            videoLocalMuteListener?.();
+        };
+    }, [videoController]);
+
+    const toggleMuteAudio = useCallback(async () => {
+        await audioController?.muteLocalAudioStream(!audioMuted);
+    }, [audioController, audioMuted]);
+
+    const toggleMuteVideo = useCallback(async () => {
+        await videoController?.muteLocalVideoStream(!videoMute);
+        console.log('...toggleMuteVideo')
+    }, [videoController, videoMute]);
+
     return (
         <div className='meeting-wrapper'>
             <p>Meeting Id: <Badge bg="info">{meetingId}</Badge></p>
@@ -78,10 +116,10 @@ const InMeeting: FC<IProps> = (props) => {
             />
             </div>
             <ButtonGroup>
-                <Button variant="primary">
+                <Button variant="primary" onClick={toggleMuteAudio}>
                     <i className={audioMuted ? 'bi bi-mic-mute-fill' : 'bi bi-mic-fill'} />&nbsp;Audio
                 </Button>
-                <Button variant="success">
+                <Button variant="success" onClick={toggleMuteVideo}>
                     <i className={videoMute ? 'bi bi-camera-video-off-fill' : 'bi bi-camera-video-fill'} />&nbsp;Video
                 </Button>
                 <Button variant="danger">Leave</Button>
