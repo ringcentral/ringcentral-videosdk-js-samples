@@ -2,8 +2,8 @@ import React, { FC, useEffect, useMemo, useRef, useCallback, useState } from 're
 import { EngineEvent, StreamEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Badge } from 'react-bootstrap';
-import { sinkStreamElement, unSinkStreamElement } from '../../utils/streamHandler';
-import { TrackType } from '../../utils/constants'
+import Message, { IAlert } from '../../components/Message'
+
 import './index.less';
 interface IProps {
     rcvEngine: EngineEvent
@@ -12,6 +12,7 @@ interface IProps {
 const InMeeting: FC<IProps> = (props) => {
     const { rcvEngine } = props
     const { meetingId } = useParams();
+    const [alert, setAlert] = useState<IAlert>({ type: 'info', msg: '' });
     const remoteVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
     const localVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
     const meetingController = useMemo(
@@ -35,16 +36,16 @@ const InMeeting: FC<IProps> = (props) => {
     useEffect(() => {
         if (meetingController) {
             streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_ADDED, stream => {
-                sinkStreamElement(stream, TrackType.VIDEO, remoteVideoRef.current);
+                remoteVideoRef.current.srcObject = stream.stream
             });
             streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_REMOVED, stream => {
-                unSinkStreamElement(stream, remoteVideoRef.current);
+                remoteVideoRef.current.srcObject = null
             });
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
-                sinkStreamElement(stream, TrackType.VIDEO, localVideoRef.current);
+                localVideoRef.current.srcObject = stream.stream
             });
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_REMOVED, stream => {
-                unSinkStreamElement(stream, localVideoRef.current);
+                localVideoRef.current.srcObject = null
             });
         }
         else {
@@ -63,10 +64,14 @@ const InMeeting: FC<IProps> = (props) => {
             <div className='video-wrapper'>
                 <video
                     className='video-elt'
+                    autoPlay={true}
+                    muted={true}
                     ref={localVideoRef}
             />
                 <video
                     className='video-elt'
+                    autoPlay={true}
+                    muted={true}
                     ref={remoteVideoRef}
             />
             </div>
@@ -77,6 +82,7 @@ const InMeeting: FC<IProps> = (props) => {
                     <button type="button" className="btn btn-danger">Leave</button>
                 </div>
             </div>
+            {<Message type='warning' msg={alert.msg} type={alert?.type} onClose={() => setAlert({ type: 'info', msg: '' })} />}
         </div>
     )
 }

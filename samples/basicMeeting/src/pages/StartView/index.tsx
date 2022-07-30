@@ -1,6 +1,7 @@
-import React, { FC, useCallback } from 'react'
-import { Button, InputGroup, Form } from 'react-bootstrap';
+import React, { FC, useCallback, useState, useRef } from 'react'
+import { Button, InputGroup, Form, Row, Col } from 'react-bootstrap';
 import { EngineEvent } from '@sdk';
+import Message from '../../components/Message'
 import './index.less';
 
 interface IProps {
@@ -9,32 +10,60 @@ interface IProps {
 
 const StartView: FC<IProps> = (props) => {
     const { rcvEngine } = props
+    const [isLoading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const inputRef = useRef(null)
 
     const startMeetingHandler = useCallback(async () => {
-        rcvEngine.startInstantMeeting();
+        setLoading(true)
+        try {
+            await rcvEngine.startInstantMeeting();
+            setLoading(false)
+        } catch (error) {
+            setLoading(false)
+        }
     }, [rcvEngine])
 
     const joinMeetingHandler = useCallback(async () => {
+        console.log('input value:::', inputRef.current.value)
+        if (!inputRef.current.value.trim()) {
+            setError('Meeting id can not be empty!')
+        }
     }, [rcvEngine])
 
     return (
-        <div className='start-view row'>
-            <div className="col-4">
-                <Button variant="success" onClick={startMeetingHandler}>start meeting</Button>
+        <>
+            <div className='start-view row'>
+                <Row>
+                    <Col sm={4} >
+                        <Button
+                            className='start-btn'
+                            variant="success"
+                            disabled={isLoading}
+                            onClick={!isLoading ? startMeetingHandler : null}>
+                            {isLoading ? 'Starting…' : 'Start meeting'}
+                        </Button>
+                    </Col>
+                    <Col sm={8} >
+                        <InputGroup className="mb-3">
+                            <Form.Control
+                                placeholder="please input meeting id"
+                                aria-label="meeting id"
+                                aria-describedby="meeting id"
+                                ref={inputRef}
+                            />
+                            <Button
+                                className='start-btn'
+                                variant="primary"
+                                onClick={joinMeetingHandler}>
+                                {isLoading ? 'Joining…' : 'Join meeting'}
+                            </Button>
+                        </InputGroup>
+                    </Col>
+                </Row>
             </div>
-            <div className="col-8">
-                <InputGroup className="mb-3">
-                    <Form.Control
-                        placeholder="please input meeting id"
-                        aria-label="meeting id"
-                        aria-describedby="meeting id"
-                    />
-                    <Button variant="primary" onClick={joinMeetingHandler}>
-                        join meeting
-                    </Button>
-                </InputGroup>
-            </div>
-        </div>)
+            <Message type='warning' msg={error} onClose={() => setError('')} />
+        </>)
 }
 
 export default StartView

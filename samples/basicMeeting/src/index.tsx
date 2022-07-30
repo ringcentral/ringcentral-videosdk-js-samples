@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from "react-dom";
-import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { RcvEngine, EngineEvent } from '@sdk';
 import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
@@ -43,7 +43,6 @@ export default function App({ config }) {
     }, [])
 
     return (
-
         <Routes>
             <Route path='meeting'>
                 <Route
@@ -58,13 +57,12 @@ export default function App({ config }) {
     )
 }
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
+createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <BrowserRouter>
-        <App config={{
-            ...window.initConfig,
-        }} />
+            <App config={{
+                ...window.initConfig,
+            }} />
         </BrowserRouter>
     </React.StrictMode>
 );
