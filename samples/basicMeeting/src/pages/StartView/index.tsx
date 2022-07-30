@@ -36,37 +36,35 @@ const StartView: FC<IProps> = (props) => {
 
     return (
         <>
-            <div className='start-view row'>
-                <Row>
-                    <Col sm={4} >
+            <Row className='start-view'>
+                <Col sm={4} >
+                    <Button
+                        className='start-btn'
+                        variant="success"
+                        disabled={isJoinLoading || isStartLoading}
+                        onClick={!isStartLoading ? startMeetingHandler : null}>
+                        <i className="bi bi-camera-reels" />&nbsp;
+                        Start meeting{isStartLoading ? <span className='dotting'></span> : null}
+                    </Button>
+                </Col>
+                <Col sm={8} >
+                    <InputGroup className="mb-3">
+                        <Form.Control
+                            placeholder="please input meeting id"
+                            aria-label="meeting id"
+                            aria-describedby="meeting id"
+                            ref={inputRef}
+                        />
                         <Button
                             className='start-btn'
-                            variant="success"
-                            disabled={isJoinLoading || isStartLoading}
-                            onClick={!isStartLoading ? startMeetingHandler : null}>
-                            <i className="bi bi-camera-reels" />&nbsp;
-                            Start meeting{isStartLoading ? <span className='dotting'></span> : null}
+                            variant="primary"
+                            onClick={!isJoinLoading ? joinMeetingHandler : null}>
+                            <i className="bi bi-box-arrow-in-right" />&nbsp;
+                            Join meeting{isJoinLoading ? <span className='dotting'></span> : null}
                         </Button>
-                    </Col>
-                    <Col sm={8} >
-                        <InputGroup className="mb-3">
-                            <Form.Control
-                                placeholder="please input meeting id"
-                                aria-label="meeting id"
-                                aria-describedby="meeting id"
-                                ref={inputRef}
-                            />
-                            <Button
-                                className='start-btn'
-                                variant="primary"
-                                onClick={!isJoinLoading ? joinMeetingHandler : null}>
-                                <i className="bi bi-box-arrow-in-right" />&nbsp;
-                                Join meeting{isJoinLoading ? <span className='dotting'></span> : null}
-                            </Button>
-                        </InputGroup>
-                    </Col>
-                </Row>
-            </div>
+                    </InputGroup>
+                </Col>
+            </Row>
             <Message type='warning' msg={error} onClose={() => setError('')} />
         </>)
 }
