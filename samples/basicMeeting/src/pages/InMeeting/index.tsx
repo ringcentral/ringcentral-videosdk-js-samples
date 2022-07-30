@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo, useRef, useCallback, useState } from 'react'
 import { EngineEvent, StreamEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { Badge } from 'react-bootstrap';
+import { Badge, Button, ButtonGroup } from 'react-bootstrap';
 import Message, { IAlert } from '../../components/Message'
 
 import './index.less';
@@ -13,6 +13,8 @@ const InMeeting: FC<IProps> = (props) => {
     const { rcvEngine } = props
     const { meetingId } = useParams();
     const [alert, setAlert] = useState<IAlert>({ type: 'info', msg: '' });
+    const [audioMuted, setAudioMuted] = useState(true);
+    const [videoMute, setVideoMute] = useState(true);
     const remoteVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
     const localVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
     const meetingController = useMemo(
@@ -75,14 +77,20 @@ const InMeeting: FC<IProps> = (props) => {
                     ref={remoteVideoRef}
             />
             </div>
-            <div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button type="button" className="btn btn-success">unmute Audio</button>
-                    <button type="button" className="btn btn-primary">unmute Video</button>
-                    <button type="button" className="btn btn-danger">Leave</button>
-                </div>
-            </div>
-            {<Message type='warning' msg={alert.msg} type={alert?.type} onClose={() => setAlert({ type: 'info', msg: '' })} />}
+            <ButtonGroup>
+                <Button variant="primary">
+                    <i className={audioMuted ? 'bi bi-mic-mute-fill' : 'bi bi-mic-fill'} />&nbsp;Audio
+                </Button>
+                <Button variant="success">
+                    <i className={videoMute ? 'bi bi-camera-video-off-fill' : 'bi bi-camera-video-fill'} />&nbsp;Video
+                </Button>
+                <Button variant="danger">Leave</Button>
+            </ButtonGroup>
+            {<Message
+                type='warning'
+                msg={alert.msg}
+                type={alert?.type}
+                onClose={() => setAlert({ type: 'info', msg: '' })} />}
         </div>
     )
 }

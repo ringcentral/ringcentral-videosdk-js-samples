@@ -41,6 +41,7 @@ const StartView: FC<IProps> = (props) => {
                             variant="success"
                             disabled={isLoading}
                             onClick={!isLoading ? startMeetingHandler : null}>
+                            <i className="bi bi-camera-reels" />&nbsp;
                             {isLoading ? 'Starting…' : 'Start meeting'}
                         </Button>
                     </Col>
@@ -56,6 +57,7 @@ const StartView: FC<IProps> = (props) => {
                                 className='start-btn'
                                 variant="primary"
                                 onClick={joinMeetingHandler}>
+                                <i className="bi bi-box-arrow-in-right" />&nbsp;
                                 {isLoading ? 'Joining…' : 'Join meeting'}
                             </Button>
                         </InputGroup>
