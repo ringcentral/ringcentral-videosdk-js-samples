@@ -1,5 +1,6 @@
 import React, { FC, useEffect } from 'react'
 import { Alert } from 'react-bootstrap';
+import './Message.less';
 
 interface IProps extends IAlert {
     onClose?: () => void

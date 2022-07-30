@@ -10,17 +10,18 @@ interface IProps {
 
 const StartView: FC<IProps> = (props) => {
     const { rcvEngine } = props
-    const [isLoading, setLoading] = useState(false);
+    const [isStartLoading, setStartLoading] = useState(false);
+    const [isJoinLoading, setJoinLoading] = useState(false);
     const [error, setError] = useState('');
     const inputRef = useRef(null)
 
     const startMeetingHandler = useCallback(async () => {
-        setLoading(true)
+        setStartLoading(true)
         try {
             await rcvEngine.startInstantMeeting();
-            setLoading(false)
+            setStartLoading(false)
         } catch (error) {
-            setLoading(false)
+            setStartLoading(false)
         }
     }, [rcvEngine])
 
@@ -28,7 +29,9 @@ const StartView: FC<IProps> = (props) => {
         console.log('input value:::', inputRef.current.value)
         if (!inputRef.current.value.trim()) {
             setError('Meeting id can not be empty!')
+            return;
         }
+        setJoinLoading(true)
     }, [rcvEngine])
 
     return (
@@ -39,10 +42,10 @@ const StartView: FC<IProps> = (props) => {
                         <Button
                             className='start-btn'
                             variant="success"
-                            disabled={isLoading}
-                            onClick={!isLoading ? startMeetingHandler : null}>
+                            disabled={isJoinLoading || isStartLoading}
+                            onClick={!isStartLoading ? startMeetingHandler : null}>
                             <i className="bi bi-camera-reels" />&nbsp;
-                            {isLoading ? 'Starting…' : 'Start meeting'}
+                            Start meeting{isStartLoading ? <span className='dotting'></span> : null}
                         </Button>
                     </Col>
                     <Col sm={8} >
@@ -56,9 +59,9 @@ const StartView: FC<IProps> = (props) => {
                             <Button
                                 className='start-btn'
                                 variant="primary"
-                                onClick={joinMeetingHandler}>
+                                onClick={!isJoinLoading ? joinMeetingHandler : null}>
                                 <i className="bi bi-box-arrow-in-right" />&nbsp;
-                                {isLoading ? 'Joining…' : 'Join meeting'}
+                                Join meeting{isJoinLoading ? <span className='dotting'></span> : null}
                             </Button>
                         </InputGroup>
                     </Col>

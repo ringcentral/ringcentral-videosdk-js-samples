@@ -1,21 +1,31 @@
 .start-view {
-    width: 600px;
+    width: 700px;
     height: 40px;
     position: absolute;
     left: 50%;
     top: 50%;
-    margin-left: -300px;
-    margin-top: -300px;
-    margin-top: -20px;
+    transform: translateX(-50%) translateY(-50%);
 }
 
 .start-btn {
-    width: 150px;
+    width: 170px;
 }
 
-.my-alert {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+.dotting {
+    display: inline-block; width: 10px; min-height: 2px;
+    padding-right: 2px;
+    border-left: 2px solid currentColor; border-right: 2px solid currentColor;   
+    background-color: currentColor; background-clip: content-box;
+    box-sizing: border-box;
+    animation: dot 1s infinite step-start both;
+}
+
+.dotting:before { content: '...'; } /* IE8 */
+.dotting::before { content: ''; }
+:root .dotting { margin-left: 2px; padding-left: 2px; } /* IE9+ */
+
+@keyframes dot {
+    25% { border-color: transparent; background-color: transparent; }          /* 0个点 */
+    50% { border-right-color: transparent; background-color: transparent; }    /* 1个点 */
+    75% { border-right-color: transparent; }                                   /* 2个点 */
 }
