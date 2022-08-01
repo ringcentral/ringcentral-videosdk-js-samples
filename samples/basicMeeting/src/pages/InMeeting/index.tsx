@@ -71,17 +71,19 @@ const InMeeting: FC<IProps> = (props) => {
 
     // video event handler
     useEffect(() => {
-        const videoLocalMuteListener = videoController?.on(
-            VideoEvent.LOCAL_VIDEO_MUTE_CHANGED,
-            setVideoMute
-        );
-        const videoRemoteMuteListener = videoController?.on(
-            VideoEvent.REMOTE_VIDEO_MUTE_CHANGED,
-        );
-        return () => {
-            videoRemoteMuteListener?.();
-            videoLocalMuteListener?.();
-        };
+        if (videoController) {
+            const videoLocalMuteListener = videoController?.on(
+                VideoEvent.LOCAL_VIDEO_MUTE_CHANGED,
+                setVideoMute
+            );
+            const videoRemoteMuteListener = videoController?.on(
+                VideoEvent.REMOTE_VIDEO_MUTE_CHANGED,
+            );
+            return () => {
+                videoRemoteMuteListener?.();
+                videoLocalMuteListener?.();
+            };
+        }
     }, [videoController]);
 
     // user event handler
@@ -126,26 +128,12 @@ const InMeeting: FC<IProps> = (props) => {
 
     const handleLeaveMeeting = useCallback(() => {
         console.log('Call leave meeting');
-        if (meetingController) {
-            meetingController
-                .leaveMeeting()
-                .catch(e => {
-                })
-                .finally(() => {
-                });
-        }
+        meetingController?.leaveMeeting();
     }, [meetingController]);
 
     const handleEndMeeting = useCallback(async () => {
         console.log('Call end meeting');
-        if (meetingController) {
-            meetingController
-                .endMeeting()
-                .then(result => {
-                })
-                .catch(e => {
-                });
-        }
+        meetingController?.endMeeting();
     }, [meetingController]);
 
     const onLeaveClick = useCallback(() => {
