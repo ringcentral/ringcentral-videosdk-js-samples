@@ -62,9 +62,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                     <Card key={participant.uid} className='video-card'>
                         <Card.Body>
                             <Card.Title>{participant.displayName} {participant.isMe ? '(You)' : ''}</Card.Title>
-                        </Card.Body>
-                        <div>
-                            {participant.isVideoMuted ? <span>Video Muted</span> : null}
+                            <>
                             <div
                                 style={{
                                     visibility: participant.isVideoMuted
@@ -75,7 +73,9 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                                     (videoRef.current[participant.uid] = video)
                                 }
                             />
-                        </div>
+                                {participant.isVideoMuted ? <span>Video Muted</span> : null}
+                            </>
+                        </Card.Body>
                     </Card>
                 )
             })}
