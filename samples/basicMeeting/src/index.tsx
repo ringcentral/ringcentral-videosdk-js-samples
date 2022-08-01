@@ -25,7 +25,9 @@ export default function App({ config }) {
             if (engine) {
                 window['librct'] = engine
                 engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
-                    navigate(`/meeting/${meetingId}`);
+                    if (!window.location.pathname.includes('/meeting/')) {
+                        navigate(`/meeting/${meetingId}`);
+                    }
                 });
                 engine.on(EngineEvent.MEETING_LEFT, () => {
                     navigate('/', { replace: true });

@@ -1,3 +1,6 @@
+import { ControlClient } from 'libsfu';
+import Librct from 'librct';
+
 /** Indicates the status of the current attendee */
 export declare enum AttendeeStatus {
     /** Not started */
@@ -150,6 +153,13 @@ export declare enum AudioEvent {
     AUDIO_UNMUTE_DEMAND = "audio-unmute-demand"
 }
 
+declare enum COMMON_SS_SOURCES {
+    SCREEN = "screen",
+    WINDOW = "window",
+    TAB = "tab",
+    AUDIO = "audio"
+}
+
 /**
  * The stream object type in conference streams
  * @ignore
@@ -180,6 +190,11 @@ export declare interface ConferenceStream {
      */
     startTime: string;
     /**
+     * Subtype stream
+     * 'screen' | 'window' | 'tab'
+     */
+    subtype?: string;
+    /**
      * Type stream
      * "video/main" | "video/screensharing" | "video/whiteboard" | "audio/main"
      */
@@ -208,7 +223,7 @@ export declare interface ConferenceStream {
     /**
      * Whether the stream is inactive
      */
-    deleted: boolean;
+    deleted?: boolean;
 }
 
 declare class DeviceManager<T extends string> extends EventEmitter<T> {
@@ -232,6 +247,7 @@ declare class DeviceManager<T extends string> extends EventEmitter<T> {
      * @return {MediaStream}
      */
     static safeGetUserMedia(constraints?: MediaStreamConstraints): Promise<MediaStream>;
+    static safeGetDisplayMedia(constraints?: DisplayMediaStreamConstraints): Promise<MediaStream>;
     /**
      * @param constraints: {MediaStreamConstraints}
      * @description A compatibility static method to request system api for ask device permission
@@ -374,7 +390,9 @@ export declare enum ErrorCodeType {
     /** The device is disabled by the browser or the user has denied permission of using the device */
     ERR_PERMISSION_DENIED = 33,
     /** The specified capture device cannot be found. */
-    ERR_DEVICE_NOT_FOUND = 34
+    ERR_DEVICE_NOT_FOUND = 34,
+    /** Sharing is locked and users cannot share except host and moderator */
+    ERR_SHARE_LOCKED = 35
 }
 
 declare class EventEmitter<T extends string> {
@@ -399,25 +417,6 @@ export declare type HttpClient = {
      */
     send(options: SendOptions): Promise<Response>;
 };
-
-declare interface IAccountInfo {
-    uri?: string;
-    accountId?: string;
-    extensionId?: string;
-    displayName?: string;
-    type?: string;
-    regionalSettings?: IRegionalSettings;
-}
-
-export declare interface IBridge {
-    /** Unique bridge identifier */
-    id: string;
-    host: IHost;
-    pins: IPins;
-    security: ISecurity;
-    discovery: IDiscovery;
-    preferences: IPreferences;
-}
 
 /**
  * @interface ICountry
@@ -522,6 +521,19 @@ export declare interface InstantMeetingSettings {
     onlyCoworkersCanJoin?: boolean;
     /** Enable End-to-End Encryption for meeting .(e2ee feature land in the future , so is forced to false)*/
     enableE2ee?: boolean;
+}
+
+declare interface IOptions_3 {
+    sfu: ControlClient;
+    librct: Librct;
+    meeting: IMeetInfo;
+    localStreams: ConferenceStream[];
+}
+
+declare interface IOptions_4 {
+    librct: Librct;
+    recordings?: IRecording[];
+    meeting?: IMeetInfo;
 }
 
 /**
@@ -661,8 +673,18 @@ declare interface IPstn {
     participant: string;
 }
 
-export declare interface IRegionalSettings {
-    homeCountry: IHomeCountry;
+export declare interface IRecording {
+    id: string;
+    paused?: boolean;
+    startTime: string;
+    started?: boolean;
+    recordingEvents: IRecordingEvent[];
+}
+
+export declare interface IRecordingEvent {
+    initiator: string;
+    time: string;
+    type: string;
 }
 
 declare interface ISecurity {
@@ -718,11 +740,6 @@ export declare enum LogLevel {
     DEBUG = "debug"
 }
 
-export declare enum MediaStatus {
-    MUTE = "mute",
-    UNMUTE = "unmute"
-}
-
 /**
  * MeetingController is used to control the state in the meeting
  * such as switching recording and acquiring the video and audio controllers used to mute/unmute the video and audio of local and remote attendees.
@@ -745,6 +762,8 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private readonly _userController;
     private _audioController?;
     private _videoController?;
+    private _sharingController?;
+    private _recordingController?;
     private _sfu?;
     private _streamManager?;
     get isWaitingRoomEnabled(): boolean;
@@ -754,10 +773,12 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     getAudioController(): AudioController | undefined;
     getStreamManager(): StreamManager | undefined;
     getVideoController(): VideoController | undefined;
+    getSharingController(): SharingController | undefined;
+    getRecordingController(): RecordingController | undefined;
     /**
      * listen meeting change, trigger MeetingEvent
      */
-    private listenMeetingChanged;
+    private _listenMeetingChanged;
     /**
      * @Description: This function is used to get meeting information
      * @tech-sol https://wiki.ringcentral.com/display/VMT/%5BSol%5D+Get+Meeting+Info
@@ -800,12 +821,6 @@ export declare enum MeetingEvent {
     CHAT_MESSAGE_RECEIVED = "chat-message-received",
     /** Occurs when the meeting lock state is changed */
     MEETING_LOCK_STATE_CHANGED = "meeting-lock-state-changed",
-    /** Occurs when the meeting sharing state is changed */
-    SHARING_STATE_CHANGED = "sharing-state-changed",
-    /** Occurs when the meeting sharing user is changed */
-    SHARING_USER_CHANGED = "sharing-user-changed",
-    /** Occurs when the meeting sharing settings is changed */
-    SHARING_SETTINGS_CHANGED = "sharing-settings-changed",
     /** Occurs when a meeting API request is executed */
     MEETING_API_EXECUTED = "meeting-api-executed",
     /** Reports the statistics of the local audio stream */
@@ -881,7 +896,7 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      * @param meetingId The ID of the meeting we want to join
      * @param options Setting options for meeting @see MeetingOptions
      */
-    joinMeeting(meetingId: string, options: MeetingOptions): Promise<MeetingController>;
+    joinMeeting(meetingId: string, options?: MeetingOptions): Promise<MeetingController>;
     /**
      * Get a meeting controller with meeting ID, Meeting controller can be used to control the meeting status likes start/stop recording, get attendee list etc
      * note: You cannot get an available meeting controller until you successfully join the meeting
@@ -938,6 +953,28 @@ export declare enum RcvMeetingState {
     MEETING_STATE_LOCKED = 8
 }
 
+declare class RecordingController {
+    private readonly _librct;
+    private _recordings;
+    private _meeting;
+    constructor(options: IOptions_4);
+    private _initialEventListener;
+    /**
+     * Get current meeting recording state
+     * @return RecordingStatus
+     */
+    getRecordingState(): RecordingStatus;
+    /**
+     * Indicates whether the meeting recording is allowed.
+     */
+    isRecordingAllowed(): boolean;
+    private _getCloudRecordingsEnabled;
+    private _getIsE2EE;
+}
+
+export declare enum RecordingEvent {
+}
+
 /**
  * options of http client send method
  */
@@ -969,6 +1006,78 @@ export declare type SendOptions = {
     retry?: boolean;
 };
 
+export declare class SharingController extends EventEmitter<SharingEvent> {
+    private _meeting;
+    private _localStreams;
+    private _currentSharingStream;
+    private _curSharingStats;
+    private readonly _sfu;
+    private readonly _librct;
+    constructor(options: IOptions_3);
+    /**
+     * Check stream stats from sfu.
+     */
+    private _checkStatsIsBad;
+    private get _tapId();
+    private _initialEventListener;
+    /**
+     * Use newest localStreams to check if there exits new sharing stream, or current sharing stream is end.
+     */
+    private _checkEventForLocalStreams;
+    /**
+     * Use newest streams to check if there exists new sharing stream, or current sharing stream is end.
+     */
+    private _checkEventForStreams;
+    private _onSharingSettingsChanged;
+    private _currentSharingEnded;
+    private _registerSfu;
+    isSharingLocked(): boolean;
+    startSharing(spec?: DisplayMediaStreamConstraints): Promise<ErrorCodeType>;
+    /**Indicates whether local user is sharing. */
+    isLocalSharing(): boolean;
+    /**Indicates whether other user is sharing. */
+    isRemoteSharing(): boolean;
+    lockSharing(locked: boolean): Promise<ErrorCodeType>;
+    /**
+     * Closes the sharing session and channel in the web SDK.
+     * @return {Promise<ErrorCodeType>}
+     */
+    stopSharing(): Promise<ErrorCodeType>;
+    /**
+     * The meeting host or moderator stop the remote user's sharing.
+     * @param {string} uid
+     * @return {Promise<ErrorCodeType>}
+     */
+    stopRemoteSharing(uid: string): Promise<ErrorCodeType>;
+}
+
+export declare enum SharingEvent {
+    /** Occurs when the meeting sharing settings is changed */
+    SHARING_SETTINGS_CHANGED = "sharing-settings-changed",
+    /** Occurs when the meeting sharing state is changed */
+    SHARING_STATE_CHANGED = "sharing-state-changed",
+    /** Occurs when the meeting sharing user is changed */
+    SHARING_USER_CHANGED = "sharing-user-changed"
+}
+
+/**
+ * Indicates the sharing state of the current meeting
+ */
+export declare enum SharingState {
+    /**Occurs when self sharing is begin. */
+    SELF_SHARING_BEGIN = 0,
+    /**Occurs when self sharing is end. */
+    SELF_SHARING_END = 1,
+    /**Occurs when others sharing is begin. */
+    OTHER_SHARING_BEGIN = 2,
+    /**Occurs when others sharing is end. */
+    OTHER_SHARING_END = 3,
+    /**Occurs when current sharing is paused. */
+    SHARING_PAUSED = 4,
+    /**Occurs when current sharing is resumed. */
+    SHARING_RESUMED = 5
+}
+
 /**
  * @desc events about StreamManager
  */
@@ -997,6 +1106,7 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
     private _localStreams;
     private _remoteStreams;
     private _tapIdStreamMap;
+    private _eventQueueSet;
 
     /**
      * @description
@@ -1004,7 +1114,8 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
      * @private
      */
     private static _getStreamSplitTracks;
-    private _deleteTapIdStreamMapForRemote;
+    private _deleteTapIdStreamMap;
+    private _addTapIdStreamMap;
     private _initialEventListener;
     /** wrapped emit start **/
     private _emitLocalVideoTrackAdded;
@@ -1016,9 +1127,10 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
     private _emitRemoteVideoTrackRemoved;
     private _emitRemoteAudioTrackRemoved;
     /** wrapped emit end **/
-    /** conference event handler start **/
+    /** librct conference event handler start **/
     private _handleConferenceStreamChanged;
-    /** conference event handler end **/
+    private _handleConferenceLocalStreamChanged;
+    /** librct conference event handler end **/
     /** sfu event handler start **/
     /**
      *
@@ -1061,8 +1173,15 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
     private _handleLocalStreamRemoved;
     private _handleRemoteStreamReplaced;
     /** sfu event handler end **/
-    getLocalStreamByTapId(tapId: string): IStream | null;
-    getLocalStreams(): IStream[];
+    getRemoteStreamByTapId(tapId: string): Partial<IStream> | null;
+    getLocalStreamByTapId(tapId: string): Partial<IStream> | null;
+    getLocalStreams(): Partial<IStream>[];
+    /**
+     * Used for 'video/screensharing' stream
+     * @param stream
+     * @returns
+     */
+    static getSubtypeByStream(stream: any): void | COMMON_SS_SOURCES;
 }
 
 export declare type TEventCB = (...args: any[]) => void;
@@ -1077,6 +1196,8 @@ export declare class UserController extends EventEmitter<UserEvent> {
     private _cachedLocalParticipant;
     private _cachedRemoteParticipants;
 
+    private _initRemoteParticipants;
+    private _init;
     getMeetingUsers(): Record<string, IParticipant>;
     getMeetingUserById(uid: string): IParticipant | undefined;
     getMyself(): IParticipant;
@@ -1084,6 +1205,8 @@ export declare class UserController extends EventEmitter<UserEvent> {
     revokeModerator(participantId: string): Promise<ErrorCodeType>;
     private _getLocalParticipant;
     private _getRemoteParticipants;
+    private _handleLocalStreamChanges;
+    private _handleStreamChanges;
     private _handleRemoteParticipantsChanged;
     private _handleLocalParticipantChanged;
     isMySelfHostOrModerator(): boolean;
@@ -1123,9 +1246,9 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
     private readonly _sfu;
     private readonly _librct;
     private readonly _streamManager;
-    private _localStream;
     private _tapId;
     private _forPreviewStream;
+    private _videoEnabled;
 
     private _participantChangeHandler;
     /**
@@ -1137,15 +1260,14 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
     muteLocalVideoStream(mute: boolean, options?: MediaTrackConstraints): Promise<ErrorCodeType>;
     /**
      * Enable video
-     * @param {MediaTrackConstraints} options
      * @return Promise<Number>
      */
-    enableVideo(options?: MediaTrackConstraints): Promise<ErrorCodeType>;
+    private _enableVideo;
     /**
      * disable video, both remote and local video stream will be stopped.
      * @return Promise<Number>
      */
-    disableVideo(): Promise<ErrorCodeType>;
+    private _disableVideo;
     /**
      * Clear useless video tracks in sfu
      */
@@ -1252,6 +1374,13 @@ export declare enum WaitingRoomMode {
     EVERY = "EveryBody",
     GUEST = "GuestsOnly",
     OTHER = "OtherAccount"
+}
+
+declare enum WaitingRoomStatus {
+    DENIED = "0",
+    ALLOW = "1",
+    WAITING = "2",
+    LEFT = "3"
 }
 
 export { }

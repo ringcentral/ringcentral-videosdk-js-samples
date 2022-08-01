@@ -1,8 +1,8 @@
-import React, { FC, useEffect, useMemo, useRef, useCallback, useState } from 'react'
-import { EngineEvent, StreamEvent, AudioEvent, VideoEvent, IParticipant, UserEvent } from '@sdk';
+import React, { FC, useEffect, useMemo, useCallback, useState } from 'react'
+import { EngineEvent, AudioEvent, VideoEvent, IParticipant, UserEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Badge, Button, ButtonGroup, Modal } from 'react-bootstrap';
-import Message, { IMessage } from '../../components/Message'
+// import Message, { IMessage } from '../../components/Message'
 import AttendeeVideoList from './AttendeeVideoList'
 
 import './index.less';
@@ -13,7 +13,7 @@ interface IProps {
 const InMeeting: FC<IProps> = (props) => {
     const { rcvEngine } = props
     const { meetingId } = useParams();
-    const [msg, setMsg] = useState<IMessage>({ type: 'info', msg: '' });
+    // const [msg, setMsg] = useState<IMessage>({ type: 'info', msg: '' });
     const [loading, setLoading] = useState(false);
     const [activeParticipantList, updateParticipantList] = useState<IParticipant[]>([]);
     const [audioMuted, setAudioMuted] = useState(true);
@@ -27,10 +27,7 @@ const InMeeting: FC<IProps> = (props) => {
         () => meetingController?.getUserController(),
         [meetingController]
     );
-    const isMySelfHostOrModerator: boolean = useMemo(() => {
-        const myself = userController?.getMyself();
-        return myself?.isHost || myself?.isModerator || false;
-    }, [userController]);
+
     const audioController = useMemo(
         () => meetingController?.getAudioController(),
         [meetingController]
@@ -39,6 +36,11 @@ const InMeeting: FC<IProps> = (props) => {
         () => meetingController?.getVideoController(),
         [meetingController]
     );
+
+    const isMySelfHostOrModerator: boolean = useMemo(() => {
+        const myself = userController?.getMyself();
+        return myself?.isHost || myself?.isModerator || false;
+    }, [userController]);
 
     useEffect(() => {
         if (rcvEngine && !meetingController) {
@@ -103,13 +105,13 @@ const InMeeting: FC<IProps> = (props) => {
         };
 
         if (userController) {
-            userController.on(UserEvent.USER_JOINED, (participant: IParticipant) => {
+            userController.on(UserEvent.USER_JOINED, () => {
                 getAttendeeList();
             });
-            userController.on(UserEvent.USER_LEFT, (participant: IParticipant) => {
+            userController.on(UserEvent.USER_LEFT, () => {
                 getAttendeeList();
             });
-            userController.on(UserEvent.USER_UPDATED, (participant: IParticipant) => {
+            userController.on(UserEvent.USER_UPDATED, () => {
                 getAttendeeList();
             });
             getAttendeeList();
@@ -181,11 +183,11 @@ const InMeeting: FC<IProps> = (props) => {
                     </Modal.Body>
                 </Modal>
             }
-            <Message
+            {/* <Message
                 type='warning'
-                msg={alert.msg}
-                type={alert?.type}
-                onClose={() => setAlert({ type: 'info', msg: '' })} />
+                msg={msg.msg}
+                type={msg?.type}
+                onClose={() => setMsg({ type: 'info', msg: '' })} /> */}
         </div>
     )
 }
