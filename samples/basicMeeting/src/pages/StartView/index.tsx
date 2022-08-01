@@ -17,21 +17,27 @@ const StartView: FC<IProps> = (props) => {
 
     const startMeetingHandler = useCallback(async () => {
         setStartLoading(true)
-        try {
-            await rcvEngine.startInstantMeeting();
-            setStartLoading(false)
-        } catch (error) {
-            setStartLoading(false)
-        }
+        rcvEngine
+            .startInstantMeeting()
+            .catch(e => {
+                setError(`Error occurs due to :${e.message}`)
+            })
+            .finally(() => setStartLoading(false));
+
     }, [rcvEngine])
 
     const joinMeetingHandler = useCallback(async () => {
-        console.log('input value:::', inputRef.current.value)
         if (!inputRef.current.value.trim()) {
             setError('Meeting id can not be empty!')
             return;
         }
         setJoinLoading(true)
+        rcvEngine
+            .joinMeeting(inputRef.current.value)
+            .catch(e => {
+                setError(`Error occurs due to :${e.message}`)
+            })
+            .finally(() => setJoinLoading(false));
     }, [rcvEngine])
 
     return (
@@ -58,6 +64,7 @@ const StartView: FC<IProps> = (props) => {
                         <Button
                             className='start-btn'
                             variant="primary"
+                            disabled={isJoinLoading || isStartLoading}
                             onClick={!isJoinLoading ? joinMeetingHandler : null}>
                             <i className="bi bi-box-arrow-in-right" />&nbsp;
                             Join meeting{isJoinLoading ? <span className='dotting'></span> : null}

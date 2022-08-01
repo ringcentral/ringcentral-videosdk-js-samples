@@ -23,6 +23,7 @@ export default function App({ config }) {
                 authData
             );
             if (rcvEngine) {
+                window['librct'] = rcvEngine
                 rcvEngine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
                     navigate(`/meeting/${meetingId}`);
                 });

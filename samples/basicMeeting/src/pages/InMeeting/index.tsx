@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo, useRef, useCallback, useState } from 'react'
 import { EngineEvent, StreamEvent, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { Badge, Button, ButtonGroup } from 'react-bootstrap';
+import { Badge, Button, ButtonGroup, Modal } from 'react-bootstrap';
 import Message, { IAlert } from '../../components/Message'
 
 import './index.less';
@@ -15,6 +15,7 @@ const InMeeting: FC<IProps> = (props) => {
     const [alert, setAlert] = useState<IAlert>({ type: 'info', msg: '' });
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
+    const [showLeaveModal, setShowLeaveModal] = useState(false);
     const remoteVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
     const localVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
     const meetingController = useMemo(
@@ -25,6 +26,10 @@ const InMeeting: FC<IProps> = (props) => {
         () => meetingController?.getUserController(),
         [meetingController]
     );
+    const isMySelfHostOrModerator: boolean = useMemo(() => {
+        const myself = userController?.getMyself();
+        return myself?.isHost || myself?.isModerator || false;
+    }, [userController]);
     const audioController = useMemo(
         () => meetingController?.getAudioController(),
         [meetingController]
@@ -58,7 +63,7 @@ const InMeeting: FC<IProps> = (props) => {
                 });
         }
 
-    }, [meetingController, meetingId])
+    }, [meetingController, meetingId, rcvEngine])
 
     // audio handler
     useEffect(() => {
@@ -98,6 +103,39 @@ const InMeeting: FC<IProps> = (props) => {
         console.log('...toggleMuteVideo')
     }, [videoController, videoMute]);
 
+    const handleLeaveMeeting = useCallback(() => {
+        console.log('Call leave meeting');
+        if (meetingController) {
+            meetingController
+                .leaveMeeting()
+                .catch(e => {
+                })
+                .finally(() => {
+                });
+        }
+    }, [meetingController]);
+
+    const handleEndMeeting = useCallback(async () => {
+        console.log('Call end meeting');
+        if (meetingController) {
+            meetingController
+                .endMeeting()
+                .then(result => {
+                })
+                .catch(e => {
+                });
+        }
+    }, [meetingController]);
+
+    const onLeaveClick = useCallback(() => {
+        if (isMySelfHostOrModerator) {
+            setShowLeaveModal(true)
+        }
+        else {
+            handleLeaveMeeting()
+        }
+    }, [isMySelfHostOrModerator])
+
     return (
         <div className='meeting-wrapper'>
             <p>Meeting Id: <Badge bg="info">{meetingId}</Badge></p>
@@ -122,13 +160,33 @@ const InMeeting: FC<IProps> = (props) => {
                 <Button variant="success" onClick={toggleMuteVideo}>
                     <i className={videoMute ? 'bi bi-camera-video-off-fill' : 'bi bi-camera-video-fill'} />&nbsp;Video
                 </Button>
-                <Button variant="danger">Leave</Button>
+                <Button variant="danger" onClick={onLeaveClick}>Leave</Button>
             </ButtonGroup>
-            {<Message
+            {/* only host or moderator could end meeting */}
+            {isMySelfHostOrModerator &&
+                <Modal show={showLeaveModal} onHide={() => setShowLeaveModal(false)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Modal heading</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body className='modal-wrapper'>
+                        <p>
+                            <Button variant="secondary" onClick={handleLeaveMeeting}>
+                                Leave Meeting
+                            </Button>
+                        </p>
+                        <p>
+                            <Button variant="primary" onClick={handleEndMeeting}>
+                                End Meeting
+                            </Button>
+                        </p>
+                    </Modal.Body>
+                </Modal>
+            }
+            <Message
                 type='warning'
                 msg={alert.msg}
                 type={alert?.type}
-                onClose={() => setAlert({ type: 'info', msg: '' })} />}
+                onClose={() => setAlert({ type: 'info', msg: '' })} />
         </div>
     )
 }
