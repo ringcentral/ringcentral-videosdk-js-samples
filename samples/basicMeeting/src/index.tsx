@@ -18,28 +18,27 @@ export default function App({ config }) {
     useEffect(() => {
         const initSDK = async () => {
             const { rcsdk, authData } = await initRingcentralSDKByPasword(config);
-            const rcvEngine = new RcvEngine(
+            const engine = new RcvEngine(
                 getHttpClient(rcsdk, config.origin),
                 authData
             );
-            if (rcvEngine) {
-                window['librct'] = rcvEngine
-                rcvEngine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
+            if (engine) {
+                window['librct'] = engine
+                engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
                     navigate(`/meeting/${meetingId}`);
                 });
-                rcvEngine.on(EngineEvent.MEETING_LEFT, () => {
+                engine.on(EngineEvent.MEETING_LEFT, () => {
                     navigate('/', { replace: true });
                 });
-                rcvEngine.on(
+                engine.on(
                     EngineEvent.MEETING_STATE_CHANGED,
                     () => {
 
                     }
                 );
             }
-            setRcvEngine(rcvEngine)
+            setRcvEngine(engine)
         }
-        // init rcvEngine only once
         !rcvEngine && initSDK()
     }, [])
 

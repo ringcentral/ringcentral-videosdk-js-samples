@@ -25,8 +25,7 @@ export const sinkStreamElement = (
     mediaElement.muted = false;
     if (type === TrackType.VIDEO) {
         mediaElement.muted = true;
-        mediaElement.style.cssText =
-            'width: 100%; height:100%; object-fit: contain; position: absolute;';
+        mediaElement.style.cssText = 'width: 100%; height:100%; object-fit: contain;';
     }
     mediaElement.id = stream.id;
     mediaElement.srcObject = stream.stream as unknown as MediaStream;

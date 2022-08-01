@@ -6,20 +6,23 @@
     justify-content: center;
 }
 
-.video-wrapper {
+.video-card-wrapper {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
 }
 
-.video-elt {
-    position: relative;
-    display: inline-block;
-    background: #ccc;
-    height: 450px;
-    width: 600px;
+.video-card {
+    width: 400px;
+    height: 370px;
+    margin-right: 8px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    margin: 16px;
+    border: 1px solid #ccc;
+    text-align: center;
 }
 
 .modal-wrapper {

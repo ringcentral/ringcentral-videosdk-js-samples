@@ -50,23 +50,21 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
     }, [meetingController])
 
     return (
-        <div>
-            {loading && <div className='video-elt' style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className='video-card-wrapper'>
+            {loading &&
+                <div className='video-card' style={{ display: 'flex', justifyContent: 'center' }}>
                 <Spinner animation="border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
             </div>}
             {!loading && participants.map(participant => {
                 return (
-                    <Card key={participant.uid} className='video-elt'>
+                    <Card key={participant.uid} className='video-card'>
                         <Card.Body>
                             <Card.Title>{participant.displayName} {participant.isMe ? '(You)' : ''}</Card.Title>
                         </Card.Body>
-                        <div
-                            style={{
-                                position: 'relative',
-                            }}>
-                            {participant.isVideoMuted ? <div>Video Muted</div> : null}
+                        <div>
+                            {participant.isVideoMuted ? <span>Video Muted</span> : null}
                             <div
                                 style={{
                                     visibility: participant.isVideoMuted

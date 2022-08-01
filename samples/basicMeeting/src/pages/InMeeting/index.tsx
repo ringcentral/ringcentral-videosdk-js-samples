@@ -44,10 +44,9 @@ const InMeeting: FC<IProps> = (props) => {
         if (rcvEngine && !meetingController) {
             setLoading(true);
             rcvEngine
-                .joinMeeting(meetingId as string)
+                .joinMeeting(meetingId, {})
                 .then(() => setLoading(false))
                 .catch(e => {
-
                 });
         }
     }, [meetingController, meetingId, rcvEngine])
