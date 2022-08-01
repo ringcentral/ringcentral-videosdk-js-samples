@@ -2,11 +2,11 @@ import React, { FC, useEffect } from 'react'
 import { Alert } from 'react-bootstrap';
 import './Message.less';
 
-interface IProps extends IAlert {
+interface IProps extends IMessage {
     onClose?: () => void
 }
 
-export interface IAlert {
+export interface IMessage {
     msg: string
     type?: 'success' | 'danger' | 'warning' | 'info'
 }

@@ -1,8 +1,9 @@
 import React, { FC, useEffect, useMemo, useRef, useCallback, useState } from 'react'
-import { EngineEvent, StreamEvent, AudioEvent, VideoEvent } from '@sdk';
+import { EngineEvent, StreamEvent, AudioEvent, VideoEvent, IParticipant, UserEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Badge, Button, ButtonGroup, Modal } from 'react-bootstrap';
-import Message, { IAlert } from '../../components/Message'
+import Message, { IMessage } from '../../components/Message'
+import AttendeeVideoList from './AttendeeVideoList'
 
 import './index.less';
 interface IProps {
@@ -12,12 +13,12 @@ interface IProps {
 const InMeeting: FC<IProps> = (props) => {
     const { rcvEngine } = props
     const { meetingId } = useParams();
-    const [alert, setAlert] = useState<IAlert>({ type: 'info', msg: '' });
+    const [msg, setMsg] = useState<IMessage>({ type: 'info', msg: '' });
+    const [loading, setLoading] = useState(false);
+    const [activeParticipantList, updateParticipantList] = useState<IParticipant[]>([]);
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
-    const remoteVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
-    const localVideoRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
     const meetingController = useMemo(
         () => rcvEngine?.getMeetingController(),
         [rcvEngine, rcvEngine?.getMeetingController()]
@@ -38,48 +39,37 @@ const InMeeting: FC<IProps> = (props) => {
         () => meetingController?.getVideoController(),
         [meetingController]
     );
-    const streamManager = meetingController?.getStreamManager();
 
     useEffect(() => {
-        if (meetingController) {
-            streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_ADDED, stream => {
-                remoteVideoRef.current.srcObject = stream.stream
-            });
-            streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_REMOVED, stream => {
-                remoteVideoRef.current.srcObject = null
-            });
-            streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
-                localVideoRef.current.srcObject = stream.stream
-            });
-            streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_REMOVED, stream => {
-                localVideoRef.current.srcObject = null
-            });
-        }
-        else {
+        if (rcvEngine && !meetingController) {
+            setLoading(true);
             rcvEngine
-                ?.joinMeeting(meetingId as string)
+                .joinMeeting(meetingId as string)
+                .then(() => setLoading(false))
                 .catch(e => {
 
                 });
         }
-
     }, [meetingController, meetingId, rcvEngine])
 
-    // audio handler
+    // audio event handler
     useEffect(() => {
-        const { isAudioMuted } = userController?.getMyself() || {};
-        setAudioMuted(isAudioMuted || false);
+        if (audioController) {
+            const { isAudioMuted } = userController?.getMyself() || {};
+            audioController.enableAudio(true);
+            setAudioMuted(isAudioMuted || false);
 
-        const audioMuteListener = audioController?.on(
-            AudioEvent.LOCAL_AUDIO_MUTE_CHANGED,
-            setAudioMuted
-        );
-        return () => {
-            audioMuteListener?.();
-        };
+            const audioMuteListener = audioController?.on(
+                AudioEvent.LOCAL_AUDIO_MUTE_CHANGED,
+                setAudioMuted
+            );
+            return () => {
+                audioMuteListener?.();
+            };
+        }
     }, [audioController]);
 
-    // video handler
+    // video event handler
     useEffect(() => {
         const videoLocalMuteListener = videoController?.on(
             VideoEvent.LOCAL_VIDEO_MUTE_CHANGED,
@@ -93,6 +83,37 @@ const InMeeting: FC<IProps> = (props) => {
             videoLocalMuteListener?.();
         };
     }, [videoController]);
+
+    // user event handler
+    useEffect(() => {
+        const getAttendeeList = () => {
+            const meetingUsers =
+                userController?.getMeetingUsers() ||
+                ({} as {
+                    [k: string]: IParticipant;
+                });
+            const localParticipant = Object.values(meetingUsers).filter(
+                participant => participant.isMe
+            );
+            const activeRemoteParticipants = Object.values(meetingUsers).filter(
+                participant => !participant.isDeleted && !participant.isMe
+            );
+            updateParticipantList([...localParticipant, ...activeRemoteParticipants]);
+        };
+
+        if (userController) {
+            userController.on(UserEvent.USER_JOINED, (participant: IParticipant) => {
+                getAttendeeList();
+            });
+            userController.on(UserEvent.USER_LEFT, (participant: IParticipant) => {
+                getAttendeeList();
+            });
+            userController.on(UserEvent.USER_UPDATED, (participant: IParticipant) => {
+                getAttendeeList();
+            });
+            getAttendeeList();
+        }
+    }, [userController]);
 
     const toggleMuteAudio = useCallback(async () => {
         await audioController?.muteLocalAudioStream(!audioMuted);
@@ -139,20 +160,11 @@ const InMeeting: FC<IProps> = (props) => {
     return (
         <div className='meeting-wrapper'>
             <p>Meeting Id: <Badge bg="info">{meetingId}</Badge></p>
-            <div className='video-wrapper'>
-                <video
-                    className='video-elt'
-                    autoPlay={true}
-                    muted={true}
-                    ref={localVideoRef}
+            <AttendeeVideoList
+                meetingController={meetingController}
+                participants={activeParticipantList}
+                loading={loading}
             />
-                <video
-                    className='video-elt'
-                    autoPlay={true}
-                    muted={true}
-                    ref={remoteVideoRef}
-            />
-            </div>
             <ButtonGroup>
                 <Button variant="primary" onClick={toggleMuteAudio}>
                     <i className={audioMuted ? 'bi bi-mic-mute-fill' : 'bi bi-mic-fill'} />&nbsp;Audio

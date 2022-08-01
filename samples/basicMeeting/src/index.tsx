@@ -39,8 +39,8 @@ export default function App({ config }) {
             }
             setRcvEngine(rcvEngine)
         }
-        initSDK()
-
+        // init rcvEngine only once
+        !rcvEngine && initSDK()
     }, [])
 
     return (
