@@ -60,11 +60,9 @@ export default function App({ config }) {
 }
 
 createRoot(document.getElementById("root")).render(
-    <React.StrictMode>
-        <BrowserRouter>
-            <App config={{
-                ...window.initConfig,
-            }} />
-        </BrowserRouter>
-    </React.StrictMode>
+    <BrowserRouter>
+        <App config={{
+            ...window.initConfig,
+        }} />
+    </BrowserRouter>
 );

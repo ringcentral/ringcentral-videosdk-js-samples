@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useCallback, useState, useRef } from 'react'
 import { EngineEvent, AudioEvent, VideoEvent, IParticipant, UserEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { Badge, Button, ButtonGroup, Modal, Spinner } from 'react-bootstrap';
+import { Badge, Button, ButtonGroup, Spinner } from 'react-bootstrap';
 import AttendeeVideoList from './AttendeeVideoList'
 
 import './index.less';
@@ -17,8 +17,6 @@ const InMeeting: FC<IProps> = (props) => {
     const [activeParticipantList, updateParticipantList] = useState<IParticipant[]>([]);
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
-    const [showLeaveModal, setShowLeaveModal] = useState(false);
-    const [isHostOrModerator, setIsHostOrModerator] = useState(false)
 
     const meetingControllerRef = useRef(null)
 
@@ -28,6 +26,7 @@ const InMeeting: FC<IProps> = (props) => {
             let meetingCtl;
             if (!rcvEngine?.getMeetingController()) {
                 setLoading(true);
+
                 meetingCtl = await rcvEngine
                     .joinMeeting(meetingId, {});
                 setLoading(false)
@@ -62,8 +61,6 @@ const InMeeting: FC<IProps> = (props) => {
         const userController = meetingController?.getUserController()
         const videoController = meetingController?.getVideoController()
 
-        const myself = userController?.getMyself();
-        setIsHostOrModerator(myself?.isHost || myself?.isModerator || false)
         userController.on(UserEvent.USER_JOINED, () => {
             getAttendeeList(userController?.getMeetingUsers());
         });
@@ -74,6 +71,7 @@ const InMeeting: FC<IProps> = (props) => {
             getAttendeeList(userController?.getMeetingUsers());
         });
 
+        //
         audioController.enableAudio(true);
         const audioMuteListener = audioController?.on(
             AudioEvent.LOCAL_AUDIO_MUTE_CHANGED,
@@ -95,35 +93,32 @@ const InMeeting: FC<IProps> = (props) => {
         };
     }
 
-    const toggleMuteAudio = useCallback(async () => {
-        await meetingControllerRef.current?.getAudioController().muteLocalAudioStream(!audioMuted);
-        console.log('Toggle mute/unmute Audio successfully!')
+    const toggleMuteAudio = useCallback(() => {
+        meetingControllerRef.current?.getAudioController()?.muteLocalAudioStream(!audioMuted)
+            .catch((e) => {
+                alert(`Error occurs due to :${e.message}`)
+            });
     }, [audioMuted]);
 
-    const toggleMuteVideo = useCallback(async () => {
-        await meetingControllerRef.current?.getVideoController().muteLocalVideoStream(!videoMute);
-        console.log('Toggle mute/unmute Video successfully!')
+    const toggleMuteVideo = useCallback(() => {
+        meetingControllerRef.current?.getVideoController()?.muteLocalVideoStream(!videoMute)
+            .catch((e) => {
+                alert(`Error occurs due to :${e.message}`)
+            });
     }, [, videoMute]);
 
     const handleLeaveMeeting = useCallback(() => {
-        console.log('Call leave meeting');
-        meetingControllerRef.current.leaveMeeting();
+        meetingControllerRef.current?.leaveMeeting().catch((e) => {
+            alert(`Error occurs due to :${e.message}`)
+        });
 
     }, []);
 
     const handleEndMeeting = useCallback(() => {
-        console.log('Call end meeting');
-        meetingControllerRef.current.endMeeting();
+        meetingControllerRef.current?.endMeeting().catch((e) => {
+            alert(`Error occurs due to :${e.message}`)
+        });
     }, []);
-
-    const onLeaveClick = useCallback(() => {
-        if (isHostOrModerator) {
-            setShowLeaveModal(true)
-        }
-        else {
-            handleLeaveMeeting()
-        }
-    }, [isHostOrModerator])
 
     return (
         <div className='meeting-wrapper'>
@@ -146,26 +141,10 @@ const InMeeting: FC<IProps> = (props) => {
                     <Button variant="success" onClick={toggleMuteVideo}>
                         <i className={videoMute ? 'bi bi-camera-video-off-fill' : 'bi bi-camera-video-fill'} />&nbsp;Video
                     </Button>
-                    <Button variant="danger" onClick={onLeaveClick}>Leave</Button>
+                    <Button variant="warning" onClick={handleLeaveMeeting}>Leave</Button>
+                    <Button variant="danger" onClick={handleEndMeeting}>End</Button>
                 </ButtonGroup>
             </>}
-            <Modal show={showLeaveModal} onHide={() => setShowLeaveModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>I want to</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className='modal-wrapper'>
-                    <p>
-                        <Button variant="secondary" onClick={handleLeaveMeeting}>
-                            Leave Meeting
-                        </Button>
-                    </p>
-                    <p>
-                        <Button variant="primary" onClick={handleEndMeeting}>
-                            End Meeting
-                        </Button>
-                    </p>
-                </Modal.Body>
-            </Modal>
         </div>
     )
 }

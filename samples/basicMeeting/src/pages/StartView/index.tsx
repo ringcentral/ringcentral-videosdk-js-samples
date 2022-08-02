@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useState, useRef } from 'react'
 import { Button, InputGroup, Form, Row, Col } from 'react-bootstrap';
 import { EngineEvent } from '@sdk';
-import Message from '../../components/Message'
 import './index.less';
 
 interface IProps {
@@ -28,7 +27,7 @@ const StartView: FC<IProps> = (props) => {
 
     const joinMeetingHandler = useCallback(async () => {
         if (!inputRef.current.value.trim()) {
-            setError('Meeting id can not be empty!')
+            alert('Meeting id can not be empty!')
             return;
         }
         setJoinLoading(true)
@@ -72,7 +71,6 @@ const StartView: FC<IProps> = (props) => {
                     </InputGroup>
                 </Col>
             </Row>
-            <Message type='warning' msg={error} onClose={() => setError('')} />
         </>)
 }
 
