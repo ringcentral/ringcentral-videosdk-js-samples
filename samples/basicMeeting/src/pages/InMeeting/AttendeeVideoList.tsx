@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import { IParticipant, StreamEvent } from '@sdk';
 import { Card, Spinner } from 'react-bootstrap';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/dom'

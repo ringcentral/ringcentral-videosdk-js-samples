@@ -41,7 +41,7 @@ export default function App({ config }) {
             }
             setRcvEngine(engine)
         }
-        !rcvEngine && initSDK()
+        initSDK()
     }, [])
 
     return (
