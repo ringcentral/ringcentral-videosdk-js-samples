@@ -48,6 +48,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
             userController.on(UserEvent.USER_UPDATED, () => {
                 getAttendeeList(userController?.getMeetingUsers());
             });
+            getAttendeeList(userController?.getMeetingUsers())
         }
     }, [meetingController])
 
@@ -70,9 +71,9 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
             </div>}
             {!loading && participantList.map(participant => {
                 return (
-                    <Card key={participant.uid} className='video-card'>
-                        <Card.Body>
-                            <Card.Title>{participant.displayName} {participant.isMe ? '(You)' : ''}</Card.Title>
+                    <div key={participant.uid} className='video-card'>
+                        <div>
+                            <h4>{participant.displayName} {participant.isMe ? '(You)' : ''}</h4>
                             <div>
                                 <Badge bg="primary">Audio {participant.isAudioMuted ? 'Muted' : 'Unmuted'}</Badge>&nbsp;
                                 <Badge bg="success">Video {participant.isVideoMuted ? 'Muted' : 'Unmuted'}</Badge>
@@ -88,8 +89,8 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                                     (videoRef.current[participant.uid] = video)
                                 }
                             />
-                        </Card.Body>
-                    </Card>
+                        </div>
+                    </div>
                 )
             })}
         </div>

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useCallback, useState, useRef } from 'react'
+import React, { FC, useEffect, useCallback, useState, useRef, useMemo } from 'react'
 import { EngineEvent, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Button, ButtonGroup } from 'react-bootstrap';
@@ -17,7 +17,10 @@ const InMeeting: FC<IProps> = (props) => {
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
 
-    const meetingControllerRef = useRef(null)
+    const meetingController = useMemo(
+        () => rcvEngine?.getMeetingController(),
+        [rcvEngine, rcvEngine?.getMeetingController()]
+    );
 
     useEffect(() => {
 
@@ -33,7 +36,6 @@ const InMeeting: FC<IProps> = (props) => {
             else {
                 meetingCtl = rcvEngine?.getMeetingController();
             }
-            meetingControllerRef.current = meetingCtl;
             init(meetingCtl)
         }
 
@@ -69,28 +71,28 @@ const InMeeting: FC<IProps> = (props) => {
     }
 
     const toggleMuteAudio = useCallback(() => {
-        meetingControllerRef.current?.getAudioController()?.muteLocalAudioStream(!audioMuted)
+        meetingController?.getAudioController()?.muteLocalAudioStream(!audioMuted)
             .catch((e) => {
                 alert(`Error occurs due to :${e.message}`)
             });
     }, [audioMuted]);
 
     const toggleMuteVideo = useCallback(() => {
-        meetingControllerRef.current?.getVideoController()?.muteLocalVideoStream(!videoMute)
+        meetingController?.getVideoController()?.muteLocalVideoStream(!videoMute)
             .catch((e) => {
                 alert(`Error occurs due to :${e.message}`)
             });
     }, [, videoMute]);
 
     const handleLeaveMeeting = useCallback(() => {
-        meetingControllerRef.current?.leaveMeeting().catch((e) => {
+        meetingController?.leaveMeeting().catch((e) => {
             alert(`Error occurs due to :${e.message}`)
         });
 
     }, []);
 
     const handleEndMeeting = useCallback(() => {
-        meetingControllerRef.current?.endMeeting().catch((e) => {
+        meetingController?.endMeeting().catch((e) => {
             alert(`Error occurs due to :${e.message}`)
         });
     }, []);
@@ -98,10 +100,7 @@ const InMeeting: FC<IProps> = (props) => {
     return (
         <div className='meeting-wrapper'>
             <div>Meeting Id: {meetingId}</div>
-                <AttendeeVideoList
-                meetingController={meetingControllerRef.current}
-                    loading={loading}
-                />
+            <AttendeeVideoList meetingController={meetingController} loading={loading} />
                 <ButtonGroup>
                     <Button variant="primary" onClick={toggleMuteAudio}>
                         <i className={audioMuted ? 'bi bi-mic-mute-fill' : 'bi bi-mic-fill'} />&nbsp;Audio
