@@ -22,23 +22,15 @@ export default function App({ config }) {
                 getHttpClient(rcsdk, config.origin),
                 authData
             );
-            if (engine) {
-                window['librct'] = engine
-                engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
-                    if (!window.location.pathname.includes('/meeting/')) {
-                        navigate(`/meeting/${meetingId}`);
-                    }
-                });
-                engine.on(EngineEvent.MEETING_LEFT, () => {
-                    navigate('/', { replace: true });
-                });
-                engine.on(
-                    EngineEvent.MEETING_STATE_CHANGED,
-                    () => {
-
-                    }
-                );
-            }
+            // listen for meeing_joined/meeting_left events
+            engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
+                if (!window.location.pathname.includes('/meeting/')) {
+                    navigate(`/meeting/${meetingId}`);
+                }
+            });
+            engine.on(EngineEvent.MEETING_LEFT, () => {
+                navigate('/', { replace: true });
+            });
             setRcvEngine(engine)
         }
         initSDK()

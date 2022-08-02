@@ -11,7 +11,6 @@ const StartView: FC<IProps> = (props) => {
     const { rcvEngine } = props
     const [isStartLoading, setStartLoading] = useState(false);
     const [isJoinLoading, setJoinLoading] = useState(false);
-    const [error, setError] = useState('');
     const inputRef = useRef(null)
 
     const startMeetingHandler = useCallback(async () => {
@@ -19,7 +18,7 @@ const StartView: FC<IProps> = (props) => {
         rcvEngine
             .startInstantMeeting()
             .catch(e => {
-                setError(`Error occurs due to :${e.message}`)
+                alert(`Error occurs due to :${e.message}`)
             })
             .finally(() => setStartLoading(false));
 
@@ -34,44 +33,41 @@ const StartView: FC<IProps> = (props) => {
         rcvEngine
             .joinMeeting(inputRef.current.value, {})
             .catch(e => {
-                setError(`Error occurs due to :${e.message}`)
+                alert(`Error occurs due to :${e.message}`)
             })
             .finally(() => setJoinLoading(false));
     }, [rcvEngine])
 
     return (
-        <>
-            <Row className='start-view'>
-                <Col sm={4} >
+        <Row className='start-view'>
+            <Col sm={4} >
+                <Button
+                    className='start-btn'
+                    variant="success"
+                    disabled={isJoinLoading || isStartLoading}
+                    onClick={!isStartLoading ? startMeetingHandler : null}>
+                    <i className="bi bi-camera-reels" />&nbsp;
+                    Start meeting{isStartLoading ? <span className='dotting'></span> : null}
+                </Button>
+            </Col>
+            <Col sm={8} >
+                <InputGroup className="mb-3">
+                    <Form.Control
+                        placeholder="please input meeting id"
+                        ref={inputRef}
+                    />
                     <Button
                         className='start-btn'
-                        variant="success"
+                        variant="primary"
                         disabled={isJoinLoading || isStartLoading}
-                        onClick={!isStartLoading ? startMeetingHandler : null}>
-                        <i className="bi bi-camera-reels" />&nbsp;
-                        Start meeting{isStartLoading ? <span className='dotting'></span> : null}
+                        onClick={!isJoinLoading ? joinMeetingHandler : null}>
+                        <i className="bi bi-box-arrow-in-right" />&nbsp;
+                        Join meeting{isJoinLoading ? <span className='dotting'></span> : null}
                     </Button>
-                </Col>
-                <Col sm={8} >
-                    <InputGroup className="mb-3">
-                        <Form.Control
-                            placeholder="please input meeting id"
-                            aria-label="meeting id"
-                            aria-describedby="meeting id"
-                            ref={inputRef}
-                        />
-                        <Button
-                            className='start-btn'
-                            variant="primary"
-                            disabled={isJoinLoading || isStartLoading}
-                            onClick={!isJoinLoading ? joinMeetingHandler : null}>
-                            <i className="bi bi-box-arrow-in-right" />&nbsp;
-                            Join meeting{isJoinLoading ? <span className='dotting'></span> : null}
-                        </Button>
-                    </InputGroup>
-                </Col>
-            </Row>
-        </>)
+                </InputGroup>
+            </Col>
+        </Row>
+    )
 }
 
 export default StartView
