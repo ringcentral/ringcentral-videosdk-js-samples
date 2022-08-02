@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useCallback, useState, useRef } from 'react'
-import { EngineEvent, AudioEvent, VideoEvent, IParticipant, UserEvent } from '@sdk';
+import { EngineEvent, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { Badge, Button, ButtonGroup, Spinner } from 'react-bootstrap';
+import { Button, ButtonGroup } from 'react-bootstrap';
 import AttendeeVideoList from './AttendeeVideoList'
 
 import './index.less';
@@ -14,7 +14,6 @@ const InMeeting: FC<IProps> = (props) => {
     const { meetingId } = useParams();
 
     const [loading, setLoading] = useState(false);
-    const [activeParticipantList, updateParticipantList] = useState<IParticipant[]>([]);
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
 
@@ -24,9 +23,9 @@ const InMeeting: FC<IProps> = (props) => {
 
         const initControllers = async () => {
             let meetingCtl;
+            // when do refreshing
             if (!rcvEngine?.getMeetingController()) {
                 setLoading(true);
-
                 meetingCtl = await rcvEngine
                     .joinMeeting(meetingId, {});
                 setLoading(false)
@@ -41,35 +40,11 @@ const InMeeting: FC<IProps> = (props) => {
         rcvEngine && initControllers();
     }, [meetingId, rcvEngine])
 
-    const getAttendeeList = (users) => {
-        const meetingUsers =
-            users ||
-            ({} as {
-                [k: string]: IParticipant;
-            });
-        const localParticipant = Object.values(meetingUsers).filter(
-            participant => participant.isMe
-        );
-        const activeRemoteParticipants = Object.values(meetingUsers).filter(
-            participant => !participant.isDeleted && !participant.isMe
-        );
-        updateParticipantList([...localParticipant, ...activeRemoteParticipants]);
-    };
+
 
     const init = (meetingController) => {
         const audioController = meetingController?.getAudioController()
-        const userController = meetingController?.getUserController()
         const videoController = meetingController?.getVideoController()
-
-        userController.on(UserEvent.USER_JOINED, () => {
-            getAttendeeList(userController?.getMeetingUsers());
-        });
-        userController.on(UserEvent.USER_LEFT, () => {
-            getAttendeeList(userController?.getMeetingUsers());
-        });
-        userController.on(UserEvent.USER_UPDATED, () => {
-            getAttendeeList(userController?.getMeetingUsers());
-        });
 
         //
         audioController.enableAudio(true);
@@ -122,16 +97,9 @@ const InMeeting: FC<IProps> = (props) => {
 
     return (
         <div className='meeting-wrapper'>
-            <p>Meeting Id: <Badge bg="info">{meetingId}</Badge>
-                {!meetingControllerRef.current &&
-                    <Spinner animation="border" role="status">
-                        <span className="visually-hidden" />
-                    </Spinner>}
-            </p>
-            {meetingControllerRef.current && <>
+            <div>Meeting Id: {meetingId}</div>
                 <AttendeeVideoList
-                    meetingController={meetingControllerRef.current}
-                    participants={activeParticipantList}
+                meetingController={meetingControllerRef.current}
                     loading={loading}
                 />
                 <ButtonGroup>
@@ -143,8 +111,7 @@ const InMeeting: FC<IProps> = (props) => {
                     </Button>
                     <Button variant="warning" onClick={handleLeaveMeeting}>Leave</Button>
                     <Button variant="danger" onClick={handleEndMeeting}>End</Button>
-                </ButtonGroup>
-            </>}
+            </ButtonGroup>
         </div>
     )
 }
