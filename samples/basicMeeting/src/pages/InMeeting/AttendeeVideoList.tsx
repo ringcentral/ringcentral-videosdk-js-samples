@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { IParticipant, StreamEvent, UserEvent } from '@sdk';
-import { Card, Spinner, Badge } from 'react-bootstrap';
+import { Spinner, Badge } from 'react-bootstrap';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/dom'
 
 interface IAttendeeListProps {
