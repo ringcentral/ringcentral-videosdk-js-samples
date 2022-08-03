@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { IParticipant, StreamEvent, UserEvent } from '@sdk';
 import { Spinner, Badge } from 'react-bootstrap';
+import { IParticipant, StreamEvent, UserEvent } from '@sdk';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/dom'
 
 interface IAttendeeListProps {
@@ -14,52 +14,55 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
 }) => {
 
     const videoRef = useRef({} as HTMLDivElement);
-    const [participantList, updateParticipantList] = useState<IParticipant[]>([]);
+    const [participantList, setParticipantList] = useState<IParticipant[]>([]);
 
     useEffect(() => {
         if (meetingController) {
             // listen for stream events
             const streamManager = meetingController?.getStreamManager();
+            // local participant joins
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
-                console.log(stream, 'LOCAL_VIDEO_TRACK_ADDED');
                 sinkStreamElement(stream, TrackType.VIDEO, videoRef.current[stream.participantId]);
             });
+            // local participant leaves
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_REMOVED, stream => {
-                console.log(stream, 'LOCAL_VIDEO_TRACK_REMOVED');
                 unSinkStreamElement(stream, videoRef.current[stream.participantId]);
             });
+            // remote participant joins
             streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_ADDED, stream => {
-                console.log(stream, 'REMOTE_VIDEO_TRACK_ADDED');
                 sinkStreamElement(stream, TrackType.VIDEO, videoRef.current[stream.participantId]);
             });
+            // remote participant leave
             streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_REMOVED, stream => {
-                console.log(stream, 'REMOTE_VIDEO_TRACK_REMOVED');
                 unSinkStreamElement(stream, videoRef.current[stream.participantId]);
             });
 
             // listen for user events
             const userController = meetingController?.getUserController()
+            // setParticipantList(userController?.getMeetingUsers())
+            // new participant joins
             userController.on(UserEvent.USER_JOINED, () => {
-                getAttendeeList(userController?.getMeetingUsers());
+                updateParticipants(userController?.getMeetingUsers());
             });
+            // participant leaves
             userController.on(UserEvent.USER_LEFT, () => {
-                getAttendeeList(userController?.getMeetingUsers());
+                updateParticipants(userController?.getMeetingUsers());
             });
+            // participant state changes, such as mute/unmute audio/video
             userController.on(UserEvent.USER_UPDATED, () => {
-                getAttendeeList(userController?.getMeetingUsers());
+                console.log('UserEvent.USER_UPDATED')
+                updateParticipants(userController?.getMeetingUsers());
             });
-            getAttendeeList(userController?.getMeetingUsers())
         }
     }, [meetingController])
 
-
-    const getAttendeeList = (users: Record<string, IParticipant>) => {
+    const updateParticipants = (users: Record<string, IParticipant>) => {
         const localParticipant = Object.values(users).filter(participant => participant.isMe);
         const activeRemoteParticipants = Object.values(users).filter(
             participant => !participant.isDeleted && !participant.isMe
         );
-        updateParticipantList([...localParticipant, ...activeRemoteParticipants]);
-    };
+        setParticipantList([...localParticipant, ...activeRemoteParticipants]);
+    }
 
     return (
         <div className='video-card-wrapper'>
@@ -74,7 +77,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                     <div key={participant.uid} className='video-card'>
                         <div>
                             <h4>{participant.displayName} {participant.isMe ? '(You)' : ''}</h4>
-                            <div>
+                            <div className='video-card-status-bar'>
                                 <Badge bg="primary">Audio {participant.isAudioMuted ? 'Muted' : 'Unmuted'}</Badge>&nbsp;
                                 <Badge bg="success">Video {participant.isVideoMuted ? 'Muted' : 'Unmuted'}</Badge>
                                 <br />

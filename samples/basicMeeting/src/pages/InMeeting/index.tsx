@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useCallback, useState, useRef, useMemo } from 'react'
+import React, { FC, useEffect, useCallback, useState, useMemo } from 'react'
 import { EngineEvent, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Button, ButtonGroup } from 'react-bootstrap';
@@ -24,7 +24,7 @@ const InMeeting: FC<IProps> = (props) => {
 
     useEffect(() => {
 
-        const initControllers = async () => {
+        const initController = async () => {
             let meetingCtl;
             // when do refreshing
             if (!rcvEngine?.getMeetingController()) {
@@ -36,40 +36,38 @@ const InMeeting: FC<IProps> = (props) => {
             else {
                 meetingCtl = rcvEngine?.getMeetingController();
             }
-            init(meetingCtl)
+            initListener(meetingCtl)
         }
 
-        rcvEngine && initControllers();
+        rcvEngine && initController();
     }, [meetingId, rcvEngine])
 
 
 
-    const init = (meetingController) => {
+    const initListener = (meetingController) => {
         const audioController = meetingController?.getAudioController()
         const videoController = meetingController?.getVideoController()
 
-        //
+        // enable video firstly
         audioController.enableAudio(true);
+        // listen for audio unmute/mute events
         const audioMuteListener = audioController?.on(
             AudioEvent.LOCAL_AUDIO_MUTE_CHANGED,
             setAudioMuted
         );
-
+        // listen for video unmute/mute events
         const videoLocalMuteListener = videoController?.on(
             VideoEvent.LOCAL_VIDEO_MUTE_CHANGED,
             setVideoMute
         );
-        const videoRemoteMuteListener = videoController?.on(
-            VideoEvent.REMOTE_VIDEO_MUTE_CHANGED,
-        );
 
         return () => {
             audioMuteListener?.();
-            videoRemoteMuteListener?.();
             videoLocalMuteListener?.();
         };
     }
 
+    // ---------------------------- start: button click handler ----------------------------
     const toggleMuteAudio = useCallback(() => {
         meetingController?.getAudioController()?.muteLocalAudioStream(!audioMuted)
             .catch((e) => {
@@ -96,20 +94,21 @@ const InMeeting: FC<IProps> = (props) => {
             alert(`Error occurs due to :${e.message}`)
         });
     }, []);
+    // ---------------------------- end: button click handler ----------------------------
 
     return (
         <div className='meeting-wrapper'>
             <div>Meeting Id: {meetingId}</div>
             <AttendeeVideoList meetingController={meetingController} loading={loading} />
-                <ButtonGroup>
-                    <Button variant="primary" onClick={toggleMuteAudio}>
-                        <i className={audioMuted ? 'bi bi-mic-mute-fill' : 'bi bi-mic-fill'} />&nbsp;Audio
-                    </Button>
-                    <Button variant="success" onClick={toggleMuteVideo}>
-                        <i className={videoMute ? 'bi bi-camera-video-off-fill' : 'bi bi-camera-video-fill'} />&nbsp;Video
-                    </Button>
-                    <Button variant="warning" onClick={handleLeaveMeeting}>Leave</Button>
-                    <Button variant="danger" onClick={handleEndMeeting}>End</Button>
+            <ButtonGroup>
+                <Button variant="primary" onClick={toggleMuteAudio}>
+                    <i className={audioMuted ? 'bi bi-mic-mute-fill' : 'bi bi-mic-fill'} />&nbsp;Audio
+                </Button>
+                <Button variant="success" onClick={toggleMuteVideo}>
+                    <i className={videoMute ? 'bi bi-camera-video-off-fill' : 'bi bi-camera-video-fill'} />&nbsp;Video
+                </Button>
+                <Button variant="warning" onClick={handleLeaveMeeting}>Leave</Button>
+                <Button variant="danger" onClick={handleEndMeeting}>End</Button>
             </ButtonGroup>
         </div>
     )
