@@ -5,6 +5,7 @@ import { RcvEngine, EngineEvent } from '@sdk';
 import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
 import { getHttpClient, initRingcentralSDKByPasword } from './utils/initAuth';
+import './index.less'
 declare global {
     interface Window {
         initConfig: Record<string, string>
@@ -37,17 +38,19 @@ export default function App({ config }) {
     }, [])
 
     return (
-        <Routes>
-            <Route path='meeting'>
-                <Route
-                    path=':meetingId'
-                    element={<InMeeting rcvEngine={rcvEngine} />
-                    }
-                />
-            </Route>
-            <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
-        </Routes>
-
+        <>
+            <div className='header'>Demo: basic meeting with mute/unmute audio/video</div>
+            <Routes>
+                <Route path='meeting'>
+                    <Route
+                        path=':meetingId'
+                        element={<InMeeting rcvEngine={rcvEngine} />
+                        }
+                    />
+                </Route>
+                <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
+            </Routes>
+        </>
     )
 }
 

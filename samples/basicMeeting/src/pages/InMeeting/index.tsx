@@ -3,8 +3,6 @@ import { EngineEvent, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import AttendeeVideoList from './AttendeeVideoList'
-
-import './index.less';
 interface IProps {
     rcvEngine: EngineEvent
 }

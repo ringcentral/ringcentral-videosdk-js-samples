@@ -1,8 +1,6 @@
 import React, { FC, useCallback, useState, useRef } from 'react'
-import { Button, InputGroup, Form, Row, Col } from 'react-bootstrap';
+import { Button, InputGroup, Form, Row, Col, Spinner } from 'react-bootstrap';
 import { EngineEvent } from '@sdk';
-import './index.less';
-
 interface IProps {
     rcvEngine: EngineEvent
 }
@@ -46,8 +44,7 @@ const StartView: FC<IProps> = (props) => {
                     variant="success"
                     disabled={isJoinLoading || isStartLoading}
                     onClick={!isStartLoading ? startMeetingHandler : null}>
-                    <i className="bi bi-camera-reels" />&nbsp;
-                    Start meeting{isStartLoading ? <span className='dotting'></span> : null}
+                    Start meeting {isStartLoading ? <Spinner animation="border" role="status" size="sm" /> : null}
                 </Button>
             </Col>
             <Col sm={8} >
@@ -61,8 +58,7 @@ const StartView: FC<IProps> = (props) => {
                         variant="primary"
                         disabled={isJoinLoading || isStartLoading}
                         onClick={!isJoinLoading ? joinMeetingHandler : null}>
-                        <i className="bi bi-box-arrow-in-right" />&nbsp;
-                        Join meeting{isJoinLoading ? <span className='dotting'></span> : null}
+                        Join meeting {isJoinLoading ? <Spinner animation="border" role="status" /> : null}
                     </Button>
                 </InputGroup>
             </Col>
