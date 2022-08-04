@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RcvEngine, EngineEvent } from '@sdk';
-import Sharing from './pages/Sharing';
+import { RcvEngine } from '@sdk';
+import Sharing from './Sharing';
 import { getHttpClient, initRingcentralSDKByPasword } from './utils/initAuth';
 import './index.less'
 declare global {
@@ -20,11 +20,6 @@ export default function App({ config }) {
                 getHttpClient(rcsdk, config.origin),
                 authData
             );
-            // listen for meeing_joined/meeting_left events
-            engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
-            });
-            engine.on(EngineEvent.MEETING_LEFT, () => {
-            });
             setRcvEngine(engine)
         }
         initSDK()
@@ -33,7 +28,6 @@ export default function App({ config }) {
     return (
         <>
             <div className='header'>Demo: screen sharing</div>
-
             <Sharing rcvEngine={rcvEngine} />
         </>
     )
