@@ -2,7 +2,7 @@
 
 ### Feature List
 
-- Start/Join a meeting
+- Start a meeting
 - Start screen sharing
 - Stop screen sharing
 
