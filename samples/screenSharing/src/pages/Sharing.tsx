@@ -8,8 +8,6 @@ interface IProps {
 const Sharing: FC<IProps> = (props) => {
     const { rcvEngine } = props
     const [isStartLoading, setStartLoading] = useState(false);
-    const [isJoinLoading, setJoinLoading] = useState(false);
-    const inputRef = useRef(null)
 
     const startMeetingHandler = useCallback(async () => {
         setStartLoading(true)
@@ -22,47 +20,24 @@ const Sharing: FC<IProps> = (props) => {
 
     }, [rcvEngine])
 
-    const joinMeetingHandler = useCallback(async () => {
-        if (!inputRef.current.value.trim()) {
-            alert('Meeting id can not be empty!')
-            return;
-        }
-        setJoinLoading(true)
-        rcvEngine
-            .joinMeeting(inputRef.current.value, {})
-            .catch(e => {
-                alert(`Error occurs due to :${e.message}`)
-            })
-            .finally(() => setJoinLoading(false));
-    }, [rcvEngine])
 
     return (
+        <>
         <Row className='start-view'>
             <Col sm={4} >
                 <Button
                     className='start-btn'
                     variant="success"
-                    disabled={isJoinLoading || isStartLoading}
+                        disabled={isStartLoading}
                     onClick={!isStartLoading ? startMeetingHandler : null}>
                     Start meeting {isStartLoading ? <Spinner animation="border" role="status" size="sm" /> : null}
                 </Button>
-            </Col>
-            <Col sm={8} >
-                <InputGroup className="mb-3">
-                    <Form.Control
-                        placeholder="please input meeting id"
-                        ref={inputRef}
-                    />
-                    <Button
-                        className='start-btn'
-                        variant="primary"
-                        disabled={isJoinLoading || isStartLoading}
-                        onClick={!isJoinLoading ? joinMeetingHandler : null}>
-                        Join meeting {isJoinLoading ? <Spinner animation="border" role="status" /> : null}
-                    </Button>
-                </InputGroup>
-            </Col>
+                </Col>
         </Row>
+            <Row>
+
+            </Row>
+        </>
     )
 }
 

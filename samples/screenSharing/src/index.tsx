@@ -32,7 +32,8 @@ export default function App({ config }) {
 
     return (
         <>
-            <div className='header'>Demo: basic meeting with mute/unmute audio/video</div>
+            <div className='header'>Demo: screen sharing</div>
+
             <Sharing rcvEngine={rcvEngine} />
         </>
     )

@@ -2,12 +2,9 @@
 
 ### Feature List
 
-- Start a new meeting
-- Join a existed meeting
-- Mute/unmute audio in the meeting
-- Mute/unmute video in the meeting
-- Leave the meeting
-- End the meeting
+- Start/Join a meeting
+- Start screen sharing
+- Stop screen sharing
 
 ### How to Run?
 
