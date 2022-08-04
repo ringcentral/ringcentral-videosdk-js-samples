@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useCallback, useState, useMemo } from 'react'
+import React, { FC, useEffect, useState, useMemo } from 'react'
 import { EngineEvent, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Button, ButtonGroup } from 'react-bootstrap';
@@ -24,23 +24,22 @@ const InMeeting: FC<IProps> = (props) => {
 
         const initController = async () => {
             let meetingCtl;
+
+            if (rcvEngine?.getMeetingController()) {
+                meetingCtl = rcvEngine?.getMeetingController();
+            }
             // when do refreshing
-            if (!rcvEngine?.getMeetingController()) {
+            else {
                 setLoading(true);
                 meetingCtl = await rcvEngine
                     .joinMeeting(meetingId, {});
                 setLoading(false)
-            }
-            else {
-                meetingCtl = rcvEngine?.getMeetingController();
             }
             initListener(meetingCtl)
         }
 
         rcvEngine && initController();
     }, [meetingId, rcvEngine])
-
-
 
     const initListener = (meetingController) => {
         const audioController = meetingController?.getAudioController()
@@ -66,32 +65,31 @@ const InMeeting: FC<IProps> = (props) => {
     }
 
     // ---------------------------- start: button click handler ----------------------------
-    const toggleMuteAudio = useCallback(() => {
+    const toggleMuteAudio = () => {
         meetingController?.getAudioController()?.muteLocalAudioStream(!audioMuted)
             .catch((e) => {
                 alert(`Error occurs due to :${e.message}`)
             });
-    }, [audioMuted]);
+    }
 
-    const toggleMuteVideo = useCallback(() => {
+    const toggleMuteVideo = () => {
         meetingController?.getVideoController()?.muteLocalVideoStream(!videoMute)
             .catch((e) => {
                 alert(`Error occurs due to :${e.message}`)
             });
-    }, [, videoMute]);
+    }
 
-    const handleLeaveMeeting = useCallback(() => {
+    const handleLeaveMeeting = () =>
         meetingController?.leaveMeeting().catch((e) => {
             alert(`Error occurs due to :${e.message}`)
         });
 
-    }, []);
 
-    const handleEndMeeting = useCallback(() => {
+    const handleEndMeeting = () => {
         meetingController?.endMeeting().catch((e) => {
             alert(`Error occurs due to :${e.message}`)
         });
-    }, []);
+    }
     // ---------------------------- end: button click handler ----------------------------
 
     return (

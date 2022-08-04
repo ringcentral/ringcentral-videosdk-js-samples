@@ -67,7 +67,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
     return (
         <div className='video-card-wrapper'>
             {loading &&
-                <div className='video-card' style={{ display: 'flex', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Spinner animation="border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>

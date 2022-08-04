@@ -58,7 +58,7 @@ const StartView: FC<IProps> = (props) => {
                         variant="primary"
                         disabled={isJoinLoading || isStartLoading}
                         onClick={!isJoinLoading ? joinMeetingHandler : null}>
-                        Join meeting {isJoinLoading ? <Spinner animation="border" role="status" /> : null}
+                        Join meeting {isJoinLoading ? <Spinner animation="border" role="status" size="sm" /> : null}
                     </Button>
                 </InputGroup>
             </Col>
