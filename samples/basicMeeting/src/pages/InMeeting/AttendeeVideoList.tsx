@@ -20,35 +20,27 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
         if (meetingController) {
             // listen for stream events
             const streamManager = meetingController?.getStreamManager();
-            // local participant joins
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
                 sinkStreamElement(stream, TrackType.VIDEO, videoRef.current[stream.participantId]);
             });
-            // local participant leaves
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_REMOVED, stream => {
                 unSinkStreamElement(stream, videoRef.current[stream.participantId]);
             });
-            // remote participant joins
             streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_ADDED, stream => {
                 sinkStreamElement(stream, TrackType.VIDEO, videoRef.current[stream.participantId]);
             });
-            // remote participant leave
             streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_REMOVED, stream => {
                 unSinkStreamElement(stream, videoRef.current[stream.participantId]);
             });
 
             // listen for user events
             const userController = meetingController?.getUserController()
-            // setParticipantList(userController?.getMeetingUsers())
-            // new participant joins
             userController.on(UserEvent.USER_JOINED, () => {
                 updateParticipants(userController?.getMeetingUsers());
             });
-            // participant leaves
             userController.on(UserEvent.USER_LEFT, () => {
                 updateParticipants(userController?.getMeetingUsers());
             });
-            // participant state changes, such as mute/unmute audio/video
             userController.on(UserEvent.USER_UPDATED, () => {
                 console.log('UserEvent.USER_UPDATED')
                 updateParticipants(userController?.getMeetingUsers());

@@ -2,11 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { SharingEvent, SharingState, StreamEvent } from '@sdk';
 
-enum StreamType {
-    VIDEO_MAIN = 'video/main',
-    VIDEO_SCREENSHARING = 'video/screensharing',
-}
-
 const InMeeting = ({ meetingController }) => {
     const [sharingStarted, setSharingStarted] = useState(false);
     const screenSharingRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
@@ -15,6 +10,7 @@ const InMeeting = ({ meetingController }) => {
         if (meetingController) {
             const sharingController = meetingController.getSharingController();
 
+            // listen for sharing state change event
             sharingController.on(
                 SharingEvent.SHARING_STATE_CHANGED,
                 (sharingState: SharingState) => {
@@ -26,19 +22,19 @@ const InMeeting = ({ meetingController }) => {
                 }
             );
 
+            // listen for streams change event
             const streamManager = meetingController?.getStreamManager();
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
-                if (stream.type === StreamType.VIDEO_SCREENSHARING) {
+                if (stream.type === 'video/screensharing') {
                     screenSharingRef.current.srcObject = stream.stream;
                 }
             });
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_REMOVED, stream => {
-                if (stream.type === StreamType.VIDEO_SCREENSHARING) {
+                if (stream.type === 'video/screensharing') {
                     screenSharingRef.current.srcObject = null;
                 }
             });
         }
-
     }, [meetingController])
 
     const toggleSharing = () => {
@@ -58,7 +54,7 @@ const InMeeting = ({ meetingController }) => {
 
     return (
         <>
-            <video className='sharing-video' ref={screenSharingRef} />
+            <video className='sharing-video' autoPlay={true} muted={true} ref={screenSharingRef} />
             <ButtonGroup>
                 <Button variant="primary" onClick={toggleSharing}>
                     {sharingStarted ? 'Stop sharing' : 'Start sharing'}
