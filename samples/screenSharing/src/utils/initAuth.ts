@@ -19,8 +19,12 @@ export async function initRingcentralSDKByPasword(config) {
             extension: '', // leave blank if direct number is used
             password
         })
-        .then(function (response) {
-            return response.json();
+        .then((response) => {
+            return response.json()
+        })
+        .catch((e) => {
+            const msg = `Login fails: ${e.message}. Please check app.config.js to verify your configuration!`
+            alert(msg)
         });
 
     return {
