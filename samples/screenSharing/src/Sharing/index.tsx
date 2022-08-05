@@ -30,14 +30,15 @@ const Sharing: FC<IProps> = (props) => {
     }, [rcvEngine])
 
     const startMeetingHandler = useCallback(async () => {
-        setStartLoading(true)
-        rcvEngine
-            .startInstantMeeting()
-            .catch(e => {
-                alert(`Error occurs due to :${e.message}`)
-            })
-            .finally(() => setStartLoading(false));
-
+        if (rcvEngine) {
+            setStartLoading(true)
+            rcvEngine
+                .startInstantMeeting()
+                .catch(e => {
+                    alert(`Error occurs due to :${e.message}`)
+                })
+                .finally(() => setStartLoading(false));
+        }
     }, [rcvEngine])
 
     return (

@@ -12,28 +12,31 @@ const StartView: FC<IProps> = (props) => {
     const inputRef = useRef(null)
 
     const startMeetingHandler = useCallback(async () => {
-        setStartLoading(true)
-        rcvEngine
-            .startInstantMeeting()
-            .catch(e => {
-                alert(`Error occurs due to :${e.message}`)
-            })
-            .finally(() => setStartLoading(false));
-
+        if (rcvEngine) {
+            setStartLoading(true)
+            rcvEngine
+                .startInstantMeeting()
+                .catch(e => {
+                    alert(`Error occurs due to :${e.message}`)
+                })
+                .finally(() => setStartLoading(false));
+        }
     }, [rcvEngine])
 
     const joinMeetingHandler = useCallback(async () => {
-        if (!inputRef.current.value.trim()) {
-            alert('Meeting id can not be empty!')
-            return;
+        if (rcvEngine) {
+            if (!inputRef.current.value.trim()) {
+                alert('Meeting id can not be empty!')
+                return;
+            }
+            setJoinLoading(true)
+            rcvEngine
+                .joinMeeting(inputRef.current.value, {})
+                .catch(e => {
+                    alert(`Error occurs due to :${e.message}`)
+                })
+                .finally(() => setJoinLoading(false));
         }
-        setJoinLoading(true)
-        rcvEngine
-            .joinMeeting(inputRef.current.value, {})
-            .catch(e => {
-                alert(`Error occurs due to :${e.message}`)
-            })
-            .finally(() => setJoinLoading(false));
     }, [rcvEngine])
 
     return (
