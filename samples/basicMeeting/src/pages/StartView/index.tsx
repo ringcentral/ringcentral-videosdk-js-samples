@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useState, useRef } from 'react'
 import { Button, InputGroup, Form, Row, Col, Spinner } from 'react-bootstrap';
-import { EngineEvent } from '@sdk';
+import { RcvEngine } from '@sdk';
 interface IProps {
-    rcvEngine: EngineEvent
+    rcvEngine: RcvEngine
 }
 
 const StartView: FC<IProps> = (props) => {
