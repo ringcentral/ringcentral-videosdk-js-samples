@@ -302,6 +302,30 @@ export declare interface EngineInitConfig {
      * Used to identify that whether the current user is a guest, default false
      */
     isGuest?: boolean;
+    /**
+     * The fetch http client, or you need call setAuthToken() before call any Api.
+     */
+    httpClient?: HttpClient;
+    /**
+     * The server url for meeting.
+     */
+    origin?: string;
+    /**
+     * The server url for discovery.
+     */
+    discoveryServer?: string;
+    /**
+     * Enable discovery or disable, default is true.
+     */
+    enableDiscovery?: boolean;
+    /**
+     * The application account identity number.
+     */
+    clientId?: string;
+    /**
+     * The application account identity secret.
+     */
+    clientSecret?: string;
 }
 
 /** Global error code for RCV SDK */
@@ -405,10 +429,6 @@ declare class EventEmitter<T extends string> {
 }
 
 export declare type HttpClient = {
-    /**
-     * origin of http client
-     */
-    origin: string;
     /**
      * send request
      * just the same as sdk.platform().send
@@ -675,16 +695,16 @@ declare interface IPstn {
 
 export declare interface IRecording {
     id: string;
+    started: boolean;
     paused?: boolean;
     startTime: string;
-    started?: boolean;
     recordingEvents: IRecordingEvent[];
 }
 
 export declare interface IRecordingEvent {
-    initiator: string;
+    type: RecordingEventType;
+    initiator?: string;
     time: string;
-    type: string;
 }
 
 declare interface ISecurity {
@@ -813,8 +833,6 @@ export declare enum MeetingEvent {
     USER_UPDATED = "user-updated",
     /** Occurs when a user leaves or disconnects from a meeting */
     USER_LEFT = "user-left",
-    /** Occurs when the meeting recording state is changed */
-    RECORDING_STATE_CHANGED = "recording-state-changed",
     /** Occurs when the current host assigns the host role to another */
     MEETING_HOST_CHANGED = "meeting-host-changed",
     /** Occurs when a new chat message is received */
@@ -875,10 +893,9 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
 
     private _meetingController;
     private readonly _config;
-    private readonly _httpClient;
     private _audioDeviceManager;
     private _videoDeviceManager;
-    constructor(httpClient: HttpClient, config?: EngineInitConfig);
+    constructor(config?: EngineInitConfig);
     /**
      * Destroy the SDK resources
      * note: Once you call `destroy` to destroy the created `INativeEngine` instance, you cannot use any method or callback in the SDK any more.
@@ -927,6 +944,17 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      * @param levels download log levels
      */
     static downloadLogs(levels?: LogLevel[]): Promise<void>;
+    /**
+     * Set token pair string in the SDK.
+     * @param tokenPair the access token and refresh token pair json.
+     * @param autoRefresh If it's TRUE, the access token will be refreshed automatically once it expired.
+     */
+    setAuthToken(tokenPair: string, autoRefresh?: boolean): Promise<ErrorCodeType>;
+    /**
+     * Refreshes the auth token pair immediately. A successful call of renewAuthToken triggers the onAuthTokenRenew callback which includes the new token pair.
+     * @param refreshToken optional, the refresh token string.
+     */
+    renewAuthToken(refreshToken?: string): Promise<ErrorCodeType>;
 }
 
 /**
@@ -959,6 +987,7 @@ declare class RecordingController {
     private _meeting;
     constructor(options: IOptions_4);
     private _initialEventListener;
+    private _getRecording;
     /**
      * Get current meeting recording state
      * @return RecordingStatus
@@ -968,11 +997,44 @@ declare class RecordingController {
      * Indicates whether the meeting recording is allowed.
      */
     isRecordingAllowed(): boolean;
+    /**
+     * Returns the current recording duration (seconds)
+     */
+    getRecordingDuration(): number;
+    private _getStartRecordEventIndex;
+    private _getEndRecordEventIndexAndAutoTime;
+    private _computeDurationTime;
+    private _isRecordingStart;
+    private _isRecordingPause;
     private _getCloudRecordingsEnabled;
     private _getIsE2EE;
+    /**
+     * Starts/Resume the recording in an active meeting.
+     * This function conflicts with E2EE. Do not enable E2EE if recording is in progress.
+     * If E2EE is enabled, do not start or unpause recording.
+     * @return {Promise<ErrorCodeType>}
+     */
+    startRecording(): Promise<ErrorCodeType>;
+    /**
+     * Pause the recording in an active meeting.
+     * @return {Promise<ErrorCodeType>}
+     */
+    pauseRecording(): Promise<ErrorCodeType>;
 }
 
 export declare enum RecordingEvent {
+    /** Occurs when the meeting recording state is changed */
+    RECORDING_STATE_CHANGED = "recording-state-changed"
+}
+
+declare enum RecordingEventType {
+    RECORDING_START = "recordingStart",
+    RECORDING_MANUAL_PAUSE_END = "recordingManualPauseEnd",
+    RECORDING_MANUAL_PAUSE_START = "recordingManualPauseStart",
+    RECORDING_PAUSE_START = "recordingPauseStart",
+    RECORDING_PAUSE_END = "recordingPauseEnd",
+    RECORDING_AUTO_PAUSE_START = "recordingAutoPauseStart",
+    RECORDING_AUTO_PAUSE_END = "recordingAutoPauseEnd"
 }
 
 /**
@@ -1182,6 +1244,11 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
      * @returns
      */
     static getSubtypeByStream(stream: any): void | COMMON_SS_SOURCES;
+}
+
+export declare enum StreamType {
+    VIDEO_MAIN = "video/main",
+    VIDEO_SCREENSHARING = "video/screensharing"
 }
 
 export declare type TEventCB = (...args: any[]) => void;

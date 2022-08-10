@@ -17,7 +17,7 @@ const StartView: FC<IProps> = (props) => {
             rcvEngine
                 .startInstantMeeting()
                 .catch(e => {
-                    alert(`Error occurs due to :${e.message}`)
+                    // alert(`Error occurs due to :${e.message}`)
                 })
                 .finally(() => setStartLoading(false));
         }

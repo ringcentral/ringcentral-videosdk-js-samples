@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import { RcvEngine, EngineEvent } from '@sdk';
+import { RcvEngine, EngineEvent, ErrorCodeType } from '@sdk';
 import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
-import { getHttpClient, initRingcentralSDKByPasword } from './utils/initAuth';
 import './index.less'
 declare global {
     interface Window {
@@ -17,15 +16,44 @@ export default function App({ config }) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const initSDK = async () => {
-            const { rcsdk, authData } = await initRingcentralSDKByPasword(config);
+        const initRingCentralSdk = () => {
+            const { clientId, clientSecret } = config
+            const RingCentralSdk = (window as any).RingCentral.SDK;
+            return new RingCentralSdk({
+                server: RingCentralSdk.server.production,
+                clientId,
+                clientSecret,
+            });
+        }
+
+        const login = async (rcsdk) => {
+            const { userName: username, password } = config
+            await rcsdk
+                .login({
+                    username,
+                    extension: '',
+                    password
+                })
+                .then((response) => {
+                    return response.json()
+                })
+                .catch((e) => {
+                    const msg = `Login fails: ${e.message}. Please check app.config.js to verify your configuration!`
+                    alert(msg)
+                });
+        }
+
+        const initRcvEngine = (rcsdk) => {
             const engine = new RcvEngine(
-                getHttpClient(rcsdk, config.origin),
-                authData
+                {
+                    httpClient: {
+                        send: options => rcsdk.platform().send(options),
+                    },
+                }
             );
-            // listen for meeing_joined/meeting_left events
             engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
-                if (!window.location.pathname.includes('/meeting/')) {
+                if (errorCode === ErrorCodeType.ERR_OK &&
+                    !window.location.pathname.includes('/meeting/')) {
                     navigate(`/meeting/${meetingId}`);
                 }
             });
@@ -34,6 +62,13 @@ export default function App({ config }) {
             });
             setRcvEngine(engine)
         }
+
+        const initSDK = async () => {
+            const rcsdk = initRingCentralSdk();
+            await login(rcsdk);
+            initRcvEngine(rcsdk)
+        }
+
         initSDK()
     }, [])
 
