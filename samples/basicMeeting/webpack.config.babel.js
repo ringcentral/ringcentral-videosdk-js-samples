@@ -1,7 +1,6 @@
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 
 export default {
     entry: {
@@ -89,10 +88,9 @@ export default {
     target: 'web',
     devtool: 'source-map',
     resolve: {
-        plugins: [new TsconfigPathsPlugin()],
-        // alias: {
-        //     '@sdk': path.join(__dirname, '../../lib/librcv.js'),
-        // },
+        alias: {
+            '@sdk': path.join(__dirname, '../../librcv/index.js'),
+        },
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.css'],
         modules: [path.join(__dirname, '.src'), 'node_modules'],
     },

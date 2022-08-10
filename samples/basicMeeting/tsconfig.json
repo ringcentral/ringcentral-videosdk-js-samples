@@ -7,7 +7,7 @@
         "baseUrl": ".",
         "moduleResolution": "node",
         "paths": {
-            "@sdk": ["../../lib/librcv.js"],
+            "@sdk": ["../../librcv"],
         }
     }
 }

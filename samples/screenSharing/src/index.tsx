@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RcvEngine } from '@sdk';
 import Sharing from './Sharing';
-import { getHttpClient, initRingcentralSDKByPasword } from './utils/initAuth';
 import './index.less'
 declare global {
     interface Window {
@@ -36,7 +35,7 @@ export default function App({ config }) {
                     return response.json()
                 })
                 .catch((e) => {
-                    const msg = `Login fails: ${e.message}. Please check app.config.js to verify your configuration!`
+                    const msg = `Login fails: ${e.message}.`
                     alert(msg)
                 });
         }

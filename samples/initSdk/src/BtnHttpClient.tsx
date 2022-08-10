@@ -33,7 +33,7 @@ const BtnHttpClient = ({ setRcvEngine, config }) => {
             })
             .catch((e) => {
                 setLoading(false)
-                const msg = `Login fails: ${e.message}. Please check app.config.js to verify your configuration!`
+                const msg = `Login fails: ${e.message}.`
                 alert(msg)
             });
 

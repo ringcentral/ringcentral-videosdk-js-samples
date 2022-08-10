@@ -38,7 +38,7 @@ export default function App({ config }) {
                     return response.json()
                 })
                 .catch((e) => {
-                    const msg = `Login fails: ${e.message}. Please check app.config.js to verify your configuration!`
+                    const msg = `Login fails: ${e.message}.`
                     alert(msg)
                 });
         }
