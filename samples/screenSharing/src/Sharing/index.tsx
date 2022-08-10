@@ -1,10 +1,10 @@
 import React, { FC, useCallback, useState, useEffect, useMemo } from 'react'
-import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
-import { EngineEvent } from '@sdk';
+import { Button, Spinner } from 'react-bootstrap';
+import { RcvEngine, EngineEvent } from '@sdk';
 import InMeeting from './InMeeting'
 
 interface IProps {
-    rcvEngine: EngineEvent
+    rcvEngine: RcvEngine
 }
 
 const Sharing: FC<IProps> = (props) => {

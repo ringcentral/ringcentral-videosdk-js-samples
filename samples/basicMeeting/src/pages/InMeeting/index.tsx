@@ -1,10 +1,10 @@
 import React, { FC, useEffect, useState, useMemo } from 'react'
-import { EngineEvent, AudioEvent, VideoEvent } from '@sdk';
+import { RcvEngine, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import AttendeeVideoList from './AttendeeVideoList'
 interface IProps {
-    rcvEngine: EngineEvent
+    rcvEngine: RcvEngine
 }
 
 const InMeeting: FC<IProps> = (props) => {
