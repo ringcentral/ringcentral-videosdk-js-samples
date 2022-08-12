@@ -31,7 +31,7 @@ const StartView: FC<IProps> = (props) => {
             }
             setJoinLoading(true)
             rcvEngine
-                .joinMeeting(inputRef.current.value, {})
+                .joinMeeting(inputRef.current.value)
                 .catch(e => {
                     alert(`Error occurs due to :${e.message}`)
                 })
