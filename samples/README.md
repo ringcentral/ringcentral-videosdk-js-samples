@@ -6,3 +6,4 @@
 - `/screenSharing`: support screen sharing fature
 - `/initSdk`: two ways to initialize SDK
 - `/deviceTest`: audio/video device test
+- `/startMeetingWithSettings`: start meeting with settings
