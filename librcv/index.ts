@@ -556,6 +556,12 @@ declare interface IOptions_4 {
     meeting?: IMeetInfo;
 }
 
+declare interface IOptions_5 {
+    sfu: ControlClient;
+    librct: Librct;
+    localStreams: ConferenceStream[];
+}
+
 /**
  * model of participant in UserController
  */
@@ -779,7 +785,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      */
     private readonly _joinData;
     private readonly _initConfig;
-    private readonly _userController;
+    private _userController?;
     private _audioController?;
     private _videoController?;
     private _sharingController?;
@@ -795,6 +801,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     getVideoController(): VideoController | undefined;
     getSharingController(): SharingController | undefined;
     getRecordingController(): RecordingController | undefined;
+    getUserController(): UserController | undefined;
     /**
      * listen meeting change, trigger MeetingEvent
      */
@@ -823,7 +830,6 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * Leaves a meeting
      */
     leaveMeeting(): Promise<ErrorCodeType>;
-    getUserController(): UserController;
 }
 
 export declare enum MeetingEvent {
@@ -890,14 +896,26 @@ export declare enum NqiStatus {
  * The main class of RCV SDK.
  */
 export declare class RcvEngine extends EventEmitter<EngineEvent> {
+    private static _instance;
 
-    private _meetingController;
     private readonly _config;
+    private _meetingController;
     private _audioDeviceManager;
     private _videoDeviceManager;
-    constructor(config?: EngineInitConfig);
     /**
-     * Destroy the SDK resources
+     * Creates an RcvEngine object and returns the instance.
+     * @param config
+     * @returns
+     */
+    static create(config?: EngineInitConfig): RcvEngine;
+    /**
+     * Returns the RcvEngine singleton instance.
+     * @returns
+     */
+    static instance(): RcvEngine | undefined;
+    private constructor();
+    /**
+     * TODO: Destroy the SDK resources
      * note: Once you call `destroy` to destroy the created `INativeEngine` instance, you cannot use any method or callback in the SDK any more.
      * @return
      *  - true success
@@ -939,6 +957,7 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
     getAudioDeviceManager(): AudioDeviceManager;
     getVideoDeviceManager(): VideoDeviceManager;
     private _clearManagerEffect;
+    private _clearManagers;
     /**
      * download logs from rcvEngine
      * @param levels download log levels
@@ -981,7 +1000,7 @@ export declare enum RcvMeetingState {
     MEETING_STATE_LOCKED = 8
 }
 
-declare class RecordingController {
+declare class RecordingController extends EventEmitter<RecordingEvent> {
     private readonly _librct;
     private _recordings;
     private _meeting;
@@ -1260,11 +1279,15 @@ export declare type TUnsubscribeFunction = () => void;
  */
 export declare class UserController extends EventEmitter<UserEvent> {
     private readonly _librct;
+    private readonly _sfu;
+    private readonly _localStreams;
     private _cachedLocalParticipant;
     private _cachedRemoteParticipants;
 
     private _initRemoteParticipants;
     private _init;
+    private _getRemoteStreams;
+    private _reportStats;
     getMeetingUsers(): Record<string, IParticipant>;
     getMeetingUserById(uid: string): IParticipant | undefined;
     getMyself(): IParticipant;

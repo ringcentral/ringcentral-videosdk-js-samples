@@ -11,7 +11,7 @@ const BtnAccessToken = ({ setRcvEngine, config }) => {
             alert(msg)
             return;
         }
-        const engine = new RcvEngine(
+        const engine = RcvEngine.create(
             {
                 clientId,
                 clientSecret

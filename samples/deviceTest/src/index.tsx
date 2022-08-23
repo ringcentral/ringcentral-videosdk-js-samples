@@ -21,7 +21,7 @@ export default function App({ config }) {
             alert(msg)
             return;
         }
-        const engine = new RcvEngine({ clientId, clientSecret });
+        const engine = RcvEngine.create({ clientId, clientSecret });
         setRcvEngine(engine)
     }, [])
 

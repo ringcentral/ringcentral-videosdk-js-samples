@@ -37,7 +37,7 @@ const BtnHttpClient = ({ setRcvEngine, config }) => {
                 alert(msg)
             });
 
-        const engine = new RcvEngine(
+        const engine = RcvEngine.create(
             {
                 httpClient: {
                     send: options => rcsdk.platform().send(options),
