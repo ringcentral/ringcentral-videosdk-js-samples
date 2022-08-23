@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RcvEngine } from '@sdk';
-import Sharing from './Sharing';
+import { RcvEngine, EngineEvent, ErrorCodeType } from '@sdk';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import StartView from './pages/StartView'
+import InMeeting from './pages/InMeeting'
 import './index.less'
 declare global {
     interface Window {
@@ -11,6 +13,7 @@ declare global {
 
 export default function App({ config }) {
     const [rcvEngine, setRcvEngine] = useState(null)
+    const navigate = useNavigate();
 
     useEffect(() => {
         const initRingCentralSdk = () => {
@@ -40,9 +43,7 @@ export default function App({ config }) {
                 });
         }
 
-        const initSDK = async () => {
-            const rcsdk = initRingCentralSdk();
-            await login(rcsdk);
+        const initRcvEngine = (rcsdk) => {
             const engine = RcvEngine.create(
                 {
                     httpClient: {
@@ -50,21 +51,48 @@ export default function App({ config }) {
                     },
                 }
             );
+            engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
+                if (errorCode === ErrorCodeType.ERR_OK &&
+                    !window.location.pathname.includes('/meeting/')) {
+                    navigate(`/meeting/${meetingId}`);
+                }
+            });
+            engine.on(EngineEvent.MEETING_LEFT, () => {
+                navigate('/', { replace: true });
+            });
             setRcvEngine(engine)
         }
+
+        const initSDK = async () => {
+            const rcsdk = initRingCentralSdk();
+            await login(rcsdk);
+            initRcvEngine(rcsdk)
+        }
+
         initSDK()
     }, [])
 
     return (
         <>
-            <div className='header'>Demo: screen sharing</div>
-            <Sharing rcvEngine={rcvEngine} />
+            <div className='header'>Demo: start a meeting with settings</div>
+            <Routes>
+                <Route path='meeting'>
+                    <Route
+                        path=':meetingId'
+                        element={<InMeeting rcvEngine={rcvEngine} />
+                        }
+                    />
+                </Route>
+                <Route path='/' element={<StartView />} />
+            </Routes>
         </>
     )
 }
 
 createRoot(document.getElementById("root")).render(
-    <App config={{
-        ...window.initConfig,
-    }} />
+    <BrowserRouter>
+        <App config={{
+            ...window.initConfig,
+        }} />
+    </BrowserRouter>
 );

@@ -44,7 +44,7 @@ export default function App({ config }) {
         }
 
         const initRcvEngine = (rcsdk) => {
-            const engine = new RcvEngine(
+            const engine = RcvEngine.create(
                 {
                     httpClient: {
                         send: options => rcsdk.platform().send(options),
