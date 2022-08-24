@@ -1,8 +1,10 @@
 ## release notes
-
 #### 0.3.0
 
-- Start/pause recording
+- Feature: Start/pause recording
+- API changes
+  - int64 assignModerators(List uids)
+  - int64 revokeModerators(List uids)
 
 #### 0.2.0
 
