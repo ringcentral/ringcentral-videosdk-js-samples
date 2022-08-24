@@ -226,6 +226,13 @@ export declare interface ConferenceStream {
     deleted?: boolean;
 }
 
+declare enum ConferenceWaitingRoomMode {
+    NO = "Nobody",
+    EVERY = "EveryBody",
+    GUEST = "GuestsOnly",
+    OTHER = "OtherAccount"
+}
+
 declare class DeviceManager<T extends string> extends EventEmitter<T> {
     protected _currentDeviceId: string | undefined;
     protected _forTestStream: MediaStream | null;
@@ -678,7 +685,7 @@ declare interface IPreferences {
     join: {
         audioMuted: boolean;
         videoMuted: boolean;
-        waitingRoomRequired: WaitingRoomMode;
+        waitingRoomRequired: ConferenceWaitingRoomMode;
         pstn: {
             promptAnnouncement: boolean;
             promptParticipants: boolean;
@@ -1291,8 +1298,15 @@ export declare class UserController extends EventEmitter<UserEvent> {
     getMeetingUsers(): Record<string, IParticipant>;
     getMeetingUserById(uid: string): IParticipant | undefined;
     getMyself(): IParticipant;
-    assignModerator(participantId: string): Promise<ErrorCodeType>;
-    revokeModerator(participantId: string): Promise<ErrorCodeType>;
+    private _handleModeratorsAction;
+    /**
+     * Assign moderator role to attendee(s) (must have the host or moderator permission).
+     */
+    assignModerators(participantIds: string[]): Promise<ErrorCodeType>;
+    /**
+     * Revokes moderator role from attendee(s) (must have the host or moderator permission).
+     */
+    revokeModerators(participantIds: string[]): Promise<ErrorCodeType>;
     private _getLocalParticipant;
     private _getRemoteParticipants;
     private _handleLocalStreamChanges;
@@ -1329,7 +1343,9 @@ export declare enum UserEvent {
     /** Occurs when a user's state changed */
     USER_UPDATED = "user-updated",
     /** Occurs when a user leaves or disconnects from a meeting */
-    USER_LEFT = "user-left"
+    USER_LEFT = "user-left",
+    /**Occurs when a user role has changed, such as, user assigned to moderator. */
+    USER_ROLE_CHANGED = "user-role-changed"
 }
 
 export declare class VideoController extends EventEmitter<VideoEvent> {
@@ -1460,10 +1476,12 @@ export declare enum VideoEvent {
 }
 
 export declare enum WaitingRoomMode {
-    NO = "Nobody",
-    EVERY = "EveryBody",
-    GUEST = "GuestsOnly",
-    OTHER = "OtherAccount"
+    /** When you open the waiting room, everyone will enter the waiting room first and wait for the host's permission to enter the meeting */
+    EVERYONE = 0,
+    /** When you open the waiting room, not logged in user will enter the waiting room first and wait for the host's permission to enter the meeting */
+    NOT_AUTH_USER = 1,
+    /** When you open the waiting room, not coworkers will enter the waiting room first and wait for the host's permission to enter the meeting */
+    NOT_COWORKERS = 2
 }
 
 declare enum WaitingRoomStatus {

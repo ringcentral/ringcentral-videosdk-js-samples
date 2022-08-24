@@ -2,7 +2,20 @@ import React, { useState } from 'react'
 import { Button, Form, Spinner } from 'react-bootstrap';
 import { RcvEngine, WaitingRoomMode } from '@sdk';
 
-const WaitingRoomOptions = [WaitingRoomMode.EVERY, WaitingRoomMode.GUEST, WaitingRoomMode.OTHER]
+const WaitingRoomOptions = [
+    {
+        value: WaitingRoomMode.EVERYONE,
+        label: 'Everyone need to'
+    },
+    {
+        value: WaitingRoomMode.NOT_AUTH_USER,
+        label: 'Not auth user need to'
+    },
+    {
+        value: WaitingRoomMode.NOT_COWORKERS,
+        label: 'Not coworkers need to'
+    }
+]
 
 const StartView = () => {
     const [formData, setFormData] = useState({
@@ -11,9 +24,9 @@ const StartView = () => {
         muteAudioForParticipant: false,
         muteVideoForParticipant: true,
         requirePassword: false,
-        meetingPassword: '1234',
+        meetingPassword: '123456',
         isWaitingRoomEnabled: false,
-        waitingRoomMode: WaitingRoomMode.EVERY,
+        waitingRoomMode: WaitingRoomMode.EVERYONE,
         allowScreenSharing: true,
         onlyAuthUserCanJoin: false,
         onlyCoworkersCanJoin: false,
@@ -70,8 +83,8 @@ const StartView = () => {
                 <Form.Group className="mb-3">
                     <Form.Label>waitingRoomMode:</Form.Label>
                     <Form.Select value={formData.waitingRoomMode}
-                        onChange={({ target: { value } }) => setFormData({ ...formData, waitingRoomMode: value as WaitingRoomMode.EVERY | WaitingRoomMode.GUEST | WaitingRoomMode.OTHER })}>
-                        {WaitingRoomOptions.map((type) => <option key={type}>{type}</option>)}
+                        onChange={({ target: { value } }) => setFormData({ ...formData, waitingRoomMode: +value })}>
+                        {WaitingRoomOptions.map((typeObj) => <option key={typeObj.value} value={typeObj.value}>{typeObj.label}</option>)}
                     </Form.Select>
                 </Form.Group>}
             <Form.Group className="mb-3">
