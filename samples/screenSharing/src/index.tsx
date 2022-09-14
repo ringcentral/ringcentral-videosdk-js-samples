@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RcvEngine } from '@sdk';
 import Sharing from './Sharing';
+import GlobalContext from './context';
 import './index.less'
 declare global {
     interface Window {
@@ -11,6 +12,7 @@ declare global {
 
 export default function App({ config }) {
     const [rcvEngine, setRcvEngine] = useState(null)
+    const [isMeetingJoined, setMeetingJoined] = useState(false)
 
     useEffect(() => {
         const initRingCentralSdk = () => {
@@ -56,10 +58,10 @@ export default function App({ config }) {
     }, [])
 
     return (
-        <>
+        <GlobalContext.Provider value={{ isMeetingJoined, setMeetingJoined: value => setMeetingJoined(value) }} >
             <div className='header'>Demo: screen sharing</div>
             <Sharing rcvEngine={rcvEngine} />
-        </>
+        </GlobalContext.Provider>
     )
 }
 

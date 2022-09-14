@@ -1,4 +1,10 @@
 ## release notes
+#### 0.4.0
+
+- Chat function
+- Support Active video callback
+- Add "beta" watermark in the video stream
+- Support MeetingContextController apis
 #### 0.3.0
 
 - Feature: Start/pause recording

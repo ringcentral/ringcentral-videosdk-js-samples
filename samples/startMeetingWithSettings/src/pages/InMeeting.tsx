@@ -1,7 +1,8 @@
-import React, { FC, useEffect, useState, useMemo, useCallback } from 'react'
+import React, { FC, useEffect, useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom';
 import { RcvEngine, UserEvent, IParticipant, AttendeeStatus } from '@sdk';
 import { Button, ButtonGroup, Table } from 'react-bootstrap';
+import { useGlobalContext } from '../context';
 
 const ATTENDEE_STATUS_DESC = {
     [AttendeeStatus.IDLE]: 'Not started',
@@ -22,31 +23,24 @@ interface IProps {
 const InMeeting: FC<IProps> = (props) => {
     const { rcvEngine } = props
     const { meetingId } = useParams();
+    const { isMeetingJoined } = useGlobalContext();
     const [participantList, setParticipantList] = useState<IParticipant[]>([]);
 
-    const meetingController = useMemo(
-        () => rcvEngine?.getMeetingController(),
-        [rcvEngine, rcvEngine?.getMeetingController()]
-    );
+    const meetingController = rcvEngine?.getMeetingController();
 
     useEffect(() => {
         const initController = async () => {
-            let meetingCtl;
-            if (rcvEngine?.getMeetingController()) {
-                meetingCtl = rcvEngine?.getMeetingController();
-            }
             // when do refreshing
-            else {
-                meetingCtl = await rcvEngine
-                    .joinMeeting(meetingId, {});
+            if (!isMeetingJoined) {
+                await rcvEngine.joinMeeting(meetingId);
             }
-            initListener(meetingCtl)
+            initListener()
         }
 
         rcvEngine && initController();
     }, [meetingId, rcvEngine])
 
-    const initListener = (meetingController) => {
+    const initListener = () => {
         // listen for user events
         const userController = meetingController?.getUserController()
         userController.on(UserEvent.USER_JOINED, () => {
@@ -70,7 +64,7 @@ const InMeeting: FC<IProps> = (props) => {
     }
 
     const handleAdmitAll = () => {
-        meetingController.getUserController().admitAllUser().catch(e => {
+        meetingController.getUserController().admitAll().catch(e => {
             alert(`Error occurs in putUserInWaitingRoom due to :${e.message}`)
         });
     };

@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { RcvEngine, EngineEvent, ErrorCodeType } from '@sdk';
 import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
+import GlobalContext from './context';
 import './index.less'
 declare global {
     interface Window {
@@ -13,6 +14,7 @@ declare global {
 
 export default function App({ config }) {
     const [rcvEngine, setRcvEngine] = useState(null)
+    const [isMeetingJoined, setMeetingJoined] = useState(false)
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -52,9 +54,11 @@ export default function App({ config }) {
                 }
             );
             engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
-                if (errorCode === ErrorCodeType.ERR_OK &&
-                    !window.location.pathname.includes('/meeting/')) {
-                    navigate(`/meeting/${meetingId}`);
+                if (errorCode === ErrorCodeType.ERR_OK) {
+                    setMeetingJoined(true);
+                    if (!window.location.pathname.includes('/meeting/')) {
+                        navigate(`/meeting/${meetingId}`);
+                    }
                 }
             });
             engine.on(EngineEvent.MEETING_LEFT, () => {
@@ -73,7 +77,7 @@ export default function App({ config }) {
     }, [])
 
     return (
-        <>
+        <GlobalContext.Provider value={{ isMeetingJoined }}>
             <div className='header'>Demo: basic meeting with mute/unmute audio/video</div>
             <Routes>
                 <Route path='meeting'>
@@ -85,7 +89,7 @@ export default function App({ config }) {
                 </Route>
                 <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
             </Routes>
-        </>
+        </GlobalContext.Provider>
     )
 }
 

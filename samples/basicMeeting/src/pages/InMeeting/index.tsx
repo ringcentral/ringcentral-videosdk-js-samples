@@ -3,6 +3,7 @@ import { RcvEngine, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import AttendeeVideoList from './AttendeeVideoList'
+import { useGlobalContext } from '../../context';
 interface IProps {
     rcvEngine: RcvEngine
 }
@@ -10,38 +11,29 @@ interface IProps {
 const InMeeting: FC<IProps> = (props) => {
     const { rcvEngine } = props
     const { meetingId } = useParams();
+    const { isMeetingJoined } = useGlobalContext();
 
     const [loading, setLoading] = useState(false);
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
 
-    const meetingController = useMemo(
-        () => rcvEngine?.getMeetingController(),
-        [rcvEngine, rcvEngine?.getMeetingController()]
-    );
+    const meetingController = rcvEngine?.getMeetingController();
 
     useEffect(() => {
 
         const initController = async () => {
-            let meetingCtl;
-
-            if (rcvEngine?.getMeetingController()) {
-                meetingCtl = rcvEngine?.getMeetingController();
-            }
             // when do refreshing
-            else {
+            if (!isMeetingJoined) {
                 setLoading(true);
-                meetingCtl = await rcvEngine
-                    .joinMeeting(meetingId, {});
+                await rcvEngine.joinMeeting(meetingId, {});
                 setLoading(false)
             }
-            initListener(meetingCtl)
+            initListener()
         }
-
         rcvEngine && initController();
     }, [meetingId, rcvEngine])
 
-    const initListener = (meetingController) => {
+    const initListener = () => {
         const audioController = meetingController?.getAudioController()
         const videoController = meetingController?.getVideoController()
 

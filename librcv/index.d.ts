@@ -26,27 +26,31 @@ export declare enum AttendeeStatus {
 }
 
 export declare class AudioController extends EventEmitter<AudioEvent> {
-    private readonly _sfu;
-    private readonly _librct;
+    private _libsfuHelper;
+    private _librctHelper;
+    private readonly _streamManager;
     private readonly _initConfig;
-    private _streamManager;
     private _localStream;
 
-    private _listenEvents;
+    private get _librct();
+    private get _sfu();
     private get _tapId();
+    private _listenEvents;
     /**
      * Remove track on the sfu by tapId.
      * @param {string} tapId
      * @return {boolean}
      */
     private _stopSfuAudioTrackByTapId;
+    private _mute;
+    private _unmute;
     /**
-     * Enable audio in meetings.
+     * Enable the audio session,create audio stream and publish.
      * @param {true | MediaTrackConstraints} spec parameters to create the Audio stream
      */
     enableAudio(spec: true | MediaTrackConstraints): Promise<ErrorCodeType>;
     /**
-     * Disable audio in meetings.
+     * Disable the audio session, unpublish the audio stream.
      */
     disableAudio(): Promise<ErrorCodeType>;
     /**
@@ -54,22 +58,19 @@ export declare class AudioController extends EventEmitter<AudioEvent> {
      * @param {boolean} mute true: mute; false: unmute
      */
     muteLocalAudioStream(mute: boolean): Promise<ErrorCodeType>;
-    private _mute;
-    private _unmute;
     /**
-     * The meeting hosts or moderators can invoke the API to mute/unmute the particular participant's audio.
+     * Mute/unmute remote audio stream of a specified user (must have the host or moderator permission).
      * @param mute
      */
     muteRemoteAudioStream(uid: string, mute: boolean): Promise<void>;
     /**
-     * The meeting hosts or moderators can invoke the API to mute/unmute  all participant's audio.
+     * Stops/Resumes subscribing to the audio stream of all users (must have the host or moderator permission).
      * @param mute
      */
     muteAllRemoteAudioStreams(mute: boolean): Promise<void>;
 }
 
 export declare class AudioDeviceManager extends DeviceManager<AudioDeviceManagerEvent> {
-    private _removeDeviceListChangedListener;
     private _audioForTest;
     constructor();
     /**
@@ -77,11 +78,6 @@ export declare class AudioDeviceManager extends DeviceManager<AudioDeviceManager
      * @return {void}
      */
     private _handleDeviceListChanged;
-    /**
-     * Clear away side effect.
-     * @return {void}
-     */
-    clear(): void;
     /**
      * Get all audio devices.
      * Whether to skip the permission check. If you set this parameter as true, the SDK does not trigger the request for media device permission.
@@ -151,6 +147,81 @@ export declare enum AudioEvent {
     REMOTE_AUDIO_MUTE_CHANGED = "remote-audio-mute-changed",
     /** Occurs when the host or moderator wants you to unmute your audio. This is a demand request, the app can decide whether to unmute. */
     AUDIO_UNMUTE_DEMAND = "audio-unmute-demand"
+}
+
+declare enum BridgeWaitingRoomMode {
+    /** Nobody need go to waiting room */
+    Nobody = 0,
+    /** EveryBody need go to waiting room */
+    EveryBody = 1,
+    /** Guests need go to waiting room */
+    GuestsOnly = 2,
+    /** Other account need go to waiting room (Other account usually are other company.)*/
+    OtherAccount = 3
+}
+
+export declare class ChatController extends EventEmitter<ChatEvent> {
+    private _librctHelper;
+    private _meetingProvider;
+    private _messageUniqueMarker;
+    private _publicChatId;
+    private _broadcastChatId;
+    private _privateChatIdMap;
+    private _breakoutChatIdMap;
+    constructor();
+    private get _librct();
+    private get _meeting();
+    private _listenEvents;
+    private _onChatMessages;
+    private _handleMessage;
+    private _handleChatId;
+    private _isChatDisabled;
+    private _getLocalParticipantId;
+    private _getPrivateChatLocalId;
+    private _getPublicChatId;
+    private _sendMessage;
+    /**
+     * Returns the current chat privilege.
+     * ChatPrivilege:
+     *   - ChatPrivilege.EVERYONE (Default value)
+     *   - ChatPrivilege.HOST_MODERATOR
+     */
+    getCurrentChatPrivilege(): ChatPrivilege;
+    /**
+     * Set the meeting chat privilege.
+     */
+    setChatPrivilege(privilege: ChatPrivilege): Promise<ErrorCodeType>;
+    /**
+     * Sends a message to a particular meeting user in an active meeting.
+     */
+    sendMessageToUser(uid: any, msg: any): Promise<ErrorCodeType>;
+    /**
+     * Sends a message to all meeting users in an active meeting.
+     */
+    sendMessageToAll(msg: any): Promise<ErrorCodeType>;
+}
+
+export declare enum ChatEvent {
+    /** Occurs when a new chat message is received */
+    CHAT_MESSAGE_RECEIVED = "chat-message-received"
+}
+
+export declare enum ChatPrivilege {
+    /** Everyone can send the chat message  */
+    EVERYONE = "everyone",
+    /** Only the meeting host and moderator can send the chat message */
+    HOST_MODERATOR = "host_moderator"
+}
+
+/**
+ * @desc type of chatMessage
+ */
+export declare enum ChatType {
+    /** Type of message sent to everyone. In group mode, only the current room can see/send the message.  */
+    PUBLIC = "public",
+    /** Type of message sent to a user. */
+    PRIVATE = "private",
+
 }
 
 declare enum COMMON_SS_SOURCES {
@@ -298,7 +369,9 @@ export declare enum EngineEvent {
     /**Occurs when leaving a meeting action is finished, error code is 0 means the action succeeds, otherwise means the action is failed.*/
     MEETING_LEFT = "meeting-left",
     /**Occurs when the meeting state is changed. */
-    MEETING_STATE_CHANGED = "meeting-state-changed"
+    MEETING_STATE_CHANGED = "meeting-state-changed",
+    /** Occurs when scheduling a meeting action is finished, error code is 0 means the action succeeds, otherwise means the action is failed. */
+    MEETING_SCHEDULE = "meeting-schedule"
 }
 
 /**
@@ -333,97 +406,117 @@ export declare interface EngineInitConfig {
      * The application account identity secret.
      */
     clientSecret?: string;
+    /**
+     * Enable vcg or disable, default is true.
+     */
+    enableVcg?: boolean;
 }
 
-/** Global error code for RCV SDK */
+/**
+ * Global error code for RCV SDK
+ */
 export declare enum ErrorCodeType {
-    /** No Errors */
+    /** Success. No error occurs. */
     ERR_OK = 0,
-    /** A general error occurs (no specified reason). */
+    /** A general error occurs (no specified reason determined). Try calling the method again. */
     ERR_FAILED = 1,
-    /** An invalid parameter is used. For example, the specific meeting ID includes illegal characters. */
+    /** An invalid argument is used. For instance, the specified meeting ID or user name includes illegal characters. Please check and reset the argument. */
     ERR_INVALID_ARGUMENT = 2,
+    /** A required parameter is missed. */
+    ERR_PARAMETER_MISS = 3,
+    /** A specific function does not support by the client SDK. */
+    ERR_FUNCTION_NOT_SUPPORTED = 4,
+    /** A user does not have permission to invoke some specified APIs. For instance, an audience to invoke the lock meeting interface. */
+    ERR_NO_PERMISSION = 5,
+    /** The user is unauthorized. */
+    ERR_UNAUTHORIZED = 6,
+    /** The access token is expired. Normally, it happens when the automatic refresh auth token option is disabled. */
+    ERR_AUTH_TOKEN_EXPIRED = 7,
+    /** The access token is invalid.  */
+    ERR_INVALID_AUTH_TOKEN = 8,
+    /** The refresh token is expired and the application has to get the new auth token pair by invoking the authorization REST API. */
+    ERR_REFRESH_TOKEN_EXPIRED = 9,
+    /** TThe audio device access is denied, either the device is not ready or it has been occupied by other applications. */
+    ERR_AUDIO_DEVICE_ACCESS_DENIED = 10,
+    /** The video device access is denied, either the device is not ready or it has been occupied by other applications.  */
+    ERR_VIDEO_DEVICE_ACCESS_DENIED = 11,
+    /** No audio device was found and can be used.  */
+    ERR_NO_AUDIO_DEVICE_AVAILABLE = 12,
+    /** No video device was found and can be used..  */
+    ERR_NO_VIDEO_DEVICE_AVAILABLE = 13,
+    /** A specific request has been aborted due to too many requests. */
+    ERR_REQUEST_ABORTED = 14,
+    /** The application used too much of the system resources and the client SDK fails to allocate the resources. */
+    ERR_RESOURCE_LIMITED = 15,
+    /** The application does not have an available network that can be used to conduct a meeting request. */
+    ERR_NO_NETWORK_CONNECTION = 16,
+    /** The remote meeting server encounters an internal error. The retry may help. */
+    ERR_SERVER_INTERNAL_ERROR = 17,
+    /** The response includes some invalid data caused can not be parsed. The retry may help. */
+    ERR_SERVER_INVALID_RESPONSE = 18,
+    /** The remote meeting server can not be reached. The retry may help. */
+    ERR_SERVER_UNREACHABLE = 19,
+    /** Request to the remote meeting server has timed out. The retry may help. */
+    ERR_SERVER_TIMEOUT = 20,
+    /** A base error code for the meetings category. */
+    ERR_MEETING_BASE = 10000,
+    /** The meeting ID must be present when joining a meeting. */
+    ERR_MEETING_ID_REQUIRED = 10001,
+    /** The meeting ID includes illegal characters. */
+    ERR_INVALID_MEETING_ID = 10002,
+    /** Can not join the meeting due to a specified meeting ID is not found. */
+    ERR_MEETING_NOT_FOUND = 10003,
+    /** The user name must be present when joining a meeting as a guest user. */
+    ERR_MEETING_USER_NAME_REQUIRED = 10004,
+    /** The user name includes illegal characters. */
+    ERR_INVALID_MEETING_USER_NAME = 10005,
+    /** The meeting requires a password to join. */
+    ERR_MEETING_PASSWORD_REQUIRED = 10006,
+    /** The input password does not match the meeting password. The user needs to check it and try joining again. */
+    ERR_INVALID_MEETING_PASSWORD = 10007,
+    /** The application can not join a meeting as a guest due to the "Guest Type" is not granted. */
+    ERR_GUEST_TYPE_NOT_GRANTED = 10008,
+    /** The user has been denied to join the meeting. */
+    ERR_JOIN_MEETING_DENIED = 10009,
+    /** A specified meeting only allows the authorized user to join. */
+    ERR_AUTHORIZED_USER_REQUIRED = 10010,
+    /** A specified meeting only allows the authorized coworkers to join. */
+    ERR_AUTHORIZED_COWORKER_REQUIRED = 10011,
+    /** A specified meeting does not support joining before the host, waiting for the host to join first. */
+    ERR_WAITING_FOR_HOST = 10012,
+    /** The waiting room mode has been enabled by the meeting host, the user will join the meeting once the meeting host admits. */
+    ERR_IN_WAITING_ROOM = 10013,
     /**
-     * The SDK module is not ready. Possible solutions:
-     * - Check the audio device.
-     * - Check the completeness of the application.
-     * - Re-initialize the RCV engine.
-     */
-    ERR_NOT_READY = 3,
-    /** The SDK does not support this function. */
-    ERR_NOT_SUPPORTED = 4,
-    /** The request is rejected. */
-    ERR_REFUSED = 5,
-    /** The SDK is not initialized before calling this method. */
-    ERR_NOT_INITIALIZED = 6,
-    /** No permission exists. Check if the user has granted access to the audio or video device. */
-    ERR_NO_PERMISSION = 7,
-    /**
-     * The request to join the meeting is rejected.
-     * - This error usually occurs when the user is already in the meeting, and still calls the method to join the meeting, for example, INativeEngine::joinMeeting
-     * - The user tries to join the meeting with a token that is expired.
-     */
-    ERR_JOIN_MEETING_REJECTED = 8,
-    /**
-     * The request to leave the meeting is rejected.
-     * This error usually occurs:
-     * - When the user has left the meeting and still calls INativeEngine::leaveMeeting to leave the meeting. In this case, stop calling INativeEngine::leaveMeeting.
-     * - When the user has not joined the meeting and still calls INativeEngine::leaveMeeting to leave the meeting. In this case, no extra operation is needed.
-     */
-    ERR_LEAVE_MEETING_REJECTED = 9,
-    /** The SDK gives up the request due to too many requests. */
-    ERR_ABORTED = 10,
-    /** The application uses too much of the system resources and the SDK fails to allocate the resources. */
-    ERR_RESOURCE_LIMITED = 11,
-    /** The specified meeting ID is invalid. Please try to rejoin the meeting with a valid meeting ID. */
-    ERR_INVALID_MEETING_ID = 12,
-    /**
-     * The token expired due to one of the following reasons:
-     * - Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the Token to access the RCV SDK within 24 hours after the Token is generated. If the user does not access the RCV SDK after 24 hours, this Token is no longer valid.
-     */
-    ERR_TOKEN_EXPIRED = 13,
-    /**
-     * The token is invalid due to one of the following reasons:
-     * - The App Certificate for the project is enabled in Console, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.
-     * - The uid is mandatory, and users must set the same uid as the one set in the INativeEngine::joinMeeting method.
-     */
-    ERR_INVALID_TOKEN = 14,
-    /** SDK internal error */
-    ERR_INTERNAL_ERROR = 15,
-    /** You're making a transition between breakout rooms */
-    ERR_BREAKOUT_ROOM_TRANSITION = 18,
-    /** The user is unauthorized */
-    ERROR_UNAUTHORIZED = 20,
-    /** The meeting doesn't support guest to join */
-    ERROR_GUEST_TYPE_NOT_GRANTED = 21,
-    /** Only authorized users could join meeting*/
-    ERROR_AUTHORIZED_USER_REQUIRED = 22,
-    /** Only authorized co-workers could join meeting*/
-    ERROR_AUTHORIZED_COWORKER_REQUIRED = 23,
-    /** The meeting is not found*/
-    ERROR_MEETING_NOT_FOUND = 24,
-    /** The meeting requires password for joining */
-    ERROR_MEETING_PASSWORD_REQUIRED = 25,
-    /** The provided password is invalid for this meeting */
-    ERROR_MEETING_PASSWORD_INVALID = 26,
-    /** The user joined meeting is move to waiting room*/
-    ERROR_IN_WAITING_ROOM = 27,
-    /** The user is denied for joining this meeting.*/
-    ERROR_JOIN_MEETING_DENIED = 28,
-    /**Waiting host join first */
-    ERROR_WAITING_FOR_HOST = 29,
-    /** The meeting has locked */
-    ERROR_MEETING_HAS_LOCKED = 30,
-    /** The meeting capacity is full */
-    ERROR_MEETING_CAPACITY_IS_FULL = 31,
-    /** The user hit the simultaneous meeting limit */
-    ERROR_EXCEEDED_CONCURRENT_MAX_COUNT = 32,
-    /** The device is disabled by the browser or the user has denied permission of using the device */
-    ERR_PERMISSION_DENIED = 33,
-    /** The specified capture device cannot be found. */
-    ERR_DEVICE_NOT_FOUND = 34,
-    /** Sharing is locked and users cannot share except host and moderator */
-    ERR_SHARE_LOCKED = 35
+     * A specified meeting has been locked by the meeting host or moderator.
+     * To continue to join this meeting, ask the meeting host or moderator to unlock the meeting first.
+     * */
+    ERR_MEETING_IS_LOCKED = 10014,
+    /** A specified meeting has reached its capacity, a new user can not join this meeting. */
+    ERR_MEETING_CAPACITY_IS_FULL = 10015,
+    /** A specified user's concurrent meeting limit has been exceeded. To start or join a new meeting, users must leave or end an existing meeting. */
+    ERR_CONCURRENT_MEETING_LIMIT_EXCEEDED = 10016,
+    /** A base error code for the meeting user category.  */
+    ERR_MEETING_USER_BASE = 11000,
+    /** A base error code for the meeting chat category. */
+    ERR_MEETING_CHAT_BASE = 12000,
+    /** A base error code for the meeting recording category. */
+    ERR_MEETING_RECORDING_BASE = 13000,
+    /** A base error code for the meeting live-transcription category. */
+    ERR_LIVE_TRANSCRIPTION_BASE = 14000,
+    /** A base error code for the meeting closed captions category. */
+    ERR_CLOSED_CAPTIONS_BASE = 15000,
+    /** A base error code for the meeting breakout room category. */
+    ERR_MEETING_BREAKOUT_BASE = 16000,
+    /** A base error code for the meeting annotation category. */
+    ERR_MEETING_ANNOTATION_BASE = 17000,
+    /** A base error code for the audio category. */
+    ERR_AUDIO_BASE = 30000,
+    /** A base error code for the video category. */
+    ERR_VIDEO_BASE = 50000,
+    /** A base error code for the sharing category. */
+    ERR_SHARING_BASE = 70000,
+    /** The meeting sharing function has been locked by the meeting host or moderator, only the meeting host or moderator allows to start a new sharing session. */
+    ERR_SHARING_IS_LOCKED = 70001
 }
 
 declare class EventEmitter<T extends string> {
@@ -431,8 +524,8 @@ declare class EventEmitter<T extends string> {
     on(eventName: T, listener: TEventCB): TUnsubscribeFunction;
     off(eventName: T, listener: TEventCB): void;
 
-    once(eventName: T, listener: TEventCB): void;
-    removeAllListeners(): void;
+
+
 }
 
 export declare type HttpClient = {
@@ -534,7 +627,7 @@ export declare interface InstantMeetingSettings {
     muteVideoForParticipant?: boolean;
     /** Configure whether users are allowed to join the meeting room before joining the meeting host, default true */
     requirePassword?: boolean;
-    /** Password for this instant meeting */
+    /** Password for this instant meeting, length is up to 10 */
     meetingPassword?: string;
     /** Configure whether to turn on waiting room for this meeting , default is false*/
     isWaitingRoomEnabled?: boolean;
@@ -550,23 +643,8 @@ export declare interface InstantMeetingSettings {
     enableE2ee?: boolean;
 }
 
-declare interface IOptions_3 {
-    sfu: ControlClient;
-    librct: Librct;
-    meeting: IMeetInfo;
-    localStreams: ConferenceStream[];
-}
-
-declare interface IOptions_4 {
-    librct: Librct;
+declare interface IOptions_2 {
     recordings?: IRecording[];
-    meeting?: IMeetInfo;
-}
-
-declare interface IOptions_5 {
-    sfu: ControlClient;
-    librct: Librct;
-    localStreams: ConferenceStream[];
 }
 
 /**
@@ -646,9 +724,9 @@ export declare interface IParticipant {
     isDeleted: boolean;
     /**
      * Indicate the network quality of attendee
-     * @return attendee's network quality, @see NqiStatus
+     * @return attendee's network quality, @see NQIState
      */
-    nqiStatus: NqiStatus;
+    nqiStatus?: NQIState;
     /**
      * Used to identify whether the attendee joined the audio
      * @return
@@ -773,49 +851,77 @@ export declare enum LogLevel {
     DEBUG = "debug"
 }
 
+export declare class MeetingContextController {
+    private _existPersonalMeetingNames;
+    private _freePhoneNumbers;
+
+    constructor(librct: any);
+    private _getPersonalBridge;
+    private _getBridgeUpdatePromise;
+    private _getMeetingInfo;
+    private _getPersonalMeetingNames;
+    private _getFreePhoneNumbers;
+    /**
+     * Schedules a meeting with customized meeting settings. A successful call of scheduleMeeting triggers the onMeetingSchedule callback.
+     * @param {ScheduleMeetingSettings} params
+     * @return {boolean}
+     */
+    scheduleMeeting(params: ScheduleMeetingSettings): Promise<ErrorCodeType>;
+    /**
+     * Load the personal meeting settings.
+     */
+    loadPersonalMeetingSettings(): Promise<PersonalMeetingSettings>;
+    /**
+     * Update the personal meeting settings and it will be applied to the next meeting.
+     */
+    updatePersonalMeetingSettings(personalMeetingSettings: PersonalMeetingSettings): Promise<void>;
+}
+
 /**
  * MeetingController is used to control the state in the meeting
  * such as switching recording and acquiring the video and audio controllers used to mute/unmute the video and audio of local and remote attendees.
  */
 export declare class MeetingController extends EventEmitter<MeetingEvent> {
-    private readonly _librct;
+    private _libsfuHelper;
+    private _librct;
+    private _nqi;
     /**
      * internal
      */
-    private readonly _account;
+    private _bridge;
     /**
      * internal
      */
-    private readonly _bridge;
-    /**
-     * internal
-     */
-    private readonly _joinData;
-    private readonly _initConfig;
+    private _joinData;
+    private _initConfig;
     private _userController?;
     private _audioController?;
     private _videoController?;
     private _sharingController?;
-    private _recordingController?;
+    private _recordingController;
+    private _chatController;
     private _sfu?;
-    private _streamManager?;
+    private _streamManager;
+    private _meetingProvider;
     get isWaitingRoomEnabled(): boolean;
 
-    init(): Promise<void>;
-    protected createLibSfu(): Promise<any>;
+
+
+
     getAudioController(): AudioController | undefined;
-    getStreamManager(): StreamManager | undefined;
+    getStreamManager(): StreamManager;
     getVideoController(): VideoController | undefined;
     getSharingController(): SharingController | undefined;
-    getRecordingController(): RecordingController | undefined;
+    getRecordingController(): RecordingController;
     getUserController(): UserController | undefined;
+    getChatController(): ChatController;
     /**
      * listen meeting change, trigger MeetingEvent
      */
     private _listenMeetingChanged;
+    private get _meeting();
     /**
      * @Description: This function is used to get meeting information
-     * @tech-sol https://wiki.ringcentral.com/display/VMT/%5BSol%5D+Get+Meeting+Info
      * @return Promise<IMeetingInfo>
      */
     getMeetingInfo(): Promise<IMeetingInfo>;
@@ -840,16 +946,8 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
 }
 
 export declare enum MeetingEvent {
-    /** Occurs when a new user joins a meeting */
-    USER_JOINED = "user-joined",
-    /** Occurs when a user's state changed */
-    USER_UPDATED = "user-updated",
-    /** Occurs when a user leaves or disconnects from a meeting */
-    USER_LEFT = "user-left",
     /** Occurs when the current host assigns the host role to another */
     MEETING_HOST_CHANGED = "meeting-host-changed",
-    /** Occurs when a new chat message is received */
-    CHAT_MESSAGE_RECEIVED = "chat-message-received",
     /** Occurs when the meeting lock state is changed */
     MEETING_LOCK_STATE_CHANGED = "meeting-lock-state-changed",
     /** Occurs when a meeting API request is executed */
@@ -861,7 +959,11 @@ export declare enum MeetingEvent {
     /** Reports the statistics of the audio stream from each remote user */
     REMOTE_AUDIO_STATS_REPORTED = "remote-audio-stats-reported",
     /** Reports the statistics of the video stream from each remote user */
-    REMOTE_VIDEO_STATS_REPORTED = "remote-video-stats-reported"
+    REMOTE_VIDEO_STATS_REPORTED = "remote-video-stats-reported",
+    /** Reports the network quality of the local user. */
+    LOCAL_NETWORK_QUALITY = "local-network-quality",
+    /** Reports the network quality of the remote user. */
+    REMOTE_NETWORK_QUALITY = "remote-network-quality"
 }
 
 export declare interface MeetingOptions {
@@ -871,32 +973,60 @@ export declare interface MeetingOptions {
     password?: string;
 }
 
+export declare interface Message {
+    /** User ID who sends message */
+    from: string;
+    /** User ID who receives message */
+    to: string;
+    timestamp: number;
+    message: string;
+    chatType: ChatType;
+}
+
 /** Indicates the network quality of the current meeting */
-export declare enum NqiStatus {
-    /**
-     * current network is disconnected
-     */
-    DISCONNECTED = 0,
-    /**
-     * current network quality is poor
-     */
-    POOR = 1,
-    /**
-     * current network quality is medium
-     */
-    MEDIUM = 2,
-    /**
-     * current network quality is good
-     */
-    GOOD = 3,
-    /**
-     * current network quality is unknown
-     */
-    UNKNOWN = 4,
-    /**
-     * current network quality is stable
-     */
-    STABLE = 5
+export declare enum NQIState {
+    GOOD = "GOOD",
+    MEDIUM = "MEDIUM",
+    POOR = "POOR",
+    DISCONNECT = "DISCONNECT",
+    UNKNOWN = "UNKNOWN"
+}
+
+declare type Participant = Omit<IParticipant, 'nqiStatus'>;
+
+export declare interface PersonalMeetingSettings {
+    /** Configure whether users are allowed to join the meeting room before joining the meeting host, default true */
+    allowJoinBeforeHost?: boolean;
+    /** Force users to turn off audio when entering a meeting, default false*/
+    muteAudio?: boolean;
+    /** Force users to turn off video when entering a meeting, default true*/
+    muteVideo?: boolean;
+    /** Configure whether users are allowed to join the meeting room before joining the meeting host, default true */
+    requirePassword?: boolean;
+    /** Password for this instant meeting */
+    meetingPassword?: string;
+    /** Configure whether to turn on waiting room for this meeting , default is false*/
+    isWaitingRoomEnabled?: boolean;
+    /** The waiting room mode*/
+    waitingRoomMode?: WaitingRoomMode;
+    /** Configure whether to allow users other than host/moderator to share the screen, default is true */
+    allowScreenSharing?: boolean;
+    /** Configure that only logged in users can join the meeting, default is false */
+    onlyAuthUserCanJoin?: boolean;
+    /** Configure that only coworkers can join the meeting, default is false */
+    onlyCoworkersCanJoin?: boolean;
+    /** Configure personal meeting id */
+    shortId?: string;
+    /** Configure personal meeting name */
+    personalRoomName?: string;
+    /** Get the code for participant to enter a meeting */
+    participantCode?: string;
+    /** Get the code for host to enter a meeting */
+    hostCode?: string;
+    /** Get dial-in number for users to enter the meeting */
+    phoneNumber?: string;
+    /** Get link for users to enter the meeting */
+    link?: string;
 }
 
 /**
@@ -904,11 +1034,13 @@ export declare enum NqiStatus {
  */
 export declare class RcvEngine extends EventEmitter<EngineEvent> {
     private static _instance;
+    private _librctHelper;
 
     private readonly _config;
-    private _meetingController;
     private _audioDeviceManager;
     private _videoDeviceManager;
+    private _meetingContextController;
+    private _meetingController;
     /**
      * Creates an RcvEngine object and returns the instance.
      * @param config
@@ -922,13 +1054,9 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
     static instance(): RcvEngine | undefined;
     private constructor();
     /**
-     * TODO: Destroy the SDK resources
-     * note: Once you call `destroy` to destroy the created `INativeEngine` instance, you cannot use any method or callback in the SDK any more.
-     * @return
-     *  - true success
-     *  - false failure
+     * Destroys the RcvEngine instance and releases all resources used by the RingCentral video client SDK.
      */
-    destroy(): boolean;
+    destroy(): void;
     /**
      * Starts an instant meeting with default meeting settings.
      */
@@ -946,13 +1074,8 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      *  - not null Available meeting controller instance
      *  - null failure
      */
-    getMeetingController(): MeetingController | null;
-    /**
-     * Get current token is guest or authorized user.
-     */
-    private _isGuestMode;
+    getMeetingController(): MeetingController;
     private _createMeetingController;
-
     /**
      * When leaves a meeting all meeting data need be reset.
      */
@@ -963,7 +1086,7 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
     private _joinAction;
     getAudioDeviceManager(): AudioDeviceManager;
     getVideoDeviceManager(): VideoDeviceManager;
-    private _clearManagerEffect;
+    getMeetingContextController(): MeetingContextController;
     private _clearManagers;
     /**
      * download logs from rcvEngine
@@ -1008,25 +1131,14 @@ export declare enum RcvMeetingState {
 }
 
 declare class RecordingController extends EventEmitter<RecordingEvent> {
-    private readonly _librct;
+    private _librctHelper;
+    private _meetingProvider;
     private _recordings;
-    private _meeting;
-    constructor(options: IOptions_4);
+    constructor(options: IOptions_2);
     private _initialEventListener;
+    private get _librct();
+    private get _meeting();
     private _getRecording;
-    /**
-     * Get current meeting recording state
-     * @return RecordingStatus
-     */
-    getRecordingState(): RecordingStatus;
-    /**
-     * Indicates whether the meeting recording is allowed.
-     */
-    isRecordingAllowed(): boolean;
-    /**
-     * Returns the current recording duration (seconds)
-     */
-    getRecordingDuration(): number;
     private _getStartRecordEventIndex;
     private _getEndRecordEventIndexAndAutoTime;
     private _computeDurationTime;
@@ -1035,14 +1147,30 @@ declare class RecordingController extends EventEmitter<RecordingEvent> {
     private _getCloudRecordingsEnabled;
     private _getIsE2EE;
     /**
-     * Starts/Resume the recording in an active meeting.
+     * Get current meeting recording state
+     * @return RecordingStatus
+     */
+    getRecordingState(): RecordingStatus;
+    /**
+     * Indicates whether the meeting recording is allowed.
+     * @returns boolean
+     */
+    isRecordingAllowed(): boolean;
+    /**
+     * Returns the current recording duration (seconds)
+     * @returns number
+     */
+    getRecordingDuration(): number;
+    /**
+     * Starts/Resume the recording in an active meeting. Only the meeting host or moderator has permission to invoke this method.
      * This function conflicts with E2EE. Do not enable E2EE if recording is in progress.
      * If E2EE is enabled, do not start or unpause recording.
      * @return {Promise<ErrorCodeType>}
      */
     startRecording(): Promise<ErrorCodeType>;
     /**
-     * Pause the recording in an active meeting.
+     * Pause the recording of an active meeting.
+     * Only the meeting host or moderator has permission to invoke this method.
      * @return {Promise<ErrorCodeType>}
      */
     pauseRecording(): Promise<ErrorCodeType>;
@@ -1061,6 +1189,12 @@ declare enum RecordingEventType {
     RECORDING_PAUSE_END = "recordingPauseEnd",
     RECORDING_AUTO_PAUSE_START = "recordingAutoPauseStart",
     RECORDING_AUTO_PAUSE_END = "recordingAutoPauseEnd"
+}
+
+export declare interface ScheduleMeetingSettings extends Omit<InstantMeetingSettings, 'requirePassword'> {
+    /** Use Personal Meeting */
+    usePersonalMeetingId?: boolean;
+    isMeetingSecret?: boolean;
 }
 
 /**
@@ -1086,22 +1220,26 @@ export declare type SendOptions = {
     /**
      * headers of request
      */
-    headers?: object;
+    headers?: Record<string, string> | Headers;
     userAgent?: string;
     skipAuthCheck?: boolean;
     skipDiscoveryCheck?: boolean;
     handleRateLimit?: boolean | number;
     retry?: boolean;
+    vcgSupported?: boolean;
 };
 
 export declare class SharingController extends EventEmitter<SharingEvent> {
-    private _meeting;
-    private _localStreams;
+    private _cachedMeeting;
+    private _libsfuHelper;
+    private _librctHelper;
+    private _meetingProvider;
+    private readonly _streamManager;
     private _currentSharingStream;
     private _curSharingStats;
-    private readonly _sfu;
-    private readonly _librct;
-    constructor(options: IOptions_3);
+    constructor();
+    private get _librct();
+    private get _sfu();
     /**
      * Check stream stats from sfu.
      */
@@ -1119,20 +1257,42 @@ export declare class SharingController extends EventEmitter<SharingEvent> {
     private _onSharingSettingsChanged;
     private _currentSharingEnded;
     private _registerSfu;
+    /**
+     * Indicates whether the sharing is being locked. If TRUE, means only the host or moderator can start the sharing.
+     * @returns boolean
+     */
     isSharingLocked(): boolean;
+    /**
+     * Enable the sharing session,create sharing stream and publish
+     * @param spec
+     * @returns Promise<ErrorCodeType>
+     */
     startSharing(spec?: DisplayMediaStreamConstraints): Promise<ErrorCodeType>;
-    /**Indicates whether local user is sharing. */
+    /**
+     * Indicates whether local user is sharing.
+     * @returns boolean
+     */
     isLocalSharing(): boolean;
-    /**Indicates whether other user is sharing. */
+    /**
+     * Indicates whether other user is sharing.
+     * @returns boolean
+     */
     isRemoteSharing(): boolean;
+    /**
+     * The host or moderator can use this function to lock/unlock the current meeting sharing.
+     * If it is locked and a participant is sharing, then the present sharing will stop right away and participants unable to start the sharing again.
+     * The host or moderator is still able to start the sharing.
+     * @param locked
+     * @returns Promise<ErrorCodeType>
+     */
     lockSharing(locked: boolean): Promise<ErrorCodeType>;
     /**
-     * Closes the sharing session and channel in the web SDK.
+     * Disable the sharing session, unpublish the sharing stream.
      * @return {Promise<ErrorCodeType>}
      */
     stopSharing(): Promise<ErrorCodeType>;
     /**
-     * The meeting host or moderator stop the remote user's sharing.
+     * Stops the remote participant's sharing (must have the host or moderator permission).
      * @param {string} uid
      * @return {Promise<ErrorCodeType>}
      */
@@ -1190,11 +1350,13 @@ export declare enum StreamEvent {
 
 export declare class StreamManager extends EventEmitter<StreamEvent> {
     private _sfu;
-    private _librct;
+    private _librctHelper;
     private _localStreams;
     private _remoteStreams;
     private _tapIdStreamMap;
+    private get _librct();
     private _eventQueueSet;
+
 
     /**
      * @description
@@ -1262,8 +1424,10 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
     private _handleRemoteStreamReplaced;
     /** sfu event handler end **/
     getRemoteStreamByTapId(tapId: string): Partial<IStream> | null;
+    getRemoteStreamBySessionId(sessionId: string): Partial<IStream> | null;
     getLocalStreamByTapId(tapId: string): Partial<IStream> | null;
     getLocalStreams(): Partial<IStream>[];
+    getLocalActiveStreamInSFU(): Partial<IStream> | undefined;
     /**
      * Used for 'video/screensharing' stream
      * @param stream
@@ -1285,56 +1449,82 @@ export declare type TUnsubscribeFunction = () => void;
  * The class to control participants of the current meetings
  */
 export declare class UserController extends EventEmitter<UserEvent> {
-    private readonly _librct;
-    private readonly _sfu;
-    private readonly _localStreams;
+    private _libsfuHelper;
+    private _librctHelper;
     private _cachedLocalParticipant;
     private _cachedRemoteParticipants;
+    private _streamManager;
 
+    private get _librct();
+    private get _sfu();
     private _initRemoteParticipants;
     private _init;
     private _getRemoteStreams;
     private _reportStats;
-    getMeetingUsers(): Record<string, IParticipant>;
-    getMeetingUserById(uid: string): IParticipant | undefined;
-    getMyself(): IParticipant;
-    private _handleModeratorsAction;
-    /**
-     * Assign moderator role to attendee(s) (must have the host or moderator permission).
-     */
-    assignModerators(participantIds: string[]): Promise<ErrorCodeType>;
-    /**
-     * Revokes moderator role from attendee(s) (must have the host or moderator permission).
-     */
-    revokeModerators(participantIds: string[]): Promise<ErrorCodeType>;
+    private _reportLoudestStream;
+    private _handleModeratorActions;
     private _getLocalParticipant;
     private _getRemoteParticipants;
     private _handleLocalStreamChanges;
     private _handleStreamChanges;
     private _handleRemoteParticipantsChanged;
     private _handleLocalParticipantChanged;
-    isMySelfHostOrModerator(): boolean;
+
+    /**
+     * Get the meeting user object list of an active meeting.
+     * @returns Map<string, IParticipant participant>
+     */
+    getMeetingUsers(): Record<string, Participant>;
+    /**
+     * Get a particular meeting user object by id.
+     * @param uid
+     * @returns IParticipant | undefined
+     */
+    getMeetingUserById(uid: string): Participant | undefined;
+    /**
+     * Get the current meeting user object
+     * @returns IParticipant
+     */
+    getMyself(): Participant;
+    /**
+     * Assign moderator role to the meeting user(s).
+     * Only the meeting host or moderator has permission to invoke this method.
+     */
+    assignModerators(uids: string[]): Promise<ErrorCodeType>;
+    /**
+     * Revokes moderator role from the meeting user(s).
+     * Only the meeting host or moderator has permission to invoke this method.
+     */
+    revokeModerators(uids: string[]): Promise<ErrorCodeType>;
+    /**
+     * Removes a particular meeting user from an active meeting.
+     * Only the meeting host or moderator has permission to invoke this method.
+     * @param uid
+     */
     removeUser(uid: string): Promise<void>;
     /**
-     * Admit user in waiting room to meeting.
+     * Admits a particular user into the meeting.
+     * Only the meeting host or moderator has permission to invoke this method.
      * @param uid {string}
      */
     admitUser(uid: string): Promise<ErrorCodeType>;
     /**
-     * Admits all users who are currently in the waiting room into the meeting .
+     * Admits all users who are currently in the waiting room into the meeting.
+     * Only the meeting host or moderator has permission to invoke this method.
      */
-    admitAllUser(): Promise<ErrorCodeType>;
+    admitAll(): Promise<ErrorCodeType>;
     /**
-     * Deny user in waiting room to meeting.
+     * Deny a user in the waiting room from joining the meeting.
+     * Only the meeting host or moderator has permission to invoke this method.
      * @param uid {string}
      */
     denyUser(uid: string): Promise<ErrorCodeType>;
     /**
-     * Put in-meeting user in waiting room
+     * Removes a particular meeting user from the current meeting session and puts this user in the waiting room.
+     * Only the meeting host or moderator has permission to invoke this method.
      * @param uid {string}
      */
     putUserInWaitingRoom(uid: string): Promise<ErrorCodeType>;
-
 }
 
 export declare enum UserEvent {
@@ -1345,25 +1535,24 @@ export declare enum UserEvent {
     /** Occurs when a user leaves or disconnects from a meeting */
     USER_LEFT = "user-left",
     /**Occurs when a user role has changed, such as, user assigned to moderator. */
-    USER_ROLE_CHANGED = "user-role-changed"
+    USER_ROLE_CHANGED = "user-role-changed",
+    /**Occurs when the active video user is changed. */
+    ACTIVE_VIDEO_USER_CHANGED = "active-video-user-changed",
+    /**Occurs when the active speaker user is changed. */
+    ACTIVE_SPEAKER_USER_CHANGED = "active-speaker-user-changed"
 }
 
 export declare class VideoController extends EventEmitter<VideoEvent> {
-    private readonly _sfu;
-    private readonly _librct;
+    private _libsfuHelper;
+    private _librctHelper;
     private readonly _streamManager;
     private _tapId;
     private _forPreviewStream;
     private _videoEnabled;
 
+    private get _librct();
+    private get _sfu();
     private _participantChangeHandler;
-    /**
-     * Starts/Stops publishing the local video stream.(muteLocalVideoStream)
-     * @param {boolean} mute
-     * @param {MediaTrackConstraints} options
-     * @return Promise<boolean>
-     */
-    muteLocalVideoStream(mute: boolean, options?: MediaTrackConstraints): Promise<ErrorCodeType>;
     /**
      * Enable video
      * @return Promise<Number>
@@ -1385,8 +1574,10 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
     private _getLocalActiveStreamInSFU;
     private _getLocalParticipant;
     private _listenEvents;
+    private _handleLocalVideoMuteChanged;
+    private _handleRemoteVideoMuteChanged;
     /**
-     * Starts the local video preview.
+     * Starts the local video preview before sending out.
      * @param constraints
      */
     startPreview(constraints: boolean | MediaTrackConstraints): Promise<MediaStream>;
@@ -1394,6 +1585,13 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
      * Stop the local video preview.
      */
     stopPreview(): Promise<void>;
+    /**
+     * Starts/Stops publishing the local video stream.
+     * @param {boolean} mute
+     * @param {MediaTrackConstraints} options
+     * @return Promise<ErrorCodeType>
+     */
+    muteLocalVideoStream(mute: boolean, options?: MediaTrackConstraints): Promise<ErrorCodeType>;
     /**
      * Stops/Resumes subscribing to the video stream of a specified user (must have the host or moderator permission).
      * @param uid
@@ -1405,8 +1603,6 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
      * @param mute
      */
     muteAllRemoteVideoStreams(mute: boolean): Promise<void>;
-    private _handleLocalVideoMuteChanged;
-    private _handleRemoteVideoMuteChanged;
 }
 
 /**
@@ -1417,11 +1613,6 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
 export declare class VideoDeviceManager extends DeviceManager<VideoDeviceManagerEvent> {
     constructor();
     private _handleDeviceListChanged;
-    /**
-     * Clear away side effect.
-     * @return {void}
-     */
-    clear(): void;
     /**
      * Get the device info by deviceId
      */
