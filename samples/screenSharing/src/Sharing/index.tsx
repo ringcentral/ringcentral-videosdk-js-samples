@@ -2,13 +2,14 @@ import React, { FC, useCallback, useState, useEffect, useMemo } from 'react'
 import { Button, Spinner } from 'react-bootstrap';
 import { RcvEngine, EngineEvent } from '@sdk';
 import InMeeting from './InMeeting'
-
+import { useGlobalContext } from '../context';
 interface IProps {
     rcvEngine: RcvEngine
 }
 
 const Sharing: FC<IProps> = (props) => {
     const { rcvEngine } = props
+    const { setMeetingJoined } = useGlobalContext();
     const [isStartLoading, setStartLoading] = useState(false);
     const [meetingId, setMeetingId] = useState('')
 
@@ -21,6 +22,7 @@ const Sharing: FC<IProps> = (props) => {
         if (rcvEngine) {
             // listen for meeing_joined/meeting_left events
             rcvEngine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
+                setMeetingJoined(true)
                 setMeetingId(meetingId)
             });
             rcvEngine.on(EngineEvent.MEETING_LEFT, () => {

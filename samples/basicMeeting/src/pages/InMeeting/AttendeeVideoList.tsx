@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { Spinner, Badge } from 'react-bootstrap';
 import { IParticipant, StreamEvent, UserEvent } from '@sdk';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/dom'
-
+import { useGlobalContext } from '../../context';
 interface IAttendeeListProps {
     meetingController: any;
     loading: boolean;
@@ -12,12 +12,12 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
     meetingController,
     loading
 }) => {
-
     const videoRef = useRef({} as HTMLDivElement);
+    const { isMeetingJoined } = useGlobalContext();
     const [participantList, setParticipantList] = useState<IParticipant[]>([]);
 
     useEffect(() => {
-        if (meetingController) {
+        if (isMeetingJoined) {
             // listen for stream events
             const streamManager = meetingController?.getStreamManager();
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
@@ -46,7 +46,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                 updateParticipants(userController?.getMeetingUsers());
             });
         }
-    }, [meetingController])
+    }, [isMeetingJoined])
 
     const updateParticipants = (users: Record<string, IParticipant>) => {
         const localParticipant = Object.values(users).filter(participant => participant.isMe);

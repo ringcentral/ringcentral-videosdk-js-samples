@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { SharingEvent, SharingState, StreamEvent, StreamType } from '@sdk';
+import { useGlobalContext } from '../context';
 
 const InMeeting = ({ meetingController }) => {
+    const { isMeetingJoined } = useGlobalContext();
     const [sharingStarted, setSharingStarted] = useState(false);
     const screenSharingRef = useRef<HTMLVideoElement>({} as HTMLVideoElement);
 
     useEffect(() => {
-        if (meetingController) {
+        if (isMeetingJoined) {
             const sharingController = meetingController.getSharingController();
 
             // listen for sharing state change event
@@ -35,7 +37,7 @@ const InMeeting = ({ meetingController }) => {
                 }
             });
         }
-    }, [meetingController])
+    }, [isMeetingJoined])
 
     const toggleSharing = () => {
         const sharingController = meetingController.getSharingController();
