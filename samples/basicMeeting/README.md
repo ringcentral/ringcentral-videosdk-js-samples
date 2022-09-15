@@ -3,8 +3,10 @@
 ### Feature List
 
 - Start/Join a meeting
+- Join a password-required meeting
 - Mute/unmute audio in the meeting
 - Mute/unmute video in the meeting
+- Show active video user in the meeting
 - Leave/End the meeting
 
 ### How to Run?

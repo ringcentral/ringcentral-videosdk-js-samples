@@ -15,6 +15,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
     const videoRef = useRef({} as HTMLDivElement);
     const { isMeetingJoined } = useGlobalContext();
     const [participantList, setParticipantList] = useState<IParticipant[]>([]);
+    const [activeVideoUser, setActiveVideoUser] = useState<IParticipant>(null)
 
     useEffect(() => {
         if (isMeetingJoined) {
@@ -45,6 +46,9 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                 console.log('UserEvent.USER_UPDATED')
                 updateParticipants(userController?.getMeetingUsers());
             });
+            userController.on(UserEvent.ACTIVE_VIDEO_USER_CHANGED, (participant: IParticipant) => {
+                setActiveVideoUser(participant)
+            });
         }
     }, [isMeetingJoined])
 
@@ -57,37 +61,43 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
     }
 
     return (
-        <div className='video-card-wrapper'>
-            {loading &&
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </Spinner>
-            </div>}
-            {!loading && participantList.map(participant => {
-                return (
-                    <div key={participant.uid} className='video-card'>
-                        <div>
-                            <h4>{participant.displayName} {participant.isMe ? '(You)' : ''}</h4>
-                            <div className='video-card-status-bar'>
-                                <Badge bg="primary">Audio {participant.isAudioMuted ? 'Muted' : 'Unmuted'}</Badge>&nbsp;
-                                <Badge bg="success">Video {participant.isVideoMuted ? 'Muted' : 'Unmuted'}</Badge>
-                                <br />
+        <div>
+            <p style={{ textAlign: 'center' }}>
+                Active Video User: {activeVideoUser ? activeVideoUser.displayName + '(' + activeVideoUser.uid + ')' : '-'}
+            </p>
+            <div className='video-card-wrapper'>
+                {loading &&
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                    </div>}
+
+                {!loading && participantList.map(participant => {
+                    return (
+                        <div key={participant.uid} className='video-card'>
+                            <div>
+                                <h4>{participant.displayName} {participant.isMe ? '(You)' : ''}</h4>
+                                <div className='video-card-status-bar'>
+                                    <Badge bg="primary">Audio {participant.isAudioMuted ? 'Muted' : 'Unmuted'}</Badge>&nbsp;
+                                    <Badge bg="success">Video {participant.isVideoMuted ? 'Muted' : 'Unmuted'}</Badge>
+                                    <br />
+                                </div>
+                                <div
+                                    style={{
+                                        visibility: participant.isVideoMuted
+                                            ? 'hidden'
+                                            : 'visible',
+                                    }}
+                                    ref={video =>
+                                        (videoRef.current[participant.uid] = video)
+                                    }
+                                />
                             </div>
-                            <div
-                                style={{
-                                    visibility: participant.isVideoMuted
-                                        ? 'hidden'
-                                        : 'visible',
-                                }}
-                                ref={video =>
-                                    (videoRef.current[participant.uid] = video)
-                                }
-                            />
                         </div>
-                    </div>
-                )
-            })}
+                    )
+                })}
+            </div>
         </div>
     )
 }
