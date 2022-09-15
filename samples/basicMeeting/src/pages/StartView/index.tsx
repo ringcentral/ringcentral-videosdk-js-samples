@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useState, useRef } from 'react'
-import { Button, Form, Row, Col, Spinner } from 'react-bootstrap';
+import { RcButton, RcIcon, RcTextField } from '@ringcentral/juno';
+import { StartMeeting, JoinMeeting } from '@ringcentral/juno-icon';
 import { RcvEngine } from '@sdk';
 interface IProps {
     rcvEngine: RcvEngine
@@ -41,36 +42,39 @@ const StartView: FC<IProps> = (props) => {
     }, [rcvEngine])
 
     return (
-        <Row className='start-view'>
-            <Col sm={3}>
-                <Form.Group>
-                    Meeting Id:
-                    <Form.Control ref={inputMeetingIdRef} type="text" placeholder="please input meeting id" />
-                </Form.Group>
-            </Col>
-            <Col sm={3}>
-                <Form.Group>
-                    Password:
-                    <Form.Control ref={inputPwdRef} type="text" placeholder="please input password" />
-                </Form.Group>
-            </Col>
-            <Col sm={5}>
-                <Button
-                    className='start-btn'
-                    variant="primary"
-                    disabled={isJoinLoading || isStartLoading}
-                    onClick={!isJoinLoading ? joinMeetingHandler : null}>
-                    Join meeting {isJoinLoading ? <Spinner animation="border" role="status" size="sm" /> : null}
-                </Button>
-                <Button
-                    className='start-btn'
-                    variant="success"
-                    disabled={isJoinLoading || isStartLoading}
-                    onClick={!isStartLoading ? startMeetingHandler : null}>
-                    Start meeting {isStartLoading ? <Spinner animation="border" role="status" size="sm" /> : null}
-                </Button>
-            </Col>
-        </Row>
+        <div className='start-view'>
+            <RcTextField
+                className='item'
+                label="Meeting Id"
+                id="control"
+                inputRef={inputMeetingIdRef}
+            />
+            <RcTextField
+                className='item'
+                label="Password"
+                id="control"
+                inputRef={inputPwdRef}
+            />
+            <RcButton
+                className='item'
+                loadingMode="prefix"
+                startIcon={<RcIcon symbol={StartMeeting} />}
+                loading={isJoinLoading}
+                disabled={isJoinLoading || isStartLoading}
+                onClick={!isJoinLoading ? joinMeetingHandler : null}>
+                Join meeting
+            </RcButton>
+            <RcButton
+                className='item'
+                loadingMode="prefix"
+                color="success.b03"
+                startIcon={<RcIcon symbol={JoinMeeting} />}
+                loading={isStartLoading}
+                disabled={isJoinLoading || isStartLoading}
+                onClick={!isStartLoading ? startMeetingHandler : null}>
+                Start meeting
+            </RcButton>
+        </div>
     )
 }
 

@@ -1,7 +1,8 @@
-import React, { FC, useEffect, useState, useMemo } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { RcvEngine, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { RcButtonGroup, RcButton, RcIcon } from '@ringcentral/juno';
+import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
 import AttendeeVideoList from './AttendeeVideoList'
 import { useGlobalContext } from '../../context';
 interface IProps {
@@ -88,16 +89,21 @@ const InMeeting: FC<IProps> = (props) => {
         <div className='meeting-wrapper'>
             <div>Meeting Id: {meetingId}</div>
             <AttendeeVideoList meetingController={meetingController} loading={loading} />
-            <ButtonGroup>
-                <Button variant="primary" onClick={toggleMuteAudio}>
-                    <i className={audioMuted ? 'bi bi-mic-mute-fill' : 'bi bi-mic-fill'} />&nbsp;Audio
-                </Button>
-                <Button variant="success" onClick={toggleMuteVideo}>
-                    <i className={videoMute ? 'bi bi-camera-video-off-fill' : 'bi bi-camera-video-fill'} />&nbsp;Video
-                </Button>
-                <Button variant="warning" onClick={handleLeaveMeeting}>Leave</Button>
-                <Button variant="danger" onClick={handleEndMeeting}>End</Button>
-            </ButtonGroup>
+            <RcButtonGroup>
+                <RcButton
+                    onClick={toggleMuteAudio}
+                    startIcon={<RcIcon symbol={audioMuted ? PhoneOff : Phone} />}>
+                    Audio
+                </RcButton>
+                <RcButton
+                    color="success.b03"
+                    onClick={toggleMuteVideo}
+                    startIcon={<RcIcon symbol={videoMute ? VideocamOff : Videocam} />}>
+                    Video
+                </RcButton>
+                <RcButton color="highlight.b03" onClick={handleLeaveMeeting}>Leave</RcButton>
+                <RcButton color="danger.b03" onClick={handleEndMeeting}>End</RcButton>
+            </RcButtonGroup>
         </div>
     )
 }

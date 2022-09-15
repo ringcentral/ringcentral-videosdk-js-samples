@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { Spinner, Badge } from 'react-bootstrap';
+import { RcLoading, RcIcon } from '@ringcentral/juno';
 import { IParticipant, StreamEvent, UserEvent } from '@sdk';
+import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/dom'
 import { useGlobalContext } from '../../context';
 interface IAttendeeListProps {
@@ -61,26 +62,24 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
     }
 
     return (
-        <div>
+        <RcLoading loading={loading}>
             <p style={{ textAlign: 'center' }}>
                 Active Video User: {activeVideoUser ? activeVideoUser.displayName + '(' + activeVideoUser.uid + ')' : '-'}
             </p>
             <div className='video-card-wrapper'>
-                {loading &&
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Spinner animation="border" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </Spinner>
-                    </div>}
-
-                {!loading && participantList.map(participant => {
+                {participantList.map(participant => {
                     return (
                         <div key={participant.uid} className='video-card'>
                             <div>
                                 <h4>{participant.displayName} {participant.isMe ? '(You)' : ''}</h4>
                                 <div className='video-card-status-bar'>
-                                    <Badge bg="primary">Audio {participant.isAudioMuted ? 'Muted' : 'Unmuted'}</Badge>&nbsp;
-                                    <Badge bg="success">Video {participant.isVideoMuted ? 'Muted' : 'Unmuted'}</Badge>
+                                    <RcIcon
+                                        className='video-card-status-bar'
+                                        symbol={participant.isAudioMuted ? PhoneOff : Phone} />
+                                    <RcIcon
+                                        className='video-card-status-bar'
+                                        color="success.b03"
+                                        symbol={participant.isVideoMuted ? VideocamOff : Videocam} />
                                     <br />
                                 </div>
                                 <div
@@ -98,7 +97,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                     )
                 })}
             </div>
-        </div>
+        </RcLoading>
     )
 }
 
