@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useState, useEffect, useMemo } from 'react'
-import { Button, Spinner } from 'react-bootstrap';
+import { RcButton } from '@ringcentral/juno';
 import { RcvEngine, EngineEvent } from '@sdk';
 import InMeeting from './InMeeting'
 import { useGlobalContext } from '../context';
@@ -48,14 +48,15 @@ const Sharing: FC<IProps> = (props) => {
             {
                 !meetingId &&
                 <div className='start-view'>
-                    <Button
-                        className='start-btn'
-                        variant="success"
-                        disabled={isStartLoading}
-                        onClick={!isStartLoading ? startMeetingHandler : null}>
-                        Start meeting {isStartLoading ? <Spinner animation="border" role="status" size="sm" /> : null}
-                    </Button>
-
+                        <RcButton
+                            loadingMode="prefix"
+                            loading={isStartLoading}
+                            className='start-btn'
+                            color="success.b03"
+                            disabled={isStartLoading}
+                            onClick={!isStartLoading ? startMeetingHandler : null}>
+                            Start meeting
+                        </RcButton>    
                 </div>
             }
             {
