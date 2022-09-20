@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useRef, useState } from 'react'
 import { RcvEngine } from '@sdk'
-import { Button } from 'react-bootstrap';
+import { RcButton } from '@ringcentral/juno';
 interface IProps {
     rcvEngine: RcvEngine
 }
@@ -29,10 +29,10 @@ const TabVideoTest: FC<IProps> = ({ rcvEngine }) => {
 
     return (
         <div className='card-wrapper'>
-            <h5>Video Test</h5>
+            <h5>Video device test</h5>
             <div>
-                <Button onClick={handleVideoTestStart} variant="success" disabled={isTesting}>Start Video Test</Button>
-                <Button onClick={handleVideoTestStop} variant="danger">Stop Video Test</Button>
+                <RcButton onClick={handleVideoTestStart} color="success.b03" disabled={isTesting}>Start Video Test</RcButton>
+                <RcButton onClick={handleVideoTestStop} color="danger.b03">Stop Video Test</RcButton>
             </div>
             <video ref={videoRef} width={400} height={320} muted controls />
             <p> Video test status: {isTesting ? 'is tesing...' : 'stopped'}</p>

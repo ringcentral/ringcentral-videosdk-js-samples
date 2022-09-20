@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Tab, Tabs } from 'react-bootstrap';
+import { RcThemeProvider, RcAppBar, RcTab, RcTabs, RcTabPanel, RcTabContext } from '@ringcentral/juno';
 import { RcvEngine } from '@sdk'
 import TabAudioTest from './TabAudioTest'
 import TabVideoTest from './TabVideoTest'
@@ -13,6 +13,7 @@ declare global {
 
 export default function App({ config }) {
     const [rcvEngine, setRcvEngine] = useState(null)
+    const [tab, setTab] = React.useState('audio');
 
     useEffect(() => {
         const { clientId, clientSecret } = config
@@ -26,19 +27,25 @@ export default function App({ config }) {
     }, [])
 
     return (
-        <>
-            <div className='header'>Demo: audio/video device test</div>
+        <RcThemeProvider>
+            <RcAppBar className='header'>
+                Demo: audio/video device test
+            </RcAppBar>
             <div className='start-view'>
-                <Tabs defaultActiveKey="audio-test">
-                    <Tab eventKey="audio-test" title="Audio Test">
+                <RcTabContext value={tab}>
+                    <RcTabs value={tab} onChange={(event: React.ChangeEvent<{}>, value: any) => setTab(value)}>
+                        <RcTab value="audio" label="Audio Test" />
+                        <RcTab value="video" label="Video Test" />
+                    </RcTabs>
+                    <RcTabPanel value="audio">
                         <TabAudioTest rcvEngine={rcvEngine} />
-                    </Tab>
-                    <Tab eventKey="video-test" title="Video Test">
+                    </RcTabPanel>
+                    <RcTabPanel value="video">
                         <TabVideoTest rcvEngine={rcvEngine} />
-                    </Tab>
-                </Tabs>
+                    </RcTabPanel>
+                </RcTabContext>
             </div>
-        </>
+        </RcThemeProvider>
     )
 }
 
