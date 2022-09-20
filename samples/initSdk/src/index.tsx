@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Button, Row, Col } from 'react-bootstrap';
 import BtnHttpClient from './BtnHttpClient'
 import BtnAccessToken from './BtnAccessToken'
+import { RcThemeProvider, RcAppBar } from '@ringcentral/juno';
 import './index.less'
 declare global {
     interface Window {
@@ -14,23 +14,20 @@ export default function App({ config }) {
     const [rcvEngine, setRcvEngine] = useState(null)
 
     return (
-        <>
-            <div className='header'>Demo: init SDK</div>
-            <Row className='start-view'>
+        <RcThemeProvider>
+            <RcAppBar className='header'>
+                Demo: init SDK
+            </RcAppBar>
+            <div className='start-view'>
                 {!rcvEngine &&
                     <>
-                        <Col sm={6}>
-                            <BtnHttpClient config={config} setRcvEngine={setRcvEngine} />
-                        </Col>
-                        <Col sm={6}>
-                            <BtnAccessToken config={config} setRcvEngine={setRcvEngine} />
-                        </Col>
-
+                    <BtnHttpClient config={config} setRcvEngine={setRcvEngine} />
+                    <BtnAccessToken config={config} setRcvEngine={setRcvEngine} />
                     </>
                 }
                 {rcvEngine && <h4>RcvEngine initialization is successful!</h4>}
-            </Row>
-        </>
+            </div>
+        </RcThemeProvider>
     )
 }
 

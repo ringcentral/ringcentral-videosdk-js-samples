@@ -80,7 +80,7 @@ export default function App({ config }) {
     return (
         <GlobalContext.Provider value={{ isMeetingJoined }}>
             <RcThemeProvider>
-                <RcAppBar style={{ lineHeight: '56px', padding: '0 20px' }}>
+                <RcAppBar className='header'>
                     Demo: basic meeting with mute/unmute audio/video
                 </RcAppBar>
                 <Routes>
