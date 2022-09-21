@@ -29,22 +29,22 @@ const BtnHttpClient = ({ setRcvEngine, config }) => {
             })
             .then((response) => {
                 setLoading(false)
+                const engine = RcvEngine.create(
+                    {
+                        httpClient: {
+                            send: options => rcsdk.platform().send(options),
+                        },
+                    }
+                );
+                setRcvEngine(engine)
                 return response.json()
             })
             .catch((e) => {
                 setLoading(false)
+                setRcvEngine("error")
                 const msg = `Login fails: ${e.message}.`
                 alert(msg)
             });
-
-        const engine = RcvEngine.create(
-            {
-                httpClient: {
-                    send: options => rcsdk.platform().send(options),
-                },
-            }
-        );
-        setRcvEngine(engine)
     }
 
     return (
