@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Form, Spinner } from 'react-bootstrap';
+import { RcButton, RcFormGroup, RcTextField, RcCheckbox, RcSelect, RcMenuItem } from '@ringcentral/juno';
 import { RcvEngine, WaitingRoomMode } from '@sdk';
 
 const WaitingRoomOptions = [
@@ -47,70 +47,69 @@ const StartView = () => {
     }
 
     return (
-        <Form className='start-view'>
-            <Form.Group className="mb-3">
-                <Form.Label>MeetingName:</Form.Label>
-                <Form.Control type="text" value={formData.meetingName}
+        <div className='start-view'>
+            <RcFormGroup>
+                <RcTextField label="MeetingName" value={formData.meetingName}
                     onChange={({ target: { value } }) => setFormData({ ...formData, meetingName: value })} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="allowJoinBeforeHost" checked={formData.allowJoinBeforeHost}
-                    onChange={({ target: { value } }) => setFormData({ ...formData, allowJoinBeforeHost: value === 'on' })} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="muteAudioForParticipant" checked={formData.muteAudioForParticipant}
-                    onChange={({ target: { value } }) => setFormData({ ...formData, muteAudioForParticipant: value === 'on' })} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="muteVideoForParticipant" checked={formData.muteVideoForParticipant}
-                    onChange={({ target: { value } }) => setFormData({ ...formData, muteVideoForParticipant: value === 'on' })} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="requirePassword" checked={formData.requirePassword}
-                    onChange={({ target: { value } }) => setFormData({ ...formData, requirePassword: value === 'on' })} />
-            </Form.Group>
+            </RcFormGroup>
+            <RcFormGroup>
+                <RcCheckbox label="allowJoinBeforeHost" checked={formData.allowJoinBeforeHost}
+                    onChange={({ target }) => setFormData({ ...formData, allowJoinBeforeHost: target.checked })} />
+            </RcFormGroup>
+            <RcFormGroup>
+                <RcCheckbox label="muteAudioForParticipant" checked={formData.muteAudioForParticipant}
+                    onChange={({ target }) => setFormData({ ...formData, muteAudioForParticipant: target.checked })} />
+            </RcFormGroup>
+            <RcFormGroup>
+                <RcCheckbox label="muteVideoForParticipant" checked={formData.muteVideoForParticipant}
+                    onChange={({ target }) => setFormData({ ...formData, muteVideoForParticipant: target.checked })} />
+            </RcFormGroup>
+            <RcFormGroup>
+                <RcCheckbox label="requirePassword" checked={formData.requirePassword}
+                    onChange={({ target }) => setFormData({ ...formData, requirePassword: target.checked })} />
+            </RcFormGroup>
             {formData.requirePassword &&
-                <Form.Group className="mb-3">
-                    <Form.Label>MeetingPassword:</Form.Label>
-                    <Form.Control type="text" value={formData.meetingPassword}
+                <RcFormGroup>
+                    <RcTextField label="MeetingPassword" value={formData.meetingPassword}
                         onChange={({ target: { value } }) => setFormData({ ...formData, meetingPassword: value })} />
-                </Form.Group>}
-            <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="isWaitingRoomEnabled" checked={formData.isWaitingRoomEnabled}
-                    onChange={({ target: { value } }) => setFormData({ ...formData, isWaitingRoomEnabled: value === 'on' })} />
-            </Form.Group>
+                </RcFormGroup>}
+            <RcFormGroup>
+                <RcCheckbox label="isWaitingRoomEnabled" checked={formData.isWaitingRoomEnabled}
+                    onChange={({ target }) => setFormData({ ...formData, isWaitingRoomEnabled: target.checked })} />
+            </RcFormGroup>
             {formData.isWaitingRoomEnabled &&
-                <Form.Group className="mb-3">
-                    <Form.Label>waitingRoomMode:</Form.Label>
-                    <Form.Select value={formData.waitingRoomMode}
+                <RcFormGroup>
+                    <RcSelect label="waitingRoomMode" value={formData.waitingRoomMode} style={{ width: 200 }}
                         onChange={({ target: { value } }) => setFormData({ ...formData, waitingRoomMode: +value })}>
-                        {WaitingRoomOptions.map((typeObj) => <option key={typeObj.value} value={typeObj.value}>{typeObj.label}</option>)}
-                    </Form.Select>
-                </Form.Group>}
-            <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="allowScreenSharing" checked={formData.allowScreenSharing}
-                    onChange={({ target: { value } }) => setFormData({ ...formData, allowScreenSharing: value === 'on' })} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="onlyAuthUserCanJoin" checked={formData.onlyAuthUserCanJoin}
-                    onChange={({ target: { value } }) => setFormData({ ...formData, onlyAuthUserCanJoin: value === 'on' })} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="onlyCoworkersCanJoin" checked={formData.onlyCoworkersCanJoin}
-                    onChange={({ target: { value } }) => setFormData({ ...formData, onlyCoworkersCanJoin: value === 'on' })} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="enableE2ee" disabled />
-            </Form.Group>
+                        {WaitingRoomOptions.map((typeObj) => <RcMenuItem key={typeObj.value} value={typeObj.value}>{typeObj.label}</RcMenuItem>)}
+                    </RcSelect>
+                </RcFormGroup>}
+            <RcFormGroup>
+                <RcCheckbox label="allowScreenSharing" checked={formData.allowScreenSharing}
+                    onChange={({ target }) => setFormData({ ...formData, allowScreenSharing: target.checked })} />
+            </RcFormGroup>
+            <RcFormGroup>
+                <RcCheckbox label="onlyAuthUserCanJoin" checked={formData.onlyAuthUserCanJoin}
+                    onChange={({ target }) => setFormData({ ...formData, onlyAuthUserCanJoin: target.checked })} />
+            </RcFormGroup>
+            <RcFormGroup>
+                <RcCheckbox label="onlyCoworkersCanJoin" checked={formData.onlyCoworkersCanJoin}
+                    onChange={({ target }) => setFormData({ ...formData, onlyCoworkersCanJoin: target.checked })} />
+            </RcFormGroup>
+            <RcFormGroup>
+                <RcCheckbox label="enableE2ee" disabled />
+            </RcFormGroup>
 
-            <Button
+            <RcButton
                 className='start-btn'
-                variant="success"
+                color="success.b03"
+                loadingMode="prefix"
+                loading={isStartLoading}
                 disabled={isStartLoading}
                 onClick={startMeetingHandler}>
-                Start meeting {isStartLoading ? <Spinner animation="border" role="status" size="sm" /> : null}
-            </Button>
-        </Form >
+                Start meeting
+            </RcButton>
+        </div>
     )
 }
 

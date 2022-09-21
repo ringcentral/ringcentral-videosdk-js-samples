@@ -1,6 +1,6 @@
 import React from 'react';
 import { RcvEngine } from '@sdk';
-import { Button } from 'react-bootstrap';
+import { RcButton } from '@ringcentral/juno';
 
 const BtnAccessToken = ({ setRcvEngine, config }) => {
 
@@ -22,9 +22,9 @@ const BtnAccessToken = ({ setRcvEngine, config }) => {
     }
 
     return (
-        <Button onClick={tokenModeHandler}>
+        <RcButton onClick={tokenModeHandler}>
             Init SDK by access token
-        </Button>
+        </RcButton>
     )
 }
 
