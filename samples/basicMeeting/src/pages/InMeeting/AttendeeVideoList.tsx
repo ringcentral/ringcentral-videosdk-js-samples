@@ -1,17 +1,15 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { RcLoading, RcIcon } from '@ringcentral/juno';
+import { RcIcon } from '@ringcentral/juno';
 import { IParticipant, StreamEvent, UserEvent } from '@sdk';
 import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/dom'
 import { useGlobalContext } from '../../context';
 interface IAttendeeListProps {
     meetingController: any;
-    loading: boolean;
 }
 
 const AttendeeVideoList: FC<IAttendeeListProps> = ({
     meetingController,
-    loading
 }) => {
     const videoRef = useRef({} as HTMLDivElement);
     const { isMeetingJoined } = useGlobalContext();
@@ -62,7 +60,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
     }
 
     return (
-        <RcLoading loading={loading}>
+        <>
             <p style={{ textAlign: 'center' }}>
                 Active Video User: {activeVideoUser ? activeVideoUser.displayName + '(' + activeVideoUser.uid + ')' : '-'}
             </p>
@@ -97,7 +95,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                     )
                 })}
             </div>
-        </RcLoading>
+        </>
     )
 }
 
