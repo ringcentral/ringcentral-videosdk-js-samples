@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import { RcvEngine, AudioEvent, VideoEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { RcButtonGroup, RcButton, RcIcon } from '@ringcentral/juno';
+import { RcButtonGroup, RcButton, RcIcon, RcLoading } from '@ringcentral/juno';
 import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
 import AttendeeVideoList from './AttendeeVideoList'
 import { useGlobalContext } from '../../context';
@@ -26,7 +26,7 @@ const InMeeting: FC<IProps> = (props) => {
             // when do refreshing
             if (!isMeetingJoined) {
                 setLoading(true);
-                await rcvEngine.joinMeeting(meetingId, {});
+                await rcvEngine.joinMeeting(meetingId);
                 setLoading(false)
             }
             initListener()
@@ -87,23 +87,25 @@ const InMeeting: FC<IProps> = (props) => {
 
     return (
         <div className='meeting-wrapper'>
-            <div>Meeting Id: {meetingId}</div>
-            <AttendeeVideoList meetingController={meetingController} loading={loading} />
-            <RcButtonGroup>
-                <RcButton
-                    onClick={toggleMuteAudio}
-                    startIcon={<RcIcon symbol={audioMuted ? PhoneOff : Phone} />}>
-                    Audio
-                </RcButton>
-                <RcButton
-                    color="success.b03"
-                    onClick={toggleMuteVideo}
-                    startIcon={<RcIcon symbol={videoMute ? VideocamOff : Videocam} />}>
-                    Video
-                </RcButton>
-                <RcButton color="highlight.b03" onClick={handleLeaveMeeting}>Leave</RcButton>
-                <RcButton color="danger.b03" onClick={handleEndMeeting}>End</RcButton>
-            </RcButtonGroup>
+            <RcLoading loading={loading}>
+                <div>Meeting Id: {meetingId}</div>
+                <AttendeeVideoList meetingController={meetingController} />
+                <RcButtonGroup>
+                    <RcButton
+                        onClick={toggleMuteAudio}
+                        startIcon={<RcIcon symbol={audioMuted ? PhoneOff : Phone} />}>
+                        Audio
+                    </RcButton>
+                    <RcButton
+                        color="success.b03"
+                        onClick={toggleMuteVideo}
+                        startIcon={<RcIcon symbol={videoMute ? VideocamOff : Videocam} />}>
+                        Video
+                    </RcButton>
+                    <RcButton color="highlight.b03" onClick={handleLeaveMeeting}>Leave</RcButton>
+                    <RcButton color="danger.b03" onClick={handleEndMeeting}>End</RcButton>
+                </RcButtonGroup>
+            </RcLoading>
         </div>
     )
 }
