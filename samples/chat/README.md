@@ -2,13 +2,9 @@
 
 ### Feature List
 
-- Start/Join a meeting
-- Join a password-required meeting
-- Mute/unmute audio in the meeting
-- Mute/unmute video in the meeting
-- Show active video user in the meeting
-- Leave/End the meeting
-
+- Set chat privilege if you are host or moderator
+- Send/Receive chat messages to All
+- Send/Receive chat messages to the targeted pariticipant
 ### How to Run?
 
 - Fill in `app.config.js` with your app and account information
