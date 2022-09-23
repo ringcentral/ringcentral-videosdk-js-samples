@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import { RcThemeProvider, RcAppBar, RcTypography } from '@ringcentral/juno';
+import { RcThemeProvider, RcAppBar } from '@ringcentral/juno';
 import { RcvEngine, EngineEvent, ErrorCodeType } from '@sdk';
 import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
