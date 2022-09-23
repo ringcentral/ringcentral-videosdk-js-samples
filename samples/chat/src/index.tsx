@@ -46,14 +46,20 @@ export default function App({ config }) {
                 });
         }
 
-        const initRcvEngine = (rcsdk) => {
-            const engine = RcvEngine.create(
-                {
-                    httpClient: {
-                        send: options => rcsdk.platform().send(options),
-                    },
-                }
-            );
+        const initSDK = async () => {
+            const { token, clientId, clientSecret } = config;
+            let engine;
+            // if config token, initialize SDK with token
+            if (token) {
+                engine = RcvEngine.create({ clientId, clientSecret });
+                await engine.setAuthToken(JSON.stringify(token));
+            }
+            // else initialize SDK with username and password
+            else {
+                const rcsdk = initRingCentralSdk();
+                await login(rcsdk);
+                engine = RcvEngine.create({ httpClient: { send: options => rcsdk.platform().send(options) } });
+            }
             engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
                 if (errorCode === ErrorCodeType.ERR_OK) {
                     setMeetingJoined(true);
@@ -66,12 +72,6 @@ export default function App({ config }) {
                 navigate('/', { replace: true });
             });
             setRcvEngine(engine)
-        }
-
-        const initSDK = async () => {
-            const rcsdk = initRingCentralSdk();
-            await login(rcsdk);
-            initRcvEngine(rcsdk)
         }
 
         initSDK()

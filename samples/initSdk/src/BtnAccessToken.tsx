@@ -17,7 +17,7 @@ const BtnAccessToken = ({ setRcvEngine, config }) => {
                 clientSecret
             }
         );
-        engine.setAuthToken(JSON.stringify({ token }));
+        engine.setAuthToken(JSON.stringify(token));
         setRcvEngine(engine)
     }
 
