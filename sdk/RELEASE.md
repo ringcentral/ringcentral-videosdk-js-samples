@@ -5,6 +5,9 @@
 - Support Active video callback
 - Add "beta" watermark in the video stream
 - Support MeetingContextController apis
+  - updatePersonalMeetingSettings()
+  - loadPersonalMeetingSettings()
+  - scheduleMeeting()
 #### 0.3.0
 
 - Feature: Start/pause recording
