@@ -79,9 +79,10 @@ export declare class AudioController extends EventEmitter<AudioEvent> {
      * @description A successful call of muteAllRemoteAudioStreams triggers the {@link AudioEvent.REMOTE_AUDIO_MUTE_CHANGED} event callback to all remote users.
      * @description Only the meeting host or moderator has permission to invoke this method.
      * @param {boolean} mute Sets whether to stop subscribing to the audio stream. True means stop subscribing, false means resume subscribing
+     * @param {boolean} allowUnmute if True means the remote user can unmute the audio by themselves, False means they can not.
      * @returns 0 means the API call is valid or fails otherwise
      */
-    muteAllRemoteAudioStreams(mute: boolean): Promise<ErrorCodeType>;
+    muteAllRemoteAudioStreams(mute: boolean, allowUnmute?: boolean): Promise<ErrorCodeType>;
 }
 
 /**
@@ -131,7 +132,7 @@ export declare class AudioDeviceManager extends DeviceManager<AudioDeviceManager
      * Starts the audio capturing device test. This method tests whether the audio capturing device works properly.
      * @return The audio media stream or fails otherwise
      */
-    startRecordingDeviceTest(): Promise<ErrorCodeType | MediaStream>;
+    startRecordingDeviceTest(): Promise<MediaStream>;
     /**
      * Stops the camera test.
      * @return 0 means success or fails otherwise
@@ -600,6 +601,11 @@ declare class EventEmitter<T extends string> {
     once(eventName: T, listener: TEventCB): void;
 
 
+}
+
+export declare enum GrantType {
+    JWT = "JWT",
+    PASSWORD = "PASSWORD"
 }
 
 export declare type HttpClient = {
@@ -1127,6 +1133,16 @@ export declare enum NQIState {
     UNKNOWN = "UNKNOWN"
 }
 
+export declare interface OauthOptions {
+    grantType: GrantType;
+    /**The RingCentral extension name */
+    username?: string;
+    /**The RingCentral extension password */
+    password?: string;
+    /**The JWT credential string */
+    jwt?: string;
+}
+
 declare type Participant = Omit<IParticipant, 'nqiStatus'>;
 
 export declare interface PersonalMeetingSettings {
@@ -1262,6 +1278,10 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      * @return 0 means the action succeeds or fails otherwise
      */
     renewAuthToken(refreshToken?: string): Promise<ErrorCodeType>;
+    /**
+     * Authorizes the users to obtain the authentication tokens through the password or JWT flow.
+     */
+    authorize(options: OauthOptions): Promise<ErrorCodeType>;
 }
 
 /**
@@ -1275,17 +1295,15 @@ export declare enum RcvMeetingState {
     /**Get meeting state failed */
     MEETING_STATE_FAILED = 2,
     /**User is moved to waiting room */
-    MEETING_STATE_IN_WAITING_ROOM = 3,
+    MEETING_STATE_INWAITINGROOM = 3,
     /**User is move to meeting from waiting room */
-    MEETING_STATE_IN_MEETING = 4,
+    MEETING_STATE_INMEETING = 4,
     /**Reconnecting */
     MEETING_STATE_RECONNECTING = 5,
     /**Wait for host join first */
-    MEETING_STATE_WAITING_FOR_HOST = 6,
+    MEETING_STATE_WAITINGFORHOST = 6,
     /**Unknown */
-    MEETING_STATE_UNKNOWN = 7,
-    /**The meeting is locked */
-    MEETING_STATE_LOCKED = 8
+    MEETING_STATE_UNKNOWN = 7
 }
 
 /**
@@ -1295,11 +1313,13 @@ export declare class RecordingController extends EventEmitter<RecordingEvent> {
     private _librctHelper;
     private _meetingProvider;
     private _recordings;
+    private _cachedRecordingAllowed;
     constructor(options: IOptions_2);
     private _initialEventListener;
     private get _librct();
     private get _meeting();
     private _getRecording;
+    private _checkRecordingAllowed;
     private _getStartRecordEventIndex;
     private _getEndRecordEventIndexAndAutoTime;
     private _computeDurationTime;
@@ -1343,8 +1363,10 @@ export declare class RecordingController extends EventEmitter<RecordingEvent> {
  * @desc events about RecordingController
  */
 export declare enum RecordingEvent {
-    /** Occurs when the meeting recording state is changed */
-    RECORDING_STATE_CHANGED = "recording-state-changed"
+    /** Occurs when the meeting recording state is changed, refer to {@link RecordingStatus}*/
+    RECORDING_STATE_CHANGED = "recording-state-changed",
+    /** Occurs when the meeting recording privilege changes. For example, when a user assigns as the moderator. */
+    RECORDING_ALLOWED_CHANGED = "recording-allowed-changed"
 }
 
 declare enum RecordingEventType {
@@ -1817,10 +1839,11 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
     /**
      * Stops or resumes subscribing to the video stream of all meeting users.
      * @description Only the meeting host or moderator has permission to invoke this method.
-     * @param mute Sets whether to stop subscribing to the video stream. True means stop subscribing, false means resume subscribing
+     * @param {boolean} mute Sets whether to stop subscribing to the video stream. True means stop subscribing, false means resume subscribing
+     * @param {boolean} allowUnmute if True means the remote user can turn on the video by themselves, False means they can not.
      * @return 0 means the action succeeds or fails otherwise
      */
-    muteAllRemoteVideoStreams(mute: boolean): Promise<ErrorCodeType>;
+    muteAllRemoteVideoStreams(mute: boolean, allowUnmute?: boolean): Promise<ErrorCodeType>;
 }
 
 /**
@@ -1844,7 +1867,7 @@ export declare class VideoDeviceManager extends DeviceManager<VideoDeviceManager
      * @description A successful call of startDeviceTest triggers capturing the video frames from the camera and displaying them in the video view. If the user can see their video that means the camera works properly.
      * @return The video media stream or fails otherwise
      */
-    startVideoDeviceTest(): Promise<ErrorCodeType | MediaStream>;
+    startVideoDeviceTest(): Promise<MediaStream>;
     /**
      * @description Stop video test stream
      * @return 0 means success or fails otherwise
