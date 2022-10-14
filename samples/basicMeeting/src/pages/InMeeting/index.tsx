@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import { RcvEngine, AudioEvent, VideoEvent } from '@sdk';
+import { RcvEngine, AudioEvent, VideoEvent, IParticipant, UserEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { RcButtonGroup, RcButton, RcIcon, RcLoading } from '@ringcentral/juno';
 import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
@@ -17,6 +17,7 @@ const InMeeting: FC<IProps> = (props) => {
     const [loading, setLoading] = useState(false);
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
+    const [participantList, setParticipantList] = useState<IParticipant[]>([]);
 
     const meetingController = rcvEngine?.getMeetingController();
 
@@ -41,20 +42,62 @@ const InMeeting: FC<IProps> = (props) => {
         // enable video firstly
         audioController.enableAudio(true);
         // listen for audio unmute/mute events
-        const audioMuteListener = audioController?.on(
+        const audioLocalMuteListener = audioController?.on(
             AudioEvent.LOCAL_AUDIO_MUTE_CHANGED,
-            setAudioMuted
+            (mute) => {
+                setAudioMuted(mute);
+                updateParticipants();
+            }
+        );
+        const audioRemoteMuteListener = audioController?.on(
+            AudioEvent.REMOTE_AUDIO_MUTE_CHANGED,
+            (uid: string, mute: boolean) => {
+                updateParticipants();
+            }
         );
         // listen for video unmute/mute events
         const videoLocalMuteListener = videoController?.on(
             VideoEvent.LOCAL_VIDEO_MUTE_CHANGED,
-            setVideoMute
+            (mute) => {
+                setVideoMute(mute);
+                updateParticipants();
+            }
         );
+        const videoRemoteMuteListener = videoController?.on(
+            VideoEvent.REMOTE_VIDEO_MUTE_CHANGED,
+            (uid: string, mute: boolean) => {
+                updateParticipants();
+            }
+        );
+        const userController = meetingController?.getUserController()
+        const userJoinedListener = userController.on(UserEvent.USER_JOINED, () => {
+            updateParticipants();
+        });
+        const userLeftListener = userController.on(UserEvent.USER_LEFT, () => {
+            updateParticipants();
+        });
+        const userUpdateListener = userController.on(UserEvent.USER_UPDATED, () => {
+            updateParticipants();
+        });
 
         return () => {
-            audioMuteListener?.();
+            audioLocalMuteListener?.();
+            audioRemoteMuteListener?.();
             videoLocalMuteListener?.();
+            videoRemoteMuteListener?.();
+            userJoinedListener?.();
+            userLeftListener?.();
+            userUpdateListener?.();
         };
+    }
+
+    const updateParticipants = () => {
+        const users = meetingController.getUserController()?.getMeetingUsers();
+        const localParticipant = Object.values(users).filter(participant => participant.isMe);
+        const activeRemoteParticipants = Object.values(users).filter(
+            participant => !participant.isDeleted && !participant.isMe
+        );
+        setParticipantList([...localParticipant, ...activeRemoteParticipants]);
     }
 
     // ---------------------------- start: button click handler ----------------------------
@@ -89,7 +132,7 @@ const InMeeting: FC<IProps> = (props) => {
         <div className='meeting-wrapper'>
             <RcLoading loading={loading}>
                 <div>Meeting Id: {meetingId}</div>
-                <AttendeeVideoList meetingController={meetingController} />
+                <AttendeeVideoList meetingController={meetingController} participantList={participantList} />
                 <RcButtonGroup>
                     <RcButton
                         onClick={toggleMuteAudio}

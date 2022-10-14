@@ -6,14 +6,15 @@ import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/d
 import { useGlobalContext } from '../../context';
 interface IAttendeeListProps {
     meetingController: any;
+    participantList: IParticipant[];
 }
 
 const AttendeeVideoList: FC<IAttendeeListProps> = ({
     meetingController,
+    participantList
 }) => {
     const videoRef = useRef({} as HTMLDivElement);
     const { isMeetingJoined } = useGlobalContext();
-    const [participantList, setParticipantList] = useState<IParticipant[]>([]);
     const [activeVideoUser, setActiveVideoUser] = useState<IParticipant>(null)
 
     useEffect(() => {
@@ -33,31 +34,15 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                 unSinkStreamElement(stream, videoRef.current[stream.participantId]);
             });
 
-            // listen for user events
+            // listen for active use event
             const userController = meetingController?.getUserController()
-            userController.on(UserEvent.USER_JOINED, () => {
-                updateParticipants(userController?.getMeetingUsers());
-            });
-            userController.on(UserEvent.USER_LEFT, () => {
-                updateParticipants(userController?.getMeetingUsers());
-            });
-            userController.on(UserEvent.USER_UPDATED, () => {
-                console.log('UserEvent.USER_UPDATED')
-                updateParticipants(userController?.getMeetingUsers());
-            });
             userController.on(UserEvent.ACTIVE_VIDEO_USER_CHANGED, (participant: IParticipant) => {
                 setActiveVideoUser(participant)
             });
         }
     }, [isMeetingJoined])
 
-    const updateParticipants = (users: Record<string, IParticipant>) => {
-        const localParticipant = Object.values(users).filter(participant => participant.isMe);
-        const activeRemoteParticipants = Object.values(users).filter(
-            participant => !participant.isDeleted && !participant.isMe
-        );
-        setParticipantList([...localParticipant, ...activeRemoteParticipants]);
-    }
+
 
     return (
         <>
