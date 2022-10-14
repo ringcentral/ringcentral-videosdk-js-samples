@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import BtnHttpClient from './BtnHttpClient'
 import BtnAccessToken from './BtnAccessToken'
+import BtnJWT from './BtnJWT'
+import BtnPwd from './BtnPwd'
 import { RcThemeProvider, RcAppBar } from '@ringcentral/juno';
 import './index.less'
 declare global {
@@ -24,6 +26,8 @@ export default function App({ config }) {
             return <>
                 <BtnHttpClient config={config} setRcvEngine={setRcvEngine} />
                 <BtnAccessToken config={config} setRcvEngine={setRcvEngine} />
+                <BtnJWT config={config} setRcvEngine={setRcvEngine} />
+                <BtnPwd config={config} setRcvEngine={setRcvEngine} />
             </>
         }
     }
