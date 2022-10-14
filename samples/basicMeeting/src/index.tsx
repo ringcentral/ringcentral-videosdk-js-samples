@@ -20,21 +20,16 @@ export default function App({ config }) {
 
   useEffect(() => {
     const initSDK = async () => {
-      const { token, clientId, clientSecret } = config;
+      const { clientId, clientSecret, jwt, userName, password } = config;
       const engine = RcvEngine.create({ clientId, clientSecret });
-      // if config token, initialize SDK with token
-      if (token) {
-        await engine.setAuthToken(JSON.stringify(token));
-      } else {
-        // else initialize SDK with password or jwt
-        const { jwt, userName, password } = config;
-        await engine.authorize({
-            grantType: jwt ? GrantType.JWT : GrantType.PASSWORD,
-            jwt,
-            username: userName,
-            password,
-          });
-      }
+      // if config jwt, initialize SDK with jwt
+      // else initialize SDK with password
+      await engine.authorize({
+        grantType: jwt ? GrantType.JWT : GrantType.PASSWORD,
+        jwt,
+        username: userName,
+        password,
+      });
 
       engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
         if (errorCode === ErrorCodeType.ERR_OK) {
