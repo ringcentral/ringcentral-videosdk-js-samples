@@ -188,6 +188,7 @@ declare enum BridgeWaitingRoomMode {
 export declare class ChatController extends EventEmitter<ChatEvent> {
     private _librctHelper;
     private _meetingProvider;
+    private _mlsSdkClientHelper;
     private _messageUniqueMarker;
     private _publicChatId;
     private _broadcastChatId;
@@ -196,6 +197,7 @@ export declare class ChatController extends EventEmitter<ChatEvent> {
     constructor();
     private get _librct();
     private get _meeting();
+    private get _mlsSdkClient();
     private _listenEvents;
     private _onChatMessages;
     private _handleMessage;
@@ -406,8 +408,6 @@ export declare enum EngineEvent {
     MEETING_JOINED = "meeting-joined",
     /**Occurs when leaving a meeting action is finished, error code is 0 means the action succeeds, otherwise means the action is failed.*/
     MEETING_LEFT = "meeting-left",
-    /**Occurs when the meeting state is changed. */
-    MEETING_STATE_CHANGED = "meeting-state-changed",
     /** Occurs when scheduling a meeting action is finished, error code is 0 means the action succeeds, otherwise means the action is failed. */
     MEETING_SCHEDULE = "meeting-schedule"
 }
@@ -448,6 +448,10 @@ export declare interface EngineInitConfig {
      * Enable vcg or disable, default is true.
      */
     enableVcg?: boolean;
+    /**
+     * The server url for e2ee.
+     */
+    bkosHost?: string;
 }
 
 /**
@@ -535,6 +539,8 @@ export declare enum ErrorCodeType {
     ERR_CONCURRENT_MEETING_LIMIT_EXCEEDED = 10016,
     /** A specific function does not support in E2EE mode. */
     ERR_FUNCTION_NOT_SUPPORTED_IN_E2EE = 10017,
+    /** Which function depends meeting initial has been called before meeting not initial **/
+    ERR_MEETING_IS_NOT_READY = 10018,
     /** A base error code for the meeting user category.  */
     ERR_MEETING_USER_BASE = 11000,
     /** Not allowed to delete yourself.  */
@@ -831,6 +837,41 @@ export declare interface IPassword {
     joinQuery: string;
 }
 
+export declare interface IPersonalMeetingSettings {
+    /** Configure whether users are allowed to join the meeting room before joining the meeting host, default true */
+    allowJoinBeforeHost?: boolean;
+    /** Force users to turn off audio when entering a meeting, default false*/
+    muteAudio?: boolean;
+    /** Force users to turn off video when entering a meeting, default true*/
+    muteVideo?: boolean;
+    /** Configure whether users are allowed to join the meeting room before joining the meeting host, default true */
+    requirePassword?: boolean;
+    /** Password for this instant meeting */
+    meetingPassword?: string;
+    /** Configure whether to turn on waiting room for this meeting , default is false*/
+    isWaitingRoomEnabled?: boolean;
+    /** The waiting room mode*/
+    waitingRoomMode?: WaitingRoomMode;
+    /** Configure whether to allow users other than host/moderator to share the screen, default is true */
+    allowScreenSharing?: boolean;
+    /** Configure that only logged in users can join the meeting, default is false */
+    onlyAuthUserCanJoin?: boolean;
+    /** Configure that only coworkers can join the meeting, default is false */
+    onlyCoworkersCanJoin?: boolean;
+    /** Configure personal meeting id */
+    shortId?: string;
+    /** Configure personal meeting name */
+    personalRoomName?: string;
+    /** Get the code for participant to enter a meeting */
+    participantCode?: string;
+    /** Get the code for host to enter a meeting */
+    hostCode?: string;
+    /** Get dial-in number for users to enter the meeting */
+    phoneNumber?: string;
+    /** Get link for users to enter the meeting */
+    link?: string;
+}
+
 declare interface IPins {
     pstn: IPstn;
     /**
@@ -955,7 +996,7 @@ export declare class MeetingContextController {
      * Loads the present personal meeting settings.
      * @return The personal meeting settings or fails otherwise
      */
-    loadPersonalMeetingSettings(): Promise<PersonalMeetingSettings>;
+    loadPersonalMeetingSettings(): Promise<IPersonalMeetingSettings>;
     /**
      * Updates the personal meeting settings.
      * Note: The new settings will take effect in the next meeting.
@@ -970,8 +1011,10 @@ export declare class MeetingContextController {
  */
 export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private _libsfuHelper;
-    private _librct;
+    private _librctHelper;
+    private get _librct();
     private _nqi;
+    private _mlsSdkClientHelper;
     /**
      * internal
      */
@@ -988,10 +1031,13 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private _recordingController;
     private _chatController;
     private _sfu?;
+    private _established;
     private _streamManager;
     private _meetingProvider;
     get isWaitingRoomEnabled(): boolean;
 
+
+    private _setEstablished;
 
 
 
@@ -1000,11 +1046,14 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      */
     private _listenMeetingChanged;
     private get _meeting();
+    private _initMlsSdkClient;
+    private _destroyMlsSdkClient;
     /**
      * Gets the AudioController instance.
      * @description AudioController instance listens for some events if initialized successfully, related events:
      * - {@link AudioEvent.AUDIO_UNMUTE_DEMAND}
      * - {@link AudioEvent.LOCAL_AUDIO_MUTE_CHANGED}
+     * - {@link AudioEvent.AUDIO_UNMUTE_DEMAND}
      * @returns The AudioController instance or undefined otherwise
      */
     getAudioController(): AudioController | undefined;
@@ -1027,6 +1076,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * @description VideoController instance listens for some events if initialized successfully, related events:
      * - {@link VideoEvent.LOCAL_VIDEO_MUTE_CHANGED}
      * - {@link VideoEvent.REMOTE_VIDEO_MUTE_CHANGED}
+     * - {@link VideoEvent.VIDEO_UNMUTE_DEMAND}
      * @returns The VideoController instance or undefined otherwise
      */
     getVideoController(): VideoController | undefined;
@@ -1035,6 +1085,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * @description SharingController instance listens for some events if initialized successfully, related events:
      * - {@link SharingEvent.SHARING_USER_CHANGED}
      * - {@link SharingEvent.SHARING_SETTINGS_CHANGED}
+     * - {@link SharingEvent.SHARING_STATE_CHANGED}
      * @returns The SharingController instance or undefined otherwise
      */
     getSharingController(): SharingController | undefined;
@@ -1052,11 +1103,16 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     getUserController(): UserController | undefined;
     /**
      * Gets the RecordingController instance.
+     * @description RecordingController instance listens for some events if initialized successfully, related to events:
+     * - {@link RecordingEvent.RECORDING_STATE_CHANGED}
+     * - {@link RecordingEvent.RECORDING_ALLOWED_CHANGED}
      * @returns The RecordingController instance
      */
     getRecordingController(): RecordingController;
     /**
      * Gets the ChatController instance.
+     * @description ChatController instance listens for some events if initialized successfully, related to events:
+     * - {@link ChatEvent.CHAT_MESSAGE_RECEIVED}
      * @returns The ChatController instance
      */
     getChatController(): ChatController;
@@ -1086,6 +1142,11 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      */
     isMeetingLocked(): boolean;
     /**
+     * Get the current meeting state.
+     * @return RcvMeetingState
+     */
+    getMeetingState(): RcvMeetingState;
+    /**
      * Leaves the current meeting.
      * @description A successful call of leaveMeeting triggers the {@link RcvEngine.on(EngineEvent.MEETING_LEFT)} event callback.
      * @return 0 means the action succeeds or fails otherwise
@@ -1096,6 +1157,8 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
 export declare enum MeetingEvent {
     /** Occurs when the meeting lock state is changed */
     MEETING_LOCK_STATE_CHANGED = "meeting-lock-state-changed",
+    /** Occurs when the meeting state changes. */
+    MEETING_STATE_CHANGED = "meeting-state-changed",
     /** Reports the network quality of the local user. */
     LOCAL_NETWORK_QUALITY = "local-network-quality",
     /** Reports the network quality of the remote user. */
@@ -1141,11 +1204,13 @@ export declare interface OauthOptions {
     password?: string;
     /**The JWT credential string */
     jwt?: string;
+    /**Default value is TRUE. If it's TRUE, the access token will be refreshed automatically once it expired */
+    autoRefresh?: boolean;
 }
 
 declare type Participant = Omit<IParticipant, 'nqiStatus'>;
 
-export declare interface PersonalMeetingSettings {
+declare class PersonalMeetingSettings implements IPersonalMeetingSettings {
     /** Configure whether users are allowed to join the meeting room before joining the meeting host, default true */
     allowJoinBeforeHost?: boolean;
     /** Force users to turn off audio when entering a meeting, default false*/
@@ -1178,6 +1243,13 @@ export declare interface PersonalMeetingSettings {
     phoneNumber?: string;
     /** Get link for users to enter the meeting */
     link?: string;
+    constructor(params: IPersonalMeetingSettings);
+    setOrigin({ bridge, phoneNumbers, personalRoomNames, }: {
+        bridge: IBridgeInfo;
+        phoneNumbers: Record<string, unknown> | undefined;
+        personalRoomNames: unknown[];
+    }): void;
+    getOrigin(): any;
 }
 
 /**
@@ -1192,6 +1264,7 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
     private _videoDeviceManager;
     private _meetingContextController;
     private _meetingController;
+    private _meetingProvider;
     /**
      * Creates an RcvEngine object and returns the instance.
      * @param config
@@ -1576,6 +1649,7 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
     private _tapIdStreamMap;
     private get _librct();
     private _eventQueueSet;
+    private _activeSharingStream;
 
 
     /**
@@ -1600,6 +1674,8 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
     /** librct conference event handler start **/
     private _handleConferenceStreamChanged;
     private _handleConferenceLocalStreamChanged;
+    private _initActiveScreenSharingStream;
+    private _cacheActiveScreenSharingStream;
     /** librct conference event handler end **/
     /** sfu event handler start **/
     /**
@@ -1642,6 +1718,7 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
      */
     private _handleLocalStreamRemoved;
     private _handleRemoteStreamReplaced;
+
 
 
 
