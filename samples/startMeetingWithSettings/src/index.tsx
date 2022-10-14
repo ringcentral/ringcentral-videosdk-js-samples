@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RcvEngine, EngineEvent, ErrorCodeType } from '@sdk';
+import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@sdk';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { RcThemeProvider, RcAppBar } from '@ringcentral/juno';
 import StartView from './pages/StartView'
@@ -19,47 +19,18 @@ export default function App({ config }) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const initRingCentralSdk = () => {
-            const { clientId, clientSecret } = config
-            const RingCentralSdk = (window as any).RingCentral.SDK;
-            return new RingCentralSdk({
-                server: RingCentralSdk.server.production,
-                clientId,
-                clientSecret,
-            });
-        }
-
-        const login = async (rcsdk) => {
-            const { userName: username, password } = config
-            await rcsdk
-                .login({
-                    username,
-                    extension: '',
-                    password
-                })
-                .then((response) => {
-                    return response.json()
-                })
-                .catch((e) => {
-                    const msg = `Login fails: ${e.message}.`
-                    alert(msg)
-                });
-        }
 
         const initSDK = async () => {
-            const { token, clientId, clientSecret } = config;
-            let engine;
-            // if config token, initialize SDK with token
-            if (token) {
-                engine = RcvEngine.create({ clientId, clientSecret });
-                await engine.setAuthToken(JSON.stringify(token));
-            }
-            // else initialize SDK with username and password
-            else {
-                const rcsdk = initRingCentralSdk();
-                await login(rcsdk);
-                engine = RcvEngine.create({ httpClient: { send: options => rcsdk.platform().send(options) } });
-            }
+            const { clientId, clientSecret, jwt, userName, password } = config;
+            const engine = RcvEngine.create({ clientId, clientSecret });
+            // if config jwt, initialize SDK with jwt
+            // else initialize SDK with password
+            await engine.authorize({
+                grantType: jwt ? GrantType.JWT : GrantType.PASSWORD,
+                jwt,
+                username: userName,
+                password,
+            });
 
             engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
                 if (errorCode === ErrorCodeType.ERR_OK) {
