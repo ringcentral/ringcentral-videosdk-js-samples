@@ -11,10 +11,12 @@ const BtnAccessToken = ({ setRcvEngine, config }) => {
             alert(msg)
             return;
         }
+        // You could open 'enableDiscovery' and set 'discoveryServer' if neccessary
         const engine = RcvEngine.create(
             {
                 clientId,
-                clientSecret
+                clientSecret,
+                enableDiscovery: false 
             }
         );
         await engine.authorize({

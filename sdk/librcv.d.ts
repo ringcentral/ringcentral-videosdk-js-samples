@@ -1,6 +1,3 @@
-import { ControlClient } from 'libsfu';
-import Librct from 'librct';
-
 /** Indicates the status of the current attendee */
 export declare enum AttendeeStatus {
     /** Not started */
@@ -32,7 +29,7 @@ export declare class AudioController extends EventEmitter<AudioEvent> {
     private _libsfuHelper;
     private _librctHelper;
     private readonly _streamManager;
-    private readonly _initConfig;
+    private _initConfig;
     private _localStream;
 
     private get _librct();
@@ -45,8 +42,8 @@ export declare class AudioController extends EventEmitter<AudioEvent> {
      * @return {boolean}
      */
     private _stopSfuAudioTrackByTapId;
-    private _mute;
-    private _unmute;
+    _toggleMuteRemoteAudioStream(uid: string, mute: boolean): Promise<ErrorCodeType>;
+    _toggleMuteAllRemoteAudioStreams(mute: boolean, allowUnmute?: boolean): Promise<ErrorCodeType>;
     /**
      * Enables the audio session.
      * @param {true | MediaTrackConstraints} spec parameters to create the Audio stream
@@ -59,30 +56,48 @@ export declare class AudioController extends EventEmitter<AudioEvent> {
      */
     disableAudio(): Promise<ErrorCodeType>;
     /**
-     * Stops or resumes publishing the local audio stream.
+     * Stops publishing the local audio stream.
      * @decription A successful call of muteLocalAudioStream triggers the {@link AudioEvent.LOCAL_AUDIO_MUTE_CHANGED} event callback to the local user.
-     * @param {boolean} mute Sets whether to stop publishing the local audio stream. True means stop publishing, false means resume publishing
      * @returns 0 means the API call is valid or fails otherwise
      */
-    muteLocalAudioStream(mute: boolean): Promise<ErrorCodeType>;
+    muteLocalAudioStream(): Promise<ErrorCodeType>;
     /**
-     * Stops or resumes subscribing to the audio stream of a remote user.
+     * Resumes publishing the local audio stream.
+     * @decription A successful call of unmuteLocalAudioStream triggers the {@link AudioEvent.LOCAL_AUDIO_MUTE_CHANGED} event callback to the local user.
+     * @returns 0 means the API call is valid or fails otherwise
+     */
+    unmuteLocalAudioStream(): Promise<ErrorCodeType>;
+    /**
+     * Stops subscribing to the audio stream of a remote user.
      * @description A successful call of muteRemoteAudioStream triggers the {@link AudioEvent.REMOTE_AUDIO_MUTE_CHANGED} event callback to the specified remote user.
      * @description Only the meeting host or moderator has permission to invoke this method.
      * @param {string} uid The unique id of the specified remote user
-     * @param {boolean} mute Sets whether to stop subscribing to the audio stream. True means stop subscribing, false means resume subscribing
      * @returns 0 means the API call is valid or fails otherwise
      */
-    muteRemoteAudioStream(uid: string, mute: boolean): Promise<ErrorCodeType>;
+    muteRemoteAudioStream(uid: string): Promise<ErrorCodeType>;
     /**
-     * Stops or resumes subscribing to the audio stream of all meeting users.
+     * Resumes subscribing to the audio stream of a remote user.
+     * @description A successful call of unmuteRemoteAudioStream triggers the {@link AudioEvent.REMOTE_AUDIO_MUTE_CHANGED} event callback to the specified remote user.
+     * @description Only the meeting host or moderator has permission to invoke this method.
+     * @param {string} uid The unique id of the specified remote user
+     * @returns 0 means the API call is valid or fails otherwise
+     */
+    unmuteRemoteAudioStream(uid: string): Promise<ErrorCodeType>;
+    /**
+     * Stops subscribing to the audio stream of all meeting users.
      * @description A successful call of muteAllRemoteAudioStreams triggers the {@link AudioEvent.REMOTE_AUDIO_MUTE_CHANGED} event callback to all remote users.
      * @description Only the meeting host or moderator has permission to invoke this method.
-     * @param {boolean} mute Sets whether to stop subscribing to the audio stream. True means stop subscribing, false means resume subscribing
      * @param {boolean} allowUnmute if True means the remote user can unmute the audio by themselves, False means they can not.
      * @returns 0 means the API call is valid or fails otherwise
      */
-    muteAllRemoteAudioStreams(mute: boolean, allowUnmute?: boolean): Promise<ErrorCodeType>;
+    muteAllRemoteAudioStreams(allowUnmute?: boolean): Promise<ErrorCodeType>;
+    /**
+     * Resumes subscribing to the audio stream of all meeting users.
+     * @description A successful call of unmuteAllRemoteAudioStreams triggers the {@link AudioEvent.REMOTE_AUDIO_MUTE_CHANGED} event callback to all remote users.
+     * @description Only the meeting host or moderator has permission to invoke this method.
+     * @returns 0 means the API call is valid or fails otherwise
+     */
+    unmuteAllRemoteAudioStreams(): Promise<ErrorCodeType>;
 }
 
 /**
@@ -976,10 +991,10 @@ export declare enum LogLevel {
  * The MeetingContextController class is a helper class for managing pre-meeting and post-meeting data, the application can use it to load and update the personal meeting settings and retrieve the recordings.
  */
 export declare class MeetingContextController {
+    private _librctHelper;
     private _existPersonalMeetingNames;
     private _freePhoneNumbers;
-
-    constructor(librct: any);
+    private get _librct();
     private _getPersonalBridge;
     private _getBridgeUpdatePromise;
     private _getMeetingInfo;
@@ -1024,10 +1039,10 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      */
     private _joinData;
     private _initConfig;
-    private _userController?;
-    private _audioController?;
-    private _videoController?;
-    private _sharingController?;
+    private _userController;
+    private _audioController;
+    private _videoController;
+    private _sharingController;
     private _recordingController;
     private _chatController;
     private _sfu?;
@@ -1040,7 +1055,6 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private _setEstablished;
 
 
-
     /**
      * listen meeting change, trigger MeetingEvent
      */
@@ -1048,6 +1062,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private get _meeting();
     private _initMlsSdkClient;
     private _destroyMlsSdkClient;
+    private _toggleLockMeeting;
     /**
      * Gets the AudioController instance.
      * @description AudioController instance listens for some events if initialized successfully, related events:
@@ -1077,18 +1092,18 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * - {@link VideoEvent.LOCAL_VIDEO_MUTE_CHANGED}
      * - {@link VideoEvent.REMOTE_VIDEO_MUTE_CHANGED}
      * - {@link VideoEvent.VIDEO_UNMUTE_DEMAND}
-     * @returns The VideoController instance or undefined otherwise
+     * @returns The VideoController instance
      */
-    getVideoController(): VideoController | undefined;
+    getVideoController(): VideoController;
     /**
      * Gets the SharingController instance.
      * @description SharingController instance listens for some events if initialized successfully, related events:
      * - {@link SharingEvent.SHARING_USER_CHANGED}
      * - {@link SharingEvent.SHARING_SETTINGS_CHANGED}
      * - {@link SharingEvent.SHARING_STATE_CHANGED}
-     * @returns The SharingController instance or undefined otherwise
+     * @returns The SharingController instance
      */
-    getSharingController(): SharingController | undefined;
+    getSharingController(): SharingController;
     /**
      * Gets the UserController instance.
      * @description UserController instance listens for some events if initialized successfully, related to events:
@@ -1098,9 +1113,9 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * - {@link UserEvent.USER_LEFT}
      * - {@link UserEvent.USER_UPDATED}
      * - {@link UserEvent.USER_JOINED}
-     * @returns The UserController instance or undefined otherwise
+     * @returns The UserController instance
      */
-    getUserController(): UserController | undefined;
+    getUserController(): UserController;
     /**
      * Gets the RecordingController instance.
      * @description RecordingController instance listens for some events if initialized successfully, related to events:
@@ -1129,13 +1144,19 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      */
     endMeeting(): Promise<ErrorCodeType>;
     /**
-     * Locks or unlocks meetings.
+     * Locks meetings.
      * @descriptionA successful call of lockMeeting triggers the {@link MeetingEvent.MEETING_LOCK_STATE_CHANGED} event callback to all meeting participants.
      * @description Only the meeting host or moderator has permission to invoke this method.
-     * @param {boolean} locked	True means to lock the meeting, otherwise unlock the meeting
      * @return 0 means the action succeeds or fails otherwise
      */
-    lockMeeting(locked: boolean): Promise<ErrorCodeType>;
+    lockMeeting(): Promise<ErrorCodeType>;
+    /**
+     * Unlocks meetings.
+     * @descriptionA successful call of unlockMeeting triggers the {@link MeetingEvent.MEETING_LOCK_STATE_CHANGED} event callback to all meeting participants.
+     * @description Only the meeting host or moderator has permission to invoke this method.
+     * @return 0 means the action succeeds or fails otherwise
+     */
+    unlockMeeting(): Promise<ErrorCodeType>;
     /**
      * Indicates whether the meeting is locked.
      * @return True means the meeting is locked or otherwise
@@ -1158,11 +1179,7 @@ export declare enum MeetingEvent {
     /** Occurs when the meeting lock state is changed */
     MEETING_LOCK_STATE_CHANGED = "meeting-lock-state-changed",
     /** Occurs when the meeting state changes. */
-    MEETING_STATE_CHANGED = "meeting-state-changed",
-    /** Reports the network quality of the local user. */
-    LOCAL_NETWORK_QUALITY = "local-network-quality",
-    /** Reports the network quality of the remote user. */
-    REMOTE_NETWORK_QUALITY = "remote-network-quality"
+    MEETING_STATE_CHANGED = "meeting-state-changed"
 }
 
 export declare interface MeetingOptions {
@@ -1511,9 +1528,10 @@ export declare class SharingController extends EventEmitter<SharingEvent> {
     private _librctHelper;
     private _meetingProvider;
     private readonly _streamManager;
+    private readonly _userController;
     private _currentSharingStream;
     private _curSharingStats;
-    constructor();
+
     private get _librct();
     private get _sfu();
     /**
@@ -1533,6 +1551,7 @@ export declare class SharingController extends EventEmitter<SharingEvent> {
     private _onSharingSettingsChanged;
     private _currentSharingEnded;
     private _registerSfu;
+    private _getSharingStream;
     /**
      * Indicates whether the sharing is being locked.
      * @returns True means locked, False means not
@@ -1556,12 +1575,18 @@ export declare class SharingController extends EventEmitter<SharingEvent> {
     isRemoteSharing(): boolean;
     /**
      * Locks sharing function.
-     * @description If the sharing function is locked and a participant is sharing, then the current sharing will stop right away and participants unable to start the sharing again. However, the host or moderator is still able to start the sharing.
+     * @description If it is locked and a participant is sharing, then the present sharing will stop right away and participants unable to start the sharing again. The host or moderator is still able to start the sharing.
      * @description Only the meeting host or moderator has permission to invoke this method.
-     * @param {boolean} locked Sets whether locks the sharing function. True means lock it, False means not
      * @returns 0 means the action succeeds or fails otherwise
      */
-    lockSharing(locked: boolean): Promise<ErrorCodeType>;
+    lockSharing(): Promise<ErrorCodeType>;
+    /**
+     * Unlocks the current meeting sharing.
+     * @description If it is unlocked, everyone in the meeting can share again.
+     * @description Only the meeting host or moderator has permission to invoke this method.
+     * @returns 0 means the action succeeds or fails otherwise
+     */
+    unlockSharing(): Promise<ErrorCodeType>;
     /**
      * Stops sharing.
      * @return 0 means success or fails otherwise
@@ -1642,12 +1667,13 @@ export declare enum StreamEvent {
  * The StreamManager class is a managing class to manage the media stream and test them added and removed.
  */
 export declare class StreamManager extends EventEmitter<StreamEvent> {
-    private _sfu;
+    private _libsfuHelper;
     private _librctHelper;
     private _localStreams;
     private _remoteStreams;
     private _tapIdStreamMap;
     private get _librct();
+    private get _sfu();
     private _eventQueueSet;
     private _activeSharingStream;
 
@@ -1743,21 +1769,19 @@ export declare class UserController extends EventEmitter<UserEvent> {
     private _libsfuHelper;
     private _librctHelper;
     private _cachedLocalParticipant;
+    private _activeVideoUser;
     private _cachedRemoteParticipants;
     private _streamManager;
-
     private get _librct();
     private get _sfu();
     private _initRemoteParticipants;
-    private _init;
+
     private _getRemoteStreams;
     private _reportStats;
     private _reportLoudestStream;
     private _handleModeratorActions;
     private _getLocalParticipant;
     private _getRemoteParticipants;
-    private _handleLocalStreamChanges;
-    private _handleStreamChanges;
     private _handleRemoteParticipantsChanged;
     private _handleLocalParticipantChanged;
 
@@ -1832,6 +1856,11 @@ export declare class UserController extends EventEmitter<UserEvent> {
      * @returns 0 means the action succeeds or fails otherwise
      */
     putUserInWaitingRoom(uid: string): Promise<ErrorCodeType>;
+    /**
+     * Gets the current active video user of an active meeting.
+     * @returns The local user object
+     */
+    getActiveVideoUser(): Participant;
 }
 
 export declare enum UserEvent {
@@ -1846,7 +1875,11 @@ export declare enum UserEvent {
     /**Occurs when the active video user is changed. */
     ACTIVE_VIDEO_USER_CHANGED = "active-video-user-changed",
     /**Occurs when the active speaker user is changed. */
-    ACTIVE_SPEAKER_USER_CHANGED = "active-speaker-user-changed"
+    ACTIVE_SPEAKER_USER_CHANGED = "active-speaker-user-changed",
+    /** Reports the network quality of the local user. */
+    LOCAL_NETWORK_QUALITY = "local-network-quality",
+    /** Reports the network quality of the remote user. */
+    REMOTE_NETWORK_QUALITY = "remote-network-quality"
 }
 
 /**
@@ -1877,8 +1910,6 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
      * Clear useless video tracks in sfu
      */
     private _stopSfuVideoTrack;
-    private _unmuteLocalVideoStream;
-    private _muteLocalVideoStream;
     private _registerStateUpdate;
     private _registerUserAction;
     private _getLocalActiveStreamInSFU;
@@ -1897,30 +1928,47 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
      */
     stopPreview(): Promise<ErrorCodeType>;
     /**
-     * Stops or resumes publishing the local video stream.
+     * Stops publishing the local video stream.
      * @description A successful call of muteLocalVideoStream triggers the {@link VideoEvent.LOCAL_VIDEO_MUTE_CHANGED} event callback to the local user.
-     * @param {boolean} mute Sets whether to stop publishing the local video stream. True means stop publishing, false means resume publishing
+     * @return 0 means the action succeeds or fails otherwise
+     */
+    muteLocalVideoStream(): Promise<ErrorCodeType>;
+    /**
+     * Resumes publishing the local video stream.
+     * @description A successful call of unmuteLocalVideoStream triggers the {@link VideoEvent.LOCAL_VIDEO_MUTE_CHANGED} event callback to the local user.
      * @param {MediaTrackConstraints} options
      * @return 0 means the action succeeds or fails otherwise
      */
-    muteLocalVideoStream(mute: boolean, options?: MediaTrackConstraints): Promise<ErrorCodeType>;
+    unmuteLocalVideoStream(options?: MediaTrackConstraints | boolean): Promise<ErrorCodeType>;
     /**
-     * Stops or resumes subscribing to the video stream of a remote user.
+     * Stops subscribing to the video stream of a specified user.
      * @description A successful call of muteRemoteVideoStream triggers the {@link VideoEvent.REMOTE_VIDEO_MUTE_CHANGED} event callback to the specified remote user.
      * @description Only the meeting host or moderator has permission to invoke this method.
      * @param uid The unique id of the specified remote user
-     * @param mute Sets whether to stop subscribing to the video stream. True means stop subscribing, false means resume subscribing
      * @return 0 means the action succeeds or fails otherwise
      */
-    muteRemoteVideoStream(uid: string, mute: boolean): Promise<ErrorCodeType>;
+    muteRemoteVideoStream(uid: string): Promise<ErrorCodeType>;
     /**
-     * Stops or resumes subscribing to the video stream of all meeting users.
+     * Resumes subscribing to the video stream of a specified user.
+     * @description A successful call of unmuteRemoteVideoStream triggers the {@link VideoEvent.REMOTE_VIDEO_MUTE_CHANGED} event callback to the specified remote user.
      * @description Only the meeting host or moderator has permission to invoke this method.
-     * @param {boolean} mute Sets whether to stop subscribing to the video stream. True means stop subscribing, false means resume subscribing
+     * @param uid The unique id of the specified remote user
+     * @return 0 means the action succeeds or fails otherwise
+     */
+    unmuteRemoteVideoStream(uid: string): Promise<ErrorCodeType>;
+    /**
+     * Stops subscribing to the video stream of all meeting users.
+     * @description Only the meeting host or moderator has permission to invoke this method.
      * @param {boolean} allowUnmute if True means the remote user can turn on the video by themselves, False means they can not.
      * @return 0 means the action succeeds or fails otherwise
      */
-    muteAllRemoteVideoStreams(mute: boolean, allowUnmute?: boolean): Promise<ErrorCodeType>;
+    muteAllRemoteVideoStreams(allowUnmute?: boolean): Promise<ErrorCodeType>;
+    /**
+     * Resumes subscribing to the video stream of all meeting users.
+     * @description Only the meeting host or moderator has permission to invoke this method.
+     * @return 0 means the action succeeds or fails otherwise
+     */
+    unmuteAllRemoteVideoStreams(): Promise<ErrorCodeType>;
 }
 
 /**

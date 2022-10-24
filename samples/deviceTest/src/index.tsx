@@ -22,7 +22,8 @@ export default function App({ config }) {
             alert(msg)
             return;
         }
-        const engine = RcvEngine.create({ clientId, clientSecret });
+        // You could open 'enableDiscovery' and set 'discoveryServer' if neccessary
+        const engine = RcvEngine.create({ clientId, clientSecret, enableDiscovery: false });
         setRcvEngine(engine)
     }, [])
 

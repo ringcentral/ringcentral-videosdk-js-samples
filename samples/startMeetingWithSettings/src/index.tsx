@@ -22,7 +22,8 @@ export default function App({ config }) {
 
         const initSDK = async () => {
             const { clientId, clientSecret, jwt, userName, password } = config;
-            const engine = RcvEngine.create({ clientId, clientSecret });
+            // You could open 'enableDiscovery' and set 'discoveryServer' if neccessary
+            const engine = RcvEngine.create({ clientId, clientSecret, enableDiscovery: false });
             // if config jwt, initialize SDK with jwt
             // else initialize SDK with password
             await engine.authorize({

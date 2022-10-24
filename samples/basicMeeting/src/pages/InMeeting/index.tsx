@@ -102,17 +102,33 @@ const InMeeting: FC<IProps> = (props) => {
 
     // ---------------------------- start: button click handler ----------------------------
     const toggleMuteAudio = () => {
-        meetingController?.getAudioController()?.muteLocalAudioStream(!audioMuted)
+        if (audioMuted) {
+            meetingController?.getAudioController()?.unmuteLocalAudioStream()
             .catch((e) => {
                 alert(`Error occurs due to :${e.message}`)
             });
+        }
+        else {
+            meetingController?.getAudioController()?.muteLocalAudioStream()
+                .catch((e) => {
+                    alert(`Error occurs due to :${e.message}`)
+                });
+        }
     }
 
     const toggleMuteVideo = () => {
-        meetingController?.getVideoController()?.muteLocalVideoStream(!videoMute)
+        if (videoMute) {
+            meetingController?.getVideoController()?.unmuteLocalVideoStream()
             .catch((e) => {
                 alert(`Error occurs due to :${e.message}`)
             });
+        }
+        else {
+            meetingController?.getVideoController()?.muteLocalVideoStream()
+                .catch((e) => {
+                    alert(`Error occurs due to :${e.message}`)
+                });
+        }
     }
 
     const handleLeaveMeeting = () =>
