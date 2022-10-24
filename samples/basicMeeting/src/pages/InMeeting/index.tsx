@@ -3,7 +3,8 @@ import { RcvEngine, AudioEvent, VideoEvent, IParticipant, UserEvent } from '@sdk
 import { useParams } from 'react-router-dom';
 import { RcButtonGroup, RcButton, RcIcon, RcLoading } from '@ringcentral/juno';
 import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
-import AttendeeVideoList from './AttendeeVideoList'
+import AttendeeVideoList from './AttendeeVideoList';
+import ParticipantTable from './ParticipantTable';
 import { useGlobalContext } from '../../context';
 interface IProps {
     rcvEngine: RcvEngine
@@ -142,6 +143,7 @@ const InMeeting: FC<IProps> = (props) => {
             alert(`Error occurs due to :${e.message}`)
         });
     }
+
     // ---------------------------- end: button click handler ----------------------------
 
     return (
@@ -164,6 +166,9 @@ const InMeeting: FC<IProps> = (props) => {
                     <RcButton color="highlight.b03" onClick={handleLeaveMeeting}>Leave</RcButton>
                     <RcButton color="danger.b03" onClick={handleEndMeeting}>End</RcButton>
                 </RcButtonGroup>
+                <br />
+                <ParticipantTable
+                    participantList={participantList} />
             </RcLoading>
         </div>
     )

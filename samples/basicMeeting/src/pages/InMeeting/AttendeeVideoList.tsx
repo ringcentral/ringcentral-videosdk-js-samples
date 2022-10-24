@@ -54,7 +54,7 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                     return (
                         <div key={participant.uid} className='video-card'>
                             <div>
-                                <h4>{participant.displayName} {participant.isMe ? '(You)' : ''}</h4>
+                                <h4>{participant.displayName} {participant.isMe ? '(Me)' : ''}</h4>
                                 <div className='video-card-status-bar'>
                                     <RcIcon
                                         className='video-card-status-bar'
