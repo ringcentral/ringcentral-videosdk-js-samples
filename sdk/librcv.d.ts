@@ -30,7 +30,6 @@ export declare class AudioController extends EventEmitter<AudioEvent> {
     private _librctHelper;
     private readonly _streamManager;
     private _initConfig;
-    private _localStream;
 
     private get _librct();
     private get _sfu();
@@ -42,14 +41,15 @@ export declare class AudioController extends EventEmitter<AudioEvent> {
      * @return {boolean}
      */
     private _stopSfuAudioTrackByTapId;
+    private _applyMaskToSfuAudioTrack;
     _toggleMuteRemoteAudioStream(uid: string, mute: boolean): Promise<ErrorCodeType>;
     _toggleMuteAllRemoteAudioStreams(mute: boolean, allowUnmute?: boolean): Promise<ErrorCodeType>;
     /**
      * Enables the audio session.
      * @param {true | MediaTrackConstraints} spec parameters to create the Audio stream
-     * @returns 0 means the API call is valid or fails otherwise
+     * @returns MediaStream means the API call is valid or fails otherwise
      */
-    enableAudio(spec: true | MediaTrackConstraints): Promise<ErrorCodeType>;
+    enableAudio(spec: true | MediaTrackConstraints): Promise<MediaStream>;
     /**
      * Disables the audio session.
      * @returns 0 means the API call is valid or fails otherwise
@@ -145,9 +145,10 @@ export declare class AudioDeviceManager extends DeviceManager<AudioDeviceManager
     stopPlaybackDeviceTest(): ErrorCodeType;
     /**
      * Starts the audio capturing device test. This method tests whether the audio capturing device works properly.
+     * @param {MediaTrackConstraints} options
      * @return The audio media stream or fails otherwise
      */
-    startRecordingDeviceTest(): Promise<MediaStream>;
+    startRecordingDeviceTest(options?: MediaTrackConstraints | boolean): Promise<MediaStream>;
     /**
      * Stops the camera test.
      * @return 0 means success or fails otherwise
@@ -209,7 +210,7 @@ export declare class ChatController extends EventEmitter<ChatEvent> {
     private _broadcastChatId;
     private _privateChatIdMap;
     private _breakoutChatIdMap;
-    constructor();
+
     private get _librct();
     private get _meeting();
     private get _mlsSdkClient();
@@ -418,6 +419,13 @@ declare class DeviceManager<T extends string> extends EventEmitter<T> {
     static replaceStreamTrack(originStream: MediaStream, targetStream: MediaStream): void;
 }
 
+export declare enum E2EEState {
+    ENABLED = 0,
+    DISABLED = 1,
+    ENABLING = 2,
+    DISABLING = 3
+}
+
 export declare enum EngineEvent {
     /**Occurs when joining a meeting action is finished, error code is 0 means the action succeeds, otherwise means the action is failed.*/
     MEETING_JOINED = "meeting-joined",
@@ -556,6 +564,8 @@ export declare enum ErrorCodeType {
     ERR_FUNCTION_NOT_SUPPORTED_IN_E2EE = 10017,
     /** Which function depends meeting initial has been called before meeting not initial **/
     ERR_MEETING_IS_NOT_READY = 10018,
+    /** Which function depends meeting initial has been called before meeting media not ready **/
+    ERR_MEETING_MEDIA_IS_NOT_READY = 10019,
     /** A base error code for the meeting user category.  */
     ERR_MEETING_USER_BASE = 11000,
     /** Not allowed to delete yourself.  */
@@ -574,6 +584,18 @@ export declare enum ErrorCodeType {
     ERR_MEETING_BREAKOUT_BASE = 16000,
     /** A base error code for the meeting annotation category. */
     ERR_MEETING_ANNOTATION_BASE = 17000,
+    /** E2EE base error. */
+    ERR_MEETING_E2EE_BASE = 18000,
+    /** Browser not support E2EE  */
+    ERR_MEETING_E2EE_NOT_SUPPORT = 18001,
+    /** Has online pstn participant **/
+    ERR_MEETING_E2EE_HAS_ONLINE_PSTN_PARTICIPANTS = 18002,
+    /** Has online unsupported rooms participants  **/
+    ERR_MEETING_E2EE_HAS_ONLINE_UNSUPPORTED_ROOMS_PARTICIPANTS = 18003,
+    /** Has online guest participants **/
+    ERR_MEETING_E2EE_HAS_ONLINE_GUEST_PARTICIPANTS = 18004,
+    /** Is main recording is ongoing **/
+    IS_MAIN_RECORDING_IS_ONGOING = 18005,
     /** A base error code for the audio category. */
     ERR_AUDIO_BASE = 30000,
     /** A base error code for the video category. */
@@ -1018,7 +1040,7 @@ export declare class MeetingContextController {
      * @param {PersonalMeetingSettings} settings
      * @return 0 means the action succeeds or fails otherwise
      */
-    updatePersonalMeetingSettings(settings: PersonalMeetingSettings): Promise<ErrorCodeType>;
+    updatePersonalMeetingSettings(settings: IPersonalMeetingSettings): Promise<ErrorCodeType>;
 }
 
 /**
@@ -1047,6 +1069,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private _chatController;
     private _sfu?;
     private _established;
+    private _e2eeState;
     private _streamManager;
     private _meetingProvider;
     get isWaitingRoomEnabled(): boolean;
@@ -1173,13 +1196,31 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * @return 0 means the action succeeds or fails otherwise
      */
     leaveMeeting(): Promise<ErrorCodeType>;
+    /**
+     * Enables the end-to-end encryption in the meeting dynamically.
+     * @description A successful call of enableEndToEndEncryption triggers the {@link MeetingEvent.MEETING_ENCRYPTION_STATE_CHANGED} event callback for all meeting users.
+     * @return 0 means the action succeeds or fails otherwise
+     */
+    enableEndToEndEncryption(): ErrorCodeType;
+    /**
+     * Disables the end-to-end encryption in the meeting.
+     * @description A successful call of disableEndToEndEncryption triggers the {@link MeetingEvent.MEETING_ENCRYPTION_STATE_CHANGED} event callback for all meeting users.
+     * @returns 0 means the action succeeds or fails otherwise
+     */
+    disableEndToEndEncryption(): ErrorCodeType;
+    /**
+     * Get the current EndToEnd Encryption state.
+     * @returns E2EEState
+     */
+    getEndToEndEncryptionState(): E2EEState;
 }
 
 export declare enum MeetingEvent {
     /** Occurs when the meeting lock state is changed */
     MEETING_LOCK_STATE_CHANGED = "meeting-lock-state-changed",
     /** Occurs when the meeting state changes. */
-    MEETING_STATE_CHANGED = "meeting-state-changed"
+    MEETING_STATE_CHANGED = "meeting-state-changed",
+    MEETING_ENCRYPTION_STATE_CHANGED = "meeting-encryption-state-changed"
 }
 
 export declare interface MeetingOptions {
@@ -1226,48 +1267,6 @@ export declare interface OauthOptions {
 }
 
 declare type Participant = Omit<IParticipant, 'nqiStatus'>;
-
-declare class PersonalMeetingSettings implements IPersonalMeetingSettings {
-    /** Configure whether users are allowed to join the meeting room before joining the meeting host, default true */
-    allowJoinBeforeHost?: boolean;
-    /** Force users to turn off audio when entering a meeting, default false*/
-    muteAudio?: boolean;
-    /** Force users to turn off video when entering a meeting, default true*/
-    muteVideo?: boolean;
-    /** Configure whether users are allowed to join the meeting room before joining the meeting host, default true */
-    requirePassword?: boolean;
-    /** Password for this instant meeting */
-    meetingPassword?: string;
-    /** Configure whether to turn on waiting room for this meeting , default is false*/
-    isWaitingRoomEnabled?: boolean;
-    /** The waiting room mode*/
-    waitingRoomMode?: WaitingRoomMode;
-    /** Configure whether to allow users other than host/moderator to share the screen, default is true */
-    allowScreenSharing?: boolean;
-    /** Configure that only logged in users can join the meeting, default is false */
-    onlyAuthUserCanJoin?: boolean;
-    /** Configure that only coworkers can join the meeting, default is false */
-    onlyCoworkersCanJoin?: boolean;
-    /** Configure personal meeting id */
-    shortId?: string;
-    /** Configure personal meeting name */
-    personalRoomName?: string;
-    /** Get the code for participant to enter a meeting */
-    participantCode?: string;
-    /** Get the code for host to enter a meeting */
-    hostCode?: string;
-    /** Get dial-in number for users to enter the meeting */
-    phoneNumber?: string;
-    /** Get link for users to enter the meeting */
-    link?: string;
-    constructor(params: IPersonalMeetingSettings);
-    setOrigin({ bridge, phoneNumbers, personalRoomNames, }: {
-        bridge: IBridgeInfo;
-        phoneNumbers: Record<string, unknown> | undefined;
-        personalRoomNames: unknown[];
-    }): void;
-    getOrigin(): any;
-}
 
 /**
  * The RcvEngine class is the entry point of the RingCentral video client SDK that empowers the applications to easily and quickly build real-time audio and video communication.
@@ -1404,7 +1403,7 @@ export declare class RecordingController extends EventEmitter<RecordingEvent> {
     private _meetingProvider;
     private _recordings;
     private _cachedRecordingAllowed;
-    constructor(options: IOptions_2);
+
     private _initialEventListener;
     private get _librct();
     private get _meeting();
@@ -1560,9 +1559,9 @@ export declare class SharingController extends EventEmitter<SharingEvent> {
     /**
      * Starts sharing the device screen in an active meeting.
      * @param {DisplayMediaStreamConstraints} spec
-     * @returns 0 means the action succeeds or fails otherwise
+     * @returns MediaStream means the action succeeds or fails otherwise
      */
-    startSharing(spec?: DisplayMediaStreamConstraints): Promise<ErrorCodeType>;
+    startSharing(spec?: DisplayMediaStreamConstraints): Promise<MediaStream>;
     /**
      * Indicates whether the current sharing is started by the local user.
      * @returns True means the local user or otherwise
@@ -1660,7 +1659,11 @@ export declare enum StreamEvent {
     /** Occurs when the remote video stream removed. */
     REMOTE_VIDEO_TRACK_REMOVED = "remote-video-track-removed",
     /** Occurs when the remote video stream added. */
-    REMOTE_VIDEO_TRACK_ADDED = "remote-video-track-added"
+    REMOTE_VIDEO_TRACK_ADDED = "remote-video-track-added",
+    /** Reports the network quality of the local stream. */
+    LOCAL_NETWORK_QUALITY = "local-network-quality",
+    /** Reports the network quality of the remote stream. */
+    REMOTE_NETWORK_QUALITY = "remote-network-quality"
 }
 
 /**
@@ -1744,6 +1747,7 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
      */
     private _handleLocalStreamRemoved;
     private _handleRemoteStreamReplaced;
+
 
 
 
@@ -1875,11 +1879,7 @@ export declare enum UserEvent {
     /**Occurs when the active video user is changed. */
     ACTIVE_VIDEO_USER_CHANGED = "active-video-user-changed",
     /**Occurs when the active speaker user is changed. */
-    ACTIVE_SPEAKER_USER_CHANGED = "active-speaker-user-changed",
-    /** Reports the network quality of the local user. */
-    LOCAL_NETWORK_QUALITY = "local-network-quality",
-    /** Reports the network quality of the remote user. */
-    REMOTE_NETWORK_QUALITY = "remote-network-quality"
+    ACTIVE_SPEAKER_USER_CHANGED = "active-speaker-user-changed"
 }
 
 /**
@@ -1889,12 +1889,12 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
     private _libsfuHelper;
     private _librctHelper;
     private readonly _streamManager;
-    private _tapId;
     private _forPreviewStream;
     private _videoEnabled;
 
     private get _librct();
     private get _sfu();
+    private get _tapId();
     private _participantChangeHandler;
     /**
      * Enable video
@@ -1912,7 +1912,6 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
     private _stopSfuVideoTrack;
     private _registerStateUpdate;
     private _registerUserAction;
-    private _getLocalActiveStreamInSFU;
     private _getLocalParticipant;
     private _listenEvents;
     private _handleLocalVideoMuteChanged;
