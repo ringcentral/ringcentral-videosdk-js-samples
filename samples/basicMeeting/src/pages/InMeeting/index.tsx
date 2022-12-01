@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import { RcvEngine, AudioEvent, VideoEvent, IParticipant, UserEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { RcButtonGroup, RcButton, RcIcon, RcLoading } from '@ringcentral/juno';
+import { RcButtonGroup, RcButton, RcIcon, RcLoading, RcSelect, RcMenuItem, RcGrid } from '@ringcentral/juno';
 import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
 import AttendeeVideoList from './AttendeeVideoList';
 import ParticipantTable from './ParticipantTable';
@@ -16,6 +16,10 @@ const InMeeting: FC<IProps> = (props) => {
     const { isMeetingJoined } = useGlobalContext();
 
     const [loading, setLoading] = useState(false);
+    const [audioDeviceList, setAudioDeviceList] = useState<MediaDeviceInfo[]>([]);
+    const [videoDeviceList, setVideoDeviceList] = useState<MediaDeviceInfo[]>([]);
+    const [audioActiveDevice, setAudioActiveDevice] = useState('');
+    const [videoActiveDevice, setVideoActiveDevice] = useState('');
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
     const [participantList, setParticipantList] = useState<IParticipant[]>([]);
@@ -31,17 +35,38 @@ const InMeeting: FC<IProps> = (props) => {
                 await rcvEngine.joinMeeting(meetingId);
                 setLoading(false)
             }
+            initDeviceList();
             initListener()
         }
         rcvEngine && initController();
     }, [meetingId, rcvEngine])
 
+    const initDeviceList = () => {
+        rcvEngine.
+            getAudioDeviceManager()
+            .enumerateRecordingDevices().then((devices) => {
+                setAudioDeviceList(devices || []);
+                if (devices.length) {
+                    const audioController = meetingController.getAudioController();
+                    const deviceId = devices[0].deviceId;
+                    audioController.enableAudio({ deviceId });
+                    setAudioActiveDevice(deviceId)
+                    console.log('change audio device:', deviceId)
+                }
+            });
+        rcvEngine
+            .getVideoDeviceManager()
+            .enumerateVideoDevices()
+            .then(devices => {
+                setVideoDeviceList(devices || []);
+                devices.length && setVideoActiveDevice(devices[0].deviceId)
+            });
+    }
+
     const initListener = () => {
         const audioController = meetingController?.getAudioController()
         const videoController = meetingController?.getVideoController()
 
-        // enable video firstly
-        audioController.enableAudio(true);
         // listen for audio unmute/mute events
         const audioLocalMuteListener = audioController?.on(
             AudioEvent.LOCAL_AUDIO_MUTE_CHANGED,
@@ -149,6 +174,21 @@ const InMeeting: FC<IProps> = (props) => {
         });
     }
 
+    const handleChangeAudioRecordingDevice = e => {
+        const deviceId = e.target.value;
+        setVideoActiveDevice(deviceId);
+        console.log('change audio device:', deviceId)
+        meetingController.getAudioController().enableAudio({ deviceId });
+    };
+
+    const handleChangVideoMedia = e => {
+        const deviceId = e.target.value;
+        setVideoActiveDevice(deviceId);
+        !videoMute && meetingController
+            .getVideoController()
+            .unmuteLocalVideoStream({ advanced: [{ deviceId }] });
+    };
+
     // ---------------------------- end: button click handler ----------------------------
 
     return (
@@ -171,6 +211,21 @@ const InMeeting: FC<IProps> = (props) => {
                     <RcButton color="highlight.b03" onClick={handleLeaveMeeting}>Leave</RcButton>
                     <RcButton color="danger.b03" onClick={handleEndMeeting}>End</RcButton>
                 </RcButtonGroup>
+                <br />
+                <RcGrid container>
+                    <RcGrid item xs={6}>
+                        <RcSelect label="select Microphone" value={audioActiveDevice} style={{ width: 400 }}
+                            onChange={handleChangeAudioRecordingDevice}>
+                            {audioDeviceList.map((device) => <RcMenuItem key={device.deviceId} value={device.deviceId}>{device.label}</RcMenuItem>)}
+                        </RcSelect>
+                    </RcGrid>
+                    <RcGrid item xs={6}>
+                        <RcSelect label="select Camera" value={videoActiveDevice} style={{ width: 400 }}
+                            onChange={handleChangVideoMedia}>
+                            {videoDeviceList.map((device) => <RcMenuItem key={device.deviceId} value={device.deviceId}>{device.label}</RcMenuItem>)}
+                        </RcSelect>
+                    </RcGrid>
+                </RcGrid>
                 <br />
                 <ParticipantTable
                     participantList={participantList} />
