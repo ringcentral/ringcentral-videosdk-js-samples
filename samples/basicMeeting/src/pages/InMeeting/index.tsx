@@ -80,6 +80,10 @@ const InMeeting: FC<IProps> = (props) => {
         const userUpdateListener = userController.on(UserEvent.USER_UPDATED, () => {
             updateParticipants();
         });
+        const userSpeakChangedListener = userController.on(UserEvent.ACTIVE_SPEAKER_USER_CHANGED, (participant: IParticipant) => {
+            console.log(UserEvent.ACTIVE_VIDEO_USER_CHANGED, participant);
+            updateParticipants();
+        });
 
         return () => {
             audioLocalMuteListener?.();
@@ -89,6 +93,7 @@ const InMeeting: FC<IProps> = (props) => {
             userJoinedListener?.();
             userLeftListener?.();
             userUpdateListener?.();
+            userSpeakChangedListener();
         };
     }
 

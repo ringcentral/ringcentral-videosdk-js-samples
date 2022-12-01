@@ -42,8 +42,8 @@ export declare class AudioController extends EventEmitter<AudioEvent> {
      */
     private _stopSfuAudioTrackByTapId;
     private _applyMaskToSfuAudioTrack;
-    _toggleMuteRemoteAudioStream(uid: string, mute: boolean): Promise<ErrorCodeType>;
-    _toggleMuteAllRemoteAudioStreams(mute: boolean, allowUnmute?: boolean): Promise<ErrorCodeType>;
+    private _toggleMuteRemoteAudioStream;
+    private _toggleMuteAllRemoteAudioStreams;
     /**
      * Enables the audio session.
      * @param {true | MediaTrackConstraints} spec parameters to create the Audio stream
@@ -198,6 +198,14 @@ declare enum BridgeWaitingRoomMode {
     OtherAccount = 3
 }
 
+export declare interface Channel {
+    createTime: string;
+    id: string;
+    isPrivate: true;
+    sessionId: string;
+    type: string;
+}
+
 /**
  * The ChatController class is a managing class to control the in-meeting chat related functions and states in an active meeting.
  */
@@ -280,6 +288,62 @@ export declare enum ChatType {
 
 }
 
+/**
+ * The ClosedCaptionsController class is a managing class to control the closed captions related functions and states in an active meeting session, such as start closed captions or stop closed captions.
+ */
+declare class ClosedCaptionsController extends EventEmitter<ClosedCaptionsEvent> {
+    private _librctHelper;
+    private _libsfuHelper;
+    private _meetingProvider;
+    private _channel;
+    private _closedCaptionsState;
+    private _cacheClosedCaptionsState;
+    private _dataChannel;
+    private _dataChannelMessage;
+    private get _librct();
+    private get _sfu();
+    private get _meeting();
+    private get _isClosedCaptionsEnabled();
+    private get _isE2eeEnabled();
+    private _checkStartClosedCaptions;
+    private _triggerStateChangedEvent;
+    /**
+     * Start the closed captions and creates the data channel in an active meeting.
+     * @description A successful call of the startClosedCaptions triggers the onClosedCaptionsStateChanged event callback.
+     * @returns 0 means the action succeeds or fails otherwise
+     */
+    startClosedCaptions(): Promise<ErrorCodeType>;
+    /**
+     * Stops the closed captions and deletes the data channel in an active meeting.
+     * @description A successful call of the stopClosedCaptions triggers the onClosedCaptionsStateChanged event {@link ClosedCaptionsEvent.CLOSED_CAPTIONS_STATE_CHANGED} callback.
+     * @returns 0 means the API call is valid or fails otherwise
+     */
+    stopClosedCaptions(): Promise<ErrorCodeType>;
+    /**
+     * Returns the current state of the closed captions in the meetings.
+     * @returns ClosedCaptionsState: UNACTIVATED, STARTED, STOPPED
+     */
+    getClosedCaptionsState(): ClosedCaptionsState;
+    /**
+     * Indicates the closed captions whether allowed to start.
+     * @returns True means closed captions allowed or otherwise
+     */
+    isClosedCaptionsAllowed(): boolean;
+}
+
+/**
+ * @desc events about ClosedCaptionsController
+ */
+export declare enum ClosedCaptionsEvent {
+    CLOSED_CAPTIONS_STATE_CHANGED = "closed-captions-state-changed"
+}
+
+export declare enum ClosedCaptionsState {
+    UNACTIVATED = 0,
+    STARTED = 1,
+    STOPPED = 2
+}
+
 declare enum COMMON_SS_SOURCES {
     SCREEN = "screen",
     WINDOW = "window",
@@ -358,6 +422,31 @@ declare enum ConferenceWaitingRoomMode {
     EVERY = "EveryBody",
     GUEST = "GuestsOnly",
     OTHER = "OtherAccount"
+}
+
+export declare abstract class DataChannel {
+    abstract on(event: string, listener: (...args: any[]) => void): void;
+    abstract emit(event: string, ...args: any[]): void;
+    abstract removeAllListeners(): void;
+    abstract open(): void;
+    abstract close(): void;
+}
+
+export declare enum DataChannelLabel {
+    CLOSED_CAPTIONS = "cc"
+}
+
+export declare interface DataChannelMessage {
+    event: string;
+    final: boolean;
+    first_word_time: number;
+    last_word_time: number;
+    participant_id: string;
+    sseq: number;
+    sseq_end: number;
+    sseq_start: number;
+    transcript: string;
+    update_part: number;
 }
 
 declare class DeviceManager<T extends string> extends EventEmitter<T> {
@@ -471,10 +560,8 @@ export declare interface EngineInitConfig {
      * Enable vcg or disable, default is true.
      */
     enableVcg?: boolean;
-    /**
-     * The server url for e2ee.
-     */
-    bkosHost?: string;
+
+
 }
 
 /**
@@ -501,7 +588,7 @@ export declare enum ErrorCodeType {
     ERR_INVALID_AUTH_TOKEN = 8,
     /** The refresh token is expired and the application has to get the new auth token pair by invoking the authorization REST API. */
     ERR_REFRESH_TOKEN_EXPIRED = 9,
-    /** TThe audio device access is denied, either the device is not ready or it has been occupied by other applications. */
+    /** The audio device access is denied, either the device is not ready or it has been occupied by other applications. */
     ERR_AUDIO_DEVICE_ACCESS_DENIED = 10,
     /** The video device access is denied, either the device is not ready or it has been occupied by other applications.  */
     ERR_VIDEO_DEVICE_ACCESS_DENIED = 11,
@@ -523,6 +610,8 @@ export declare enum ErrorCodeType {
     ERR_SERVER_UNREACHABLE = 19,
     /** Request to the remote meeting server has timed out. The retry may help. */
     ERR_SERVER_TIMEOUT = 20,
+    /** The over function does not exist **/
+    ERR_OVERRIDE_METHOD_IS_MISSING = 21,
     /** A base error code for the meetings category. */
     ERR_MEETING_BASE = 10000,
     /** The meeting ID must be present when joining a meeting. */
@@ -570,6 +659,10 @@ export declare enum ErrorCodeType {
     ERR_MEETING_USER_BASE = 11000,
     /** Not allowed to delete yourself.  */
     ERR_MEETING_USER_NOT_REMOVE_SELF = 11001,
+    /** Sdk instance not found while preparing avatar url  */
+    ERR_MEETING_USER_AVATAR_NO_SDK_INSTANCE_FOUND = 11002,
+    /** Meeting info not found while preparing avatar url  */
+    ERR_MEETING_USER_AVATAR_NO_MEETING_FOUND = 11003,
     /** A base error code for the meeting chat category. */
     ERR_MEETING_CHAT_BASE = 12000,
     /** A base error code for the meeting recording category. */
@@ -580,6 +673,14 @@ export declare enum ErrorCodeType {
     ERR_LIVE_TRANSCRIPTION_BASE = 14000,
     /** A base error code for the meeting closed captions category. */
     ERR_CLOSED_CAPTIONS_BASE = 15000,
+    /** Server does not allow closed captions */
+    ERR_CLOSED_CAPTIONS_SERVER_NOT_ENABLE = 15001,
+    /** librct create channel failed */
+    ERR_CLOSED_CAPTIONS_FAILED_TO_CREATE_CHANNEL = 15002,
+    /** libsfu create channel failed */
+    ERR_CLOSED_CAPTIONS_FAILED_TO_CREATE_DATA_CHANNEL = 15003,
+    /** librct delete channel failed */
+    ERR_CLOSED_CAPTIONS_FAILED_TO_DELETE_CHANNEL = 15004,
     /** A base error code for the meeting breakout room category. */
     ERR_MEETING_BREAKOUT_BASE = 16000,
     /** A base error code for the meeting annotation category. */
@@ -594,8 +695,30 @@ export declare enum ErrorCodeType {
     ERR_MEETING_E2EE_HAS_ONLINE_UNSUPPORTED_ROOMS_PARTICIPANTS = 18003,
     /** Has online guest participants **/
     ERR_MEETING_E2EE_HAS_ONLINE_GUEST_PARTICIPANTS = 18004,
+    /** When E2EE state is ENABLED, can not call enableEndToEndEncryption */
+    ERR_MEETING_E2EE_IS_ENABLED = 18005,
+    /** When E2EE state is ENABLING, can not call enableEndToEndEncryption or disableEndToEndEncryption */
+    ERR_MEETING_E2EE_IS_ENABLING = 18006,
+    /** When E2EE state is DISABLED, can not call disableEndToEndEncryption */
+    ERR_MEETING_E2EE_IS_DISABLED = 18007,
+    /** When E2EE state is DISABLING, can not call enableEndToEndEncryption or disableEndToEndEncryption */
+    ERR_MEETING_E2EE_IS_DISABLING = 18008,
     /** Is main recording is ongoing **/
-    IS_MAIN_RECORDING_IS_ONGOING = 18005,
+    ERR_MEETING_E2EE_IS_MAIN_RECORDING_IS_ONGOING = 18009,
+    /** A base error code for the meeting-context. */
+    ERR_MEETING_CONTEXT_NOT_SUPPORTED = 20000,
+    /** In e2ee mode, usePersonalMeetingId must be not true. */
+    ERR_MEETING_CONTEXT_E2EE_NOT_SUPPORTED_USE_PERSONAL_MEETING = 20001,
+    /** In e2ee mode, isWaitingRoomEnabled must be set to true. */
+    ERR_MEETING_CONTEXT_E2EE_NOT_SUPPORTED_WAITING_ROOM_TYPE = 20002,
+    /** In e2ee mode, one of (isOnlyAuthUserJoin, isOnlyCoworkersJoin) must be set to true. */
+    ERR_MEETING_CONTEXT_E2EE_NOT_SUPPORTED_JOIN_TYPE = 20003,
+    /** In e2ee mode, meeting password must be set. */
+    ERR_MEETING_CONTEXT_E2EE_NEED_MEETING_PASSWORD = 20004,
+    /** In e2ee mode, waiting room mode not support for join type is onlycoworkersjoin. */
+    ERR_MEETING_CONTEXT_E2EE_WAITING_ROOM_MODE_NOT_SUPPORT_FOR_JOIN_TYPE_IS_ONLY_COWORKERS_JOIN = 20005,
+    /** In e2ee mode, allowJoinBeforeHost must be false for waiting room for everyone. */
+    ERR_MEETING_CONTEXT_E2EE_ALLOW_JOIN_BEFORE_HOST_MUST_BE_FALSE_FOR_WAITING_ROOM_FOR_EVERYONE = 20006,
     /** A base error code for the audio category. */
     ERR_AUDIO_BASE = 30000,
     /** A base error code for the video category. */
@@ -609,7 +732,7 @@ export declare enum ErrorCodeType {
     /** The meeting sharing function has been locked by the meeting host or moderator, only the meeting host or moderator allows to start a new sharing session. */
     ERR_SHARING_IS_LOCKED = 70001,
     /** A base error code for the browser. */
-    ERR_BROWSER_NOT_SUPPORTED = 9000,
+    ERR_BROWSER_NOT_SUPPORTED = 90000,
     /** navigator.mediaDevices.enumerateDevices not supported. */
     ERR_BROWSER_ENUMERATE_DEVICES_NOT_SUPPORTED = 90001,
     /** navigator.mediaDevices.getUserMedia not supported. */
@@ -857,6 +980,19 @@ export declare interface IParticipant {
      * - false, audio is disabled
      */
     isAudioJoined: boolean;
+    /**
+     * Get particular in-meeting participant profile image (unsized)
+     * @return
+     * - return url of unsized profile image
+     */
+    getHeadshotUrl(): Promise<string>;
+    /**
+     * Get particular in-meeting participant profile image (sized)
+     * @param size max width/height of profile image
+     * @return
+     * - url of profile image, return url of sized profile image
+     */
+    getHeadshotUrlWithSize(size?: number): Promise<string>;
 }
 
 export declare interface IPassword {
@@ -1009,6 +1145,8 @@ export declare enum LogLevel {
     DEBUG = "debug"
 }
 
+export declare type MaxRemoteVideo = RemoteSlot[] | number;
+
 /**
  * The MeetingContextController class is a helper class for managing pre-meeting and post-meeting data, the application can use it to load and update the personal meeting settings and retrieve the recordings.
  */
@@ -1067,6 +1205,8 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private _sharingController;
     private _recordingController;
     private _chatController;
+    private _runtimeConfig;
+    private _closedCaptionsController;
     private _sfu?;
     private _established;
     private _e2eeState;
@@ -1094,7 +1234,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * - {@link AudioEvent.AUDIO_UNMUTE_DEMAND}
      * @returns The AudioController instance or undefined otherwise
      */
-    getAudioController(): AudioController | undefined;
+    getAudioController(): AudioController;
     /**
      * Gets the StreamManager instance.
      * @description StreamManager instance listens for some events if initialized successfully, related events:
@@ -1155,6 +1295,11 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      */
     getChatController(): ChatController;
     /**
+     * Gets the ClosedCaptionsController instance.
+     * @returns The ClosedCaptionsController instance
+     */
+    getClosedCaptionsController(): ClosedCaptionsController;
+    /**
      * Gets the current active meeting details.
      * @return The meeting information object or error code 10000
      */
@@ -1196,23 +1341,27 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * @return 0 means the action succeeds or fails otherwise
      */
     leaveMeeting(): Promise<ErrorCodeType>;
+    private _enableSFUEndToEndEncryption;
+    private _disableSFUEndToEndEncryption;
     /**
      * Enables the end-to-end encryption in the meeting dynamically.
      * @description A successful call of enableEndToEndEncryption triggers the {@link MeetingEvent.MEETING_ENCRYPTION_STATE_CHANGED} event callback for all meeting users.
      * @return 0 means the action succeeds or fails otherwise
      */
-    enableEndToEndEncryption(): ErrorCodeType;
+    enableEndToEndEncryption(): ErrorCodeType.ERR_OK | ErrorCodeType.ERR_MEETING_E2EE_IS_ENABLED | ErrorCodeType.ERR_MEETING_E2EE_IS_ENABLING | ErrorCodeType.ERR_MEETING_E2EE_IS_DISABLING;
     /**
      * Disables the end-to-end encryption in the meeting.
      * @description A successful call of disableEndToEndEncryption triggers the {@link MeetingEvent.MEETING_ENCRYPTION_STATE_CHANGED} event callback for all meeting users.
      * @returns 0 means the action succeeds or fails otherwise
      */
-    disableEndToEndEncryption(): ErrorCodeType;
+    disableEndToEndEncryption(): ErrorCodeType.ERR_OK | ErrorCodeType.ERR_MEETING_E2EE_IS_ENABLING | ErrorCodeType.ERR_MEETING_E2EE_IS_DISABLED | ErrorCodeType.ERR_MEETING_E2EE_IS_DISABLING;
     /**
      * Get the current EndToEnd Encryption state.
      * @returns E2EEState
      */
     getEndToEndEncryptionState(): E2EEState;
+
+
 }
 
 export declare enum MeetingEvent {
@@ -1268,6 +1417,31 @@ export declare interface OauthOptions {
 
 declare type Participant = Omit<IParticipant, 'nqiStatus'>;
 
+export declare class PreferenceController {
+    _request(options: SendOptions): Promise<any>;
+    private _getApiUrl;
+    /**
+     * Load all preferences.
+     */
+    loadPreferenceMap(): Promise<Record<string, unknown>>;
+    /**
+     * Get a preference 's value.
+     * @param preferenceKey
+     */
+    getPreference(preferenceKey: string): Promise<unknown>;
+    /**
+     * Set a preference with key and value.
+     * @param preferenceKey
+     * @param preferenceValue
+     */
+    setPreference(preferenceKey: string, preferenceValue: unknown): Promise<ErrorCodeType>;
+    /**
+     * Update all settings with key-value map.
+     * @param settings
+     */
+    updatePreferenceMap(settings: Record<string, unknown>): Promise<ErrorCodeType>;
+}
+
 /**
  * The RcvEngine class is the entry point of the RingCentral video client SDK that empowers the applications to easily and quickly build real-time audio and video communication.
  */
@@ -1279,8 +1453,11 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
     private _audioDeviceManager;
     private _videoDeviceManager;
     private _meetingContextController;
+    private _preferenceController;
     private _meetingController;
     private _meetingProvider;
+    private _processor;
+    private _runtimeConfig;
     /**
      * Creates an RcvEngine object and returns the instance.
      * @param config
@@ -1348,6 +1525,11 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      * @returns The RcvMeetingContextController instance
      */
     getMeetingContextController(): MeetingContextController;
+    /**
+     * Gets the preference controller.
+     * @return The PreferenceController instance.
+     */
+    getPreferenceController(): PreferenceController;
     private _clearManagers;
     /**
      * download logs from rcvEngine
@@ -1371,6 +1553,19 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      * Authorizes the users to obtain the authentication tokens through the password or JWT flow.
      */
     authorize(options: OauthOptions): Promise<ErrorCodeType>;
+    /**
+     * Sets the local audio processor.
+     * By implementing the local audio processor,
+     * the application can receive audio raw data from the client SDK and can apply processing algorithm on its own.
+     */
+    setLocalAudioProcessor(arg: (stream: MediaStream) => MediaStream): void;
+    /**
+     * Sets the local video processor.
+     * By implementing the local video processor,
+     * the application can receive YUV raw data from the client SDK and can apply processing algorithm on its own.
+     */
+    setLocalVideoProcessor(arg: (stream: MediaStream) => MediaStream): void;
+
 }
 
 /**
@@ -1540,11 +1735,11 @@ export declare class SharingController extends EventEmitter<SharingEvent> {
     private get _tapId();
     private _initialEventListener;
     /**
-     * Use newest localStreams to check if there exits new sharing stream, or current sharing stream is end.
+     * Use newest localStreams to check if there exists new sharing stream, or current sharing stream is end.
      */
     private _checkEventForLocalStreams;
     /**
-     * Use newest streams to check if there exists new sharing stream, or current sharing stream is end.
+     * Use the newest streams to check if there exists new sharing stream, or current sharing stream is end.
      */
     private _checkEventForStreams;
     private _onSharingSettingsChanged;
@@ -1559,9 +1754,10 @@ export declare class SharingController extends EventEmitter<SharingEvent> {
     /**
      * Starts sharing the device screen in an active meeting.
      * @param {DisplayMediaStreamConstraints} spec
+     * @param {IMediaStreamOptions} options
      * @returns MediaStream means the action succeeds or fails otherwise
      */
-    startSharing(spec?: DisplayMediaStreamConstraints): Promise<MediaStream>;
+    startSharing(spec?: DisplayMediaStreamConstraints, options?: IMediaStreamOptions): Promise<MediaStream>;
     /**
      * Indicates whether the current sharing is started by the local user.
      * @returns True means the local user or otherwise
@@ -1755,7 +1951,10 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
 
 
 
+
 }
+
+export declare type StreamProcessor = (stream: MediaStream) => MediaStream;
 
 export declare enum StreamType {
     VIDEO_MAIN = "video/main",
@@ -1889,6 +2088,7 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
     private _libsfuHelper;
     private _librctHelper;
     private readonly _streamManager;
+    private _runtimeConfig;
     private _forPreviewStream;
     private _videoEnabled;
 
@@ -1927,6 +2127,12 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
      */
     stopPreview(): Promise<ErrorCodeType>;
     /**
+     * Mute Video without handle MediaStream and libsfu
+     * @description For node
+     * @return 0 means the action succeeds or fails otherwise
+     */
+    private _muteLocalVideoStreamWithoutMedia;
+    /**
      * Stops publishing the local video stream.
      * @description A successful call of muteLocalVideoStream triggers the {@link VideoEvent.LOCAL_VIDEO_MUTE_CHANGED} event callback to the local user.
      * @return 0 means the action succeeds or fails otherwise
@@ -1935,10 +2141,11 @@ export declare class VideoController extends EventEmitter<VideoEvent> {
     /**
      * Resumes publishing the local video stream.
      * @description A successful call of unmuteLocalVideoStream triggers the {@link VideoEvent.LOCAL_VIDEO_MUTE_CHANGED} event callback to the local user.
-     * @param {MediaTrackConstraints} options
+     * @param {MediaTrackConstraints} mediaTrackConstraints
+     * @param {IMediaStreamOptions} options
      * @return 0 means the action succeeds or fails otherwise
      */
-    unmuteLocalVideoStream(options?: MediaTrackConstraints | boolean): Promise<ErrorCodeType>;
+    unmuteLocalVideoStream(mediaTrackConstraints?: MediaTrackConstraints | boolean, options?: IMediaStreamOptions): Promise<MediaStream>;
     /**
      * Stops subscribing to the video stream of a specified user.
      * @description A successful call of muteRemoteVideoStream triggers the {@link VideoEvent.REMOTE_VIDEO_MUTE_CHANGED} event callback to the specified remote user.
