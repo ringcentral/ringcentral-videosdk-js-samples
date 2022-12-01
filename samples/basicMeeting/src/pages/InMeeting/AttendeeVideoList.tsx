@@ -22,7 +22,6 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
         if (isMeetingJoined) {
             // listen for stream events
             const streamManager = meetingController?.getStreamManager();
-            // video
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
                 sinkStreamElement(stream, TrackType.VIDEO, videoRef.current[stream.participantId]);
             });
@@ -34,13 +33,6 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
             });
             streamManager?.on(StreamEvent.REMOTE_VIDEO_TRACK_REMOVED, stream => {
                 unSinkStreamElement(stream, videoRef.current[stream.participantId]);
-            });
-            // audio
-            streamManager?.on(StreamEvent.REMOTE_AUDIO_TRACK_REMOVED, stream => {
-                unSinkStreamElement(stream, audioRef.current[stream.participantId]);
-            });
-            streamManager?.on(StreamEvent.REMOTE_AUDIO_TRACK_ADDED, stream => {
-                sinkStreamElement(stream, TrackType.AUDIO, audioRef.current[stream.participantId]);
             });
             // listen for active use event
             const userController = meetingController?.getUserController()
@@ -81,11 +73,6 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                                     }}
                                     ref={video =>
                                         (videoRef.current[participant.uid] = video)
-                                    }
-                                />
-                                <div
-                                    ref={audio =>
-                                        (audioRef.current[participant.uid] = audio)
                                     }
                                 />
                             </div>

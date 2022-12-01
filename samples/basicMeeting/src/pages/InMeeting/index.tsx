@@ -1,11 +1,12 @@
-import React, { FC, useEffect, useState } from 'react'
-import { RcvEngine, AudioEvent, VideoEvent, IParticipant, UserEvent } from '@sdk';
+import React, { FC, useEffect, useState, useRef } from 'react'
+import { RcvEngine, AudioEvent, VideoEvent, IParticipant, UserEvent, StreamEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { RcButtonGroup, RcButton, RcIcon, RcLoading, RcSelect, RcMenuItem, RcGrid } from '@ringcentral/juno';
 import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
 import AttendeeVideoList from './AttendeeVideoList';
 import ParticipantTable from './ParticipantTable';
 import { useGlobalContext } from '../../context';
+import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/dom'
 interface IProps {
     rcvEngine: RcvEngine
 }
@@ -23,6 +24,7 @@ const InMeeting: FC<IProps> = (props) => {
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
     const [participantList, setParticipantList] = useState<IParticipant[]>([]);
+    const audioRef = useRef({} as HTMLDivElement);
 
     const meetingController = rcvEngine?.getMeetingController();
 
@@ -108,6 +110,15 @@ const InMeeting: FC<IProps> = (props) => {
         const userSpeakChangedListener = userController.on(UserEvent.ACTIVE_SPEAKER_USER_CHANGED, (participant: IParticipant) => {
             console.log(UserEvent.ACTIVE_VIDEO_USER_CHANGED, participant);
             updateParticipants();
+        });
+
+        // audio
+        const streamManager = meetingController?.getStreamManager();
+        streamManager?.on(StreamEvent.REMOTE_AUDIO_TRACK_REMOVED, stream => {
+            unSinkStreamElement(stream, audioRef.current);
+        });
+        streamManager?.on(StreamEvent.REMOTE_AUDIO_TRACK_ADDED, stream => {
+            sinkStreamElement(stream, TrackType.AUDIO, audioRef.current);
         });
 
         return () => {
@@ -229,6 +240,7 @@ const InMeeting: FC<IProps> = (props) => {
                 <br />
                 <ParticipantTable
                     participantList={participantList} />
+                <div ref={audioRef} />
             </RcLoading>
         </div>
     )
