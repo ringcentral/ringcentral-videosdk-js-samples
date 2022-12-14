@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "jsx": "react",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "moduleResolution": "node",
+        "paths": {
+            "@sdk": ["../../sdk/librcv"],
+            "@src/*": ["./src/*"],
+        }
+    }
+}
