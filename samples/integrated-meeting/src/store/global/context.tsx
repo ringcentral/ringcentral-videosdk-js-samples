@@ -1,8 +1,10 @@
+import { RcvEngine } from '@sdk';
 import React, { useContext } from 'react';
 interface IGlobalContext {
-    isMeetingJoined: boolean;
+    rcvEngine: RcvEngine | null;
 }
-const GlobalContext = React.createContext<IGlobalContext>({ isMeetingJoined: false } as any);
+const GlobalContext = React.createContext<IGlobalContext>({ rcvEngine: null } as any);
+
 const useGlobalContext = () => useContext<IGlobalContext>(GlobalContext);
 export { useGlobalContext };
 export default GlobalContext;

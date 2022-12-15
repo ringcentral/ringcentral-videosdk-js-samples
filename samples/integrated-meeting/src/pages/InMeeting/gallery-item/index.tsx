@@ -1,22 +1,22 @@
 import React, { FC, useEffect } from 'react';
 import { IParticipant } from '@sdk';
 import Avatar from '@src/components/avatar';
-import VideoInfo from './video-info';
+import VideoInfo from './gallery-video-info';
 import './index.less';
 
 interface IGalleryItem {
-    meetingController: any;
     participant: IParticipant;
     setVideoRef: (ref: HTMLDivElement) => void;
 }
 const GalleryItem: FC<IGalleryItem> = ({ participant, setVideoRef }) => {
-    useEffect(() => {
-        console.log(participant.nqiStatus);
-    }, [participant.nqiStatus]);
     return (
         <div className='gallery-item'>
             <div className='gallery-item-inner'>
-                <div className='avatar-wrapper'>
+                <div
+                    className='avatar-wrapper'
+                    style={{
+                        visibility: participant.isVideoMuted ? 'visible' : 'hidden',
+                    }}>
                     <Avatar displaySize='100%' imgSize={300} participant={participant}></Avatar>
                 </div>
                 <div className='video-info-wrapper'>

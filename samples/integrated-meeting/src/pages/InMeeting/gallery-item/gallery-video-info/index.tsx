@@ -26,7 +26,7 @@ interface VideoInfo {
 }
 const VideoInfo: FC<VideoInfo> = ({ participant }) => {
     return (
-        <div className='video-info'>
+        <div className='gallery-video-info'>
             <div className='icon-item'>
                 <RcIcon size='small' symbol={NqiIconMap[participant.nqiStatus]} />
             </div>

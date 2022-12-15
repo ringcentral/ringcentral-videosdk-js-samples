@@ -2,8 +2,6 @@ import type { IParticipant } from '@sdk';
 import type { FC } from 'react';
 import React, { useEffect, useState } from 'react';
 
-import styles from './index.css';
-
 interface IAvatarProps {
     participant: IParticipant;
     displaySize?: number | string;
@@ -48,11 +46,7 @@ const Avatar: FC<IAvatarProps> = ({
         return null;
     }
     return (
-        <img
-            className={styles.avatar}
-            src={url}
-            style={{ width: displaySize, height: displaySize }}
-        />
+        <img src={url} style={{ borderRadius: '50%', width: displaySize, height: displaySize }} />
     );
 };
 

@@ -5,7 +5,8 @@ import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@sdk';
 import { RcThemeProvider } from '@ringcentral/juno';
 import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
-import GlobalContext from './context';
+import GlobalContext from './store/global/context';
+import { MeetingContextProvider } from './store/meeting';
 import './index.less';
 declare global {
     interface Window {
@@ -21,14 +22,13 @@ export default function App({ config }) {
     useEffect(() => {
         const initSDK = async () => {
             const { clientId, clientSecret, jwt, userName, password } = config;
-            // You could open 'enableDiscovery' and set 'discoveryServer' if neccessary
+
             const engine = RcvEngine.create({
                 clientId,
                 clientSecret,
                 enableDiscovery: false,
             });
-            // if config jwt, initialize SDK with jwt
-            // else initialize SDK with password
+
             await engine.authorize({
                 grantType: jwt ? GrantType.JWT : GrantType.PASSWORD,
                 jwt,
@@ -54,11 +54,18 @@ export default function App({ config }) {
     }, []);
 
     return (
-        <GlobalContext.Provider value={{ isMeetingJoined }}>
+        <GlobalContext.Provider value={{ rcvEngine }}>
             <RcThemeProvider>
                 <Routes>
                     <Route path='meeting'>
-                        <Route path=':meetingId' element={<InMeeting rcvEngine={rcvEngine} />} />
+                        <Route
+                            path=':meetingId'
+                            element={
+                                <MeetingContextProvider isMeetingJoined={isMeetingJoined}>
+                                    <InMeeting />
+                                </MeetingContextProvider>
+                            }
+                        />
                     </Route>
                     <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
                 </Routes>

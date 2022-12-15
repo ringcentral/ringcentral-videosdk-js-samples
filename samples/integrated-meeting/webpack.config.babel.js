@@ -55,17 +55,7 @@ export default {
             },
             {
                 test: /\.css$/i,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: {
-                                exportLocalsConvention: 'camelCase',
-                            },
-                        },
-                    },
-                ],
+                use: ['style-loader', 'css-loader'],
             },
             {
                 test: /\.less$/i,
