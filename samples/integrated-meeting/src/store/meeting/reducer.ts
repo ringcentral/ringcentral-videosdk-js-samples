@@ -2,11 +2,6 @@ import { IMeetingState, MeetingReduceType, IMeetingAction } from './types';
 
 export function meetingReducer(state: IMeetingState, { type, payload }: IMeetingAction) {
     switch (type) {
-        case MeetingReduceType.MEETING_JOINED:
-            return {
-                ...state,
-                isMeetingJoined: payload.isMeetingJoined,
-            };
         case MeetingReduceType.PARTICIPANT_LIST:
             return {
                 ...state,

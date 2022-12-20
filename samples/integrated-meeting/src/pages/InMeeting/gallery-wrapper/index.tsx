@@ -14,7 +14,7 @@ const getGridRule = calculateFinalGridRule(32);
 const GALLERY_ITEM_ASPECT_RATIO = 1.8;
 
 const GalleryWrapper: FC = () => {
-    const { rcvEngine } = useGlobalContext();
+    const { rcvEngine, isMeetingJoined } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
     const { state: meetingState } = useMeetingContext();
@@ -28,7 +28,7 @@ const GalleryWrapper: FC = () => {
         .join(' ');
 
     useEffect(() => {
-        if (meetingState.isMeetingJoined) {
+        if (isMeetingJoined) {
             // listen for stream events
             const streamManager = meetingController?.getStreamManager();
             streamManager?.on(StreamEvent.LOCAL_VIDEO_TRACK_ADDED, stream => {
@@ -44,7 +44,7 @@ const GalleryWrapper: FC = () => {
                 unSinkStreamElement(stream, videoRef.current[stream.participantId]);
             });
         }
-    }, [meetingState.isMeetingJoined]);
+    }, [isMeetingJoined]);
 
     useEffect(() => {
         if (galleryWrapRect?.width && galleryWrapRect?.height) {

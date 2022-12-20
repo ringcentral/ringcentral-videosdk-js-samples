@@ -12,7 +12,6 @@ import { IMeetingState, IMeetingContext, MeetingReduceType } from './types';
 import { meetingReducer } from './reducer';
 
 const initState: IMeetingState = {
-    isMeetingJoined: false,
     isAudioMuted: true,
     isVideoMuted: true,
     participantList: [],
@@ -24,14 +23,7 @@ export const MeetingContext = createContext<IMeetingContext>({
     dispatch: () => {},
 });
 
-export const MeetingContextProvider: React.FC<
-    PropsWithChildren<{ isMeetingJoined: boolean }>
-> = props => {
-    const { isMeetingJoined } = props;
-    useEffect(() => {
-        dispatch({ type: MeetingReduceType.MEETING_JOINED, payload: { isMeetingJoined } });
-    }, [isMeetingJoined]);
-
+export const MeetingContextProvider: React.FC<PropsWithChildren<{}>> = props => {
     const [rcvEngine, setRcvEngine] = useState(null);
     const [state, dispatch] = useReducer(meetingReducer, initState);
     return (

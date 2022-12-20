@@ -81,7 +81,6 @@ const InMeeting: FC<IProps> = props => {
         const audioLocalMuteListener = audioController?.on(
             AudioEvent.LOCAL_AUDIO_MUTE_CHANGED,
             mute => {
-                debugger;
                 setAudioMuted(mute);
                 updateParticipants();
             }

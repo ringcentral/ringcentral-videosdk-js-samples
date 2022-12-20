@@ -11,7 +11,7 @@ import { MeetingReduceType } from '@src/store/meeting';
 import './index.less';
 
 const InMeeting: FC = () => {
-    const { rcvEngine } = useGlobalContext();
+    const { rcvEngine, isMeetingJoined } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
     const { meetingId } = useParams();
@@ -23,11 +23,12 @@ const InMeeting: FC = () => {
     useEffect(() => {
         const initController = async () => {
             // when do refreshing
-            if (!meetingState.isMeetingJoined) {
+            if (!isMeetingJoined) {
                 setLoading(true);
                 await rcvEngine.joinMeeting(meetingId);
                 setLoading(false);
             }
+            getParticipants();
             initListener();
         };
         rcvEngine && initController();
@@ -45,13 +46,13 @@ const InMeeting: FC = () => {
                     type: MeetingReduceType.AUDIO_MUTE_UPDATED,
                     payload: { isAudioMuted: mute },
                 });
-                updateParticipants();
+                getParticipants();
             }
         );
         const audioRemoteMuteListener = audioController?.on(
             AudioEvent.REMOTE_AUDIO_MUTE_CHANGED,
             () => {
-                updateParticipants();
+                getParticipants();
             }
         );
         // listen for video unmute/mute events
@@ -62,29 +63,29 @@ const InMeeting: FC = () => {
                     type: MeetingReduceType.VIDEO_MUTE_UPDATED,
                     payload: { isVideoMuted: mute },
                 });
-                updateParticipants();
+                getParticipants();
             }
         );
         const videoRemoteMuteListener = videoController?.on(
             VideoEvent.REMOTE_VIDEO_MUTE_CHANGED,
             () => {
-                updateParticipants();
+                getParticipants();
             }
         );
         const userController = meetingController?.getUserController();
         const userJoinedListener = userController.on(UserEvent.USER_JOINED, () => {
-            updateParticipants();
+            getParticipants();
         });
         const userLeftListener = userController.on(UserEvent.USER_LEFT, () => {
-            updateParticipants();
+            getParticipants();
         });
         const userUpdateListener = userController.on(UserEvent.USER_UPDATED, () => {
-            updateParticipants();
+            getParticipants();
         });
         const userSpeakChangedListener = userController.on(
             UserEvent.ACTIVE_SPEAKER_USER_CHANGED,
             (participant: IParticipant) => {
-                updateParticipants();
+                getParticipants();
             }
         );
 
@@ -109,7 +110,11 @@ const InMeeting: FC = () => {
         };
     };
 
-    const updateParticipants = () => {
+    useEffect(() => {
+        console.log(meetingState.participantList);
+    }, [meetingState.participantList]);
+
+    const getParticipants = () => {
         const users = meetingController.getUserController()?.getMeetingUsers();
         const localParticipant = Object.values(users).filter(participant => participant.isMe);
         const activeRemoteParticipants = Object.values(users).filter(
@@ -124,13 +129,17 @@ const InMeeting: FC = () => {
     return (
         <div className='meeting-wrapper'>
             <RcLoading loading={loading}>
-                <div className='speakers-container'>
-                    <GalleryWrapper></GalleryWrapper>
-                </div>
-                <div className='action-bar-container'>
-                    <ActionBar></ActionBar>
-                </div>
-                <div ref={audioRef} />
+                {isMeetingJoined ? (
+                    <>
+                        <div className='speakers-container'>
+                            <GalleryWrapper></GalleryWrapper>
+                        </div>
+                        <div className='action-bar-container'>
+                            <ActionBar></ActionBar>
+                        </div>
+                        <div ref={audioRef} />
+                    </>
+                ) : null}
             </RcLoading>
         </div>
     );
