@@ -58,7 +58,7 @@ const VideoAction: FC<IVideoAction> = () => {
         }
     };
     return (
-        <div className='audio-action'>
+        <div className='action-button-wrapper' ref={ref}>
             <div className='action-button' onClick={toggleMuteVideo}>
                 <RcIcon size='large' symbol={meetingState.isVideoMuted ? VideocamOff : Videocam} />
                 <p className='action-text'>
@@ -72,31 +72,31 @@ const VideoAction: FC<IVideoAction> = () => {
                     }}>
                     <RcIcon size='small' symbol={ArrowUp2} />
                 </div>
-                {isShowVideoDeviceList ? (
-                    <div className='action-bar-pop-menu' ref={ref}>
-                        <ul>
-                            {videoDeviceList.map(item => {
-                                return (
-                                    <li
-                                        key={item.deviceId}
-                                        className='action-bar-pop-menu-item'
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            handleChangeVideoDevice(item.deviceId);
-                                        }}>
-                                        {videoActiveDevice === item.deviceId ? (
-                                            <div className='checked'>
-                                                <RcIcon size='small' symbol={Check} />
-                                            </div>
-                                        ) : null}
-                                        {item.label}
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                ) : null}
             </div>
+            {isShowVideoDeviceList ? (
+                <div className='action-bar-popover'>
+                    <ul>
+                        {videoDeviceList.map(item => {
+                            return (
+                                <li
+                                    key={item.deviceId}
+                                    className='action-bar-popover-menu-item'
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        handleChangeVideoDevice(item.deviceId);
+                                    }}>
+                                    {videoActiveDevice === item.deviceId ? (
+                                        <div className='checked'>
+                                            <RcIcon size='small' symbol={Check} />
+                                        </div>
+                                    ) : null}
+                                    {item.label}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            ) : null}
         </div>
     );
 };

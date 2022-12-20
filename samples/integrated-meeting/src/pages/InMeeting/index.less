@@ -1,8 +1,66 @@
-.action-bar-container{
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    height:70px;
+.action-bar-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
     background: #1a1a1a;
+}
+.meeting-feature-modal {
+    background: #fff;
+    border-radius: 10px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 360px;
+    height: 500px;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    color: #202124;
+    .header {
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #e2e2e2;
+        .title {
+            font-size: 18px;
+        }
+    }
+}
+.meeting-popover-wrap {
+    overflow: visible;
+}
+.meeting-popover {
+    padding: 10px 0;
+    font-size: 12px;
+    &-operation-item {
+        text-align: left;
+        white-space: nowrap;
+        cursor: pointer;
+        padding: 5px 20px 5px 30px;
+        &:hover {
+            background: #eee;
+        }
+        position: relative;
+        .operation-icon {
+            position: absolute;
+            color: #039fd8;
+            left: 10px;
+            top: 6px;
+        }
+    }
+    &:before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 5px solid transparent;
+        border-top: 5px solid #fff;
+    }
+    &.center-bottom:before {
+        content: '';
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }

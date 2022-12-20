@@ -4,6 +4,8 @@ import { RcButton, RcIcon, RcIconButton } from '@ringcentral/juno';
 import { MicOff, Mic, Videocam, VideocamOff, HandUp } from '@ringcentral/juno-icon';
 import AudioAction from './audio-action';
 import VideoAction from './video-action';
+import LeaveAction from './leave-action';
+import Participants from './participants';
 import MeetingInfoAction from './meeting-info-action';
 import './index.less';
 import { useMeetingContext } from '@src/store/meeting';
@@ -24,10 +26,8 @@ const ActionBar: FC<IActionBar> = () => {
             <div className='action-group'>
                 <AudioAction></AudioAction>
                 <VideoAction></VideoAction>
-                <div className='action-button highlight'>
-                    <RcIcon size='large' symbol={HandUp} />
-                    <p className='action-text'>Leave</p>
-                </div>
+                <Participants></Participants>
+                <LeaveAction></LeaveAction>
             </div>
         </div>
     );

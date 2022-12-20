@@ -1,0 +1,34 @@
+.participants {
+    .count {
+        position: absolute;
+        font-size: 12px;
+        top: 10px;
+        right: 15px;
+    }
+    .participant-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+        font-size: 12px;
+        .participant-info {
+            display: flex;
+            align-items: center;
+            .participant-name {
+                margin-left: 5px;
+                .role {
+                    color: #5f6368;
+                    transform: scale(0.9);
+                    transform-origin: left;
+                }
+            }
+        }
+        .participant-operation {
+            color: #5f6368;
+            &-icon {
+                margin-left: 8px;
+                cursor: pointer;
+            }
+        }
+    }
+}

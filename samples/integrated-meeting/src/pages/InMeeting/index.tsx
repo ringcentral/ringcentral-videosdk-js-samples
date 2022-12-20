@@ -116,13 +116,16 @@ const InMeeting: FC = () => {
 
     const getParticipants = () => {
         const users = meetingController.getUserController()?.getMeetingUsers();
-        const localParticipant = Object.values(users).filter(participant => participant.isMe);
+        const localParticipant = Object.values(users).find(participant => participant.isMe);
         const activeRemoteParticipants = Object.values(users).filter(
             participant => !participant.isDeleted && !participant.isMe
         );
         dispatch({
             type: MeetingReduceType.PARTICIPANT_LIST,
-            payload: { participantList: [...localParticipant, ...activeRemoteParticipants] },
+            payload: {
+                localParticipant: localParticipant,
+                participantList: [localParticipant, ...activeRemoteParticipants],
+            },
         });
     };
 
