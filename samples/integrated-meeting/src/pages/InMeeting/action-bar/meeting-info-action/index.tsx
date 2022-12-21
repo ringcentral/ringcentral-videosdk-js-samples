@@ -1,14 +1,12 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { RcIcon } from '@ringcentral/juno';
+import { RcIcon, RcPopover } from '@ringcentral/juno';
 import { InfoBorder, Info } from '@ringcentral/juno-icon';
 import { MeetingReduceType, useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
-import { useOnClickOutside } from '@src/hooks';
 import './index.less';
 
 const MeetingInfoAction: FC = () => {
-    const ref = useRef();
-    useOnClickOutside(ref, () => setIsShowMeetingInfo(false));
+    const actionButtonRef = useRef();
 
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
@@ -31,27 +29,32 @@ const MeetingInfoAction: FC = () => {
         }
     };
 
-    const toggleMeetingInfo = async e => {
+    const showMeetingInfo = async e => {
         e.stopPropagation();
-        if (!isShowMeetingInfo) {
-            if (!meetingState.meetingInfo) {
-                await getMeetingInfo();
-            }
-            setIsShowMeetingInfo(true);
-        } else {
-            setIsShowMeetingInfo(false);
+        if (!meetingState.meetingInfo) {
+            await getMeetingInfo();
         }
+        setIsShowMeetingInfo(true);
     };
 
     return (
-        <div className='left-action-button-wrapper' ref={ref}>
-            <div className='left-action-button' onClick={toggleMeetingInfo}>
+        <div>
+            <div className='left-action-button' onClick={showMeetingInfo} ref={actionButtonRef}>
                 <RcIcon size='large' symbol={isShowMeetingInfo ? Info : InfoBorder} />
             </div>
-            {isShowMeetingInfo ? (
-                <div
-                    className='action-bar-popover left'
-                    style={{ left: 0, transform: 'translateX(0)' }}>
+            <RcPopover
+                open={isShowMeetingInfo}
+                anchorEl={actionButtonRef.current}
+                onClose={() => setIsShowMeetingInfo(false)}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}>
+                <div className='meeting-popover left-bottom'>
                     <div className='meeting-info'>
                         <h1 className='meeting-info-title'>Meeting details</h1>
                         <div className='meeting-info-item'>
@@ -72,7 +75,7 @@ const MeetingInfoAction: FC = () => {
                         </div>
                     </div>
                 </div>
-            ) : null}
+            </RcPopover>
         </div>
     );
 };

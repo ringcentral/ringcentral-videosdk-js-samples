@@ -15,7 +15,7 @@ const Participants: FC = () => {
     const [isShowParticipantModal, setIsShowParticipantModal] = useState(false);
 
     return (
-        <div className='action-button-wrapper participants'>
+        <div className='participants'>
             <div className='action-button' onClick={() => setIsShowParticipantModal(true)}>
                 <RcIcon size='large' symbol={Team} />
                 <p className='count'>{meetingState.participantList.length}</p>

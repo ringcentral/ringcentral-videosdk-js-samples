@@ -15,7 +15,7 @@ const AudioAction: FC<IAudioAction> = () => {
 
     const [isShowAudioDeviceList, setIsShowAudioDeviceList] = useState(false);
 
-    const actionButtonref = useRef();
+    const actionButtonRef = useRef();
 
     useEffect(() => {
         if (rcvEngine) {
@@ -62,8 +62,8 @@ const AudioAction: FC<IAudioAction> = () => {
         }
     };
     return (
-        <div className='action-button-wrapper'>
-            <div className='action-button' onClick={toggleMuteAudio} ref={actionButtonref}>
+        <div>
+            <div className='action-button' onClick={toggleMuteAudio} ref={actionButtonRef}>
                 <RcIcon size='large' symbol={meetingState.isAudioMuted ? MicOff : Mic} />
                 <p className='action-text'>{meetingState.isAudioMuted ? 'Unmute' : 'Mute'}</p>
                 <div
@@ -77,7 +77,7 @@ const AudioAction: FC<IAudioAction> = () => {
             </div>
             <RcPopover
                 open={isShowAudioDeviceList}
-                anchorEl={actionButtonref.current}
+                anchorEl={actionButtonRef.current}
                 onClose={() => setIsShowAudioDeviceList(false)}
                 anchorOrigin={{
                     vertical: 'top',

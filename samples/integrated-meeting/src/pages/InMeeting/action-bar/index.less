@@ -11,28 +11,18 @@
         display: flex;
         align-items: center;
         padding: 0 20px;
-        .left-action-button-wrapper {
-            position: relative;
-        }
         .left-action-button {
-            width: 40px;
-            height: 40px;
+            height: 70px;
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
             position: relative;
-            &:hover {
-                background: rgb(54, 53, 53);
-            }
+            cursor: pointer;
         }
     }
     .action-group {
         display: flex;
-        .action-button-wrapper {
-            position: relative;
-        }
         .action-button {
             width: 70px;
             height: 70px;
@@ -43,6 +33,12 @@
             position: relative;
             &:hover {
                 background: rgb(54, 53, 53);
+            }
+            .count {
+                font-size: 12px;
+                position: absolute;
+                right: 15px;
+                top: 12px;
             }
         }
         .action-button-more {
@@ -68,57 +64,6 @@
         .action-text {
             font-size: 12px;
             transform: scale(0.8);
-        }
-    }
-    .action-bar-popover-menu-item {
-        list-style: none;
-        padding: 5px 20px 5px 30px;
-        text-align: left;
-        white-space: nowrap;
-        cursor: pointer;
-        &:hover {
-            background: #eee;
-        }
-        position: relative;
-        .checked {
-            position: absolute;
-            color: #039fd8;
-            left: 10px;
-            top: 6px;
-        }
-    }
-
-    .action-bar-popover {
-        position: absolute;
-        background: #fff;
-        bottom: 70px;
-        left: 50%;
-        transform: translateX(-50%);
-        border-radius: 10px;
-        z-index: 10;
-        padding: 10px 0;
-        font-size: 12px;
-        color: #333;
-        &:before {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            width: 0;
-            height: 0;
-            border: 5px solid transparent;
-            border-top: 5px solid #fff;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        &.left {
-            left: 0;
-            transform: translateX(0);
-            bottom: 60px;
-            &:before {
-                content: '';
-                left: 15px;
-                transform: translateX(0);
-            }
         }
     }
 }

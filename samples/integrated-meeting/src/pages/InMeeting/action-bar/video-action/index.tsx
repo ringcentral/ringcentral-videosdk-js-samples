@@ -1,15 +1,11 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { RcIcon } from '@ringcentral/juno';
+import { RcIcon, RcPopover } from '@ringcentral/juno';
 import { Videocam, VideocamOff, ArrowUp2, Check } from '@ringcentral/juno-icon';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
-import { useOnClickOutside } from '@src/hooks';
 
 interface IVideoAction {}
 const VideoAction: FC<IVideoAction> = () => {
-    const ref = useRef();
-    useOnClickOutside(ref, () => setIsShowVideoDeviceList(false));
-
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
@@ -18,6 +14,8 @@ const VideoAction: FC<IVideoAction> = () => {
     const [videoActiveDevice, setVideoActiveDevice] = useState('');
 
     const [isShowVideoDeviceList, setIsShowVideoDeviceList] = useState(false);
+
+    const actionButtonRef = useRef();
 
     useEffect(() => {
         if (rcvEngine) {
@@ -58,8 +56,8 @@ const VideoAction: FC<IVideoAction> = () => {
         }
     };
     return (
-        <div className='action-button-wrapper' ref={ref}>
-            <div className='action-button' onClick={toggleMuteVideo}>
+        <div>
+            <div className='action-button' onClick={toggleMuteVideo} ref={actionButtonRef}>
                 <RcIcon size='large' symbol={meetingState.isVideoMuted ? VideocamOff : Videocam} />
                 <p className='action-text'>
                     {meetingState.isVideoMuted ? 'Start Video' : 'Stop Video'}
@@ -73,30 +71,39 @@ const VideoAction: FC<IVideoAction> = () => {
                     <RcIcon size='small' symbol={ArrowUp2} />
                 </div>
             </div>
-            {isShowVideoDeviceList ? (
-                <div className='action-bar-popover'>
-                    <ul>
-                        {videoDeviceList.map(item => {
-                            return (
-                                <li
-                                    key={item.deviceId}
-                                    className='action-bar-popover-menu-item'
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        handleChangeVideoDevice(item.deviceId);
-                                    }}>
-                                    {videoActiveDevice === item.deviceId ? (
-                                        <div className='checked'>
-                                            <RcIcon size='small' symbol={Check} />
-                                        </div>
-                                    ) : null}
-                                    {item.label}
-                                </li>
-                            );
-                        })}
-                    </ul>
+            <RcPopover
+                open={isShowVideoDeviceList}
+                anchorEl={actionButtonRef.current}
+                onClose={() => setIsShowVideoDeviceList(false)}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}>
+                <div className='meeting-popover center-bottom'>
+                    {videoDeviceList.map(item => {
+                        return (
+                            <div
+                                key={item.deviceId}
+                                className='meeting-popover-operation-item'
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    handleChangeVideoDevice(item.deviceId);
+                                }}>
+                                {videoActiveDevice === item.deviceId ? (
+                                    <div className='operation-icon'>
+                                        <RcIcon size='small' symbol={Check} color='#039fd8' />
+                                    </div>
+                                ) : null}
+                                {item.label}
+                            </div>
+                        );
+                    })}
                 </div>
-            ) : null}
+            </RcPopover>
         </div>
     );
 };

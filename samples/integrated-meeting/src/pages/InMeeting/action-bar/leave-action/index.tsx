@@ -1,13 +1,12 @@
 import React, { FC, useRef, useState } from 'react';
-import { RcIcon } from '@ringcentral/juno';
+import { RcIcon, RcPopover } from '@ringcentral/juno';
 import { HandUp } from '@ringcentral/juno-icon';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
 import { useOnClickOutside } from '@src/hooks';
 
 const LeaveAction: FC = () => {
-    const ref = useRef();
-    useOnClickOutside(ref, () => setIsShowLeaveOption(false));
+    const actionButtonRef = useRef();
 
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
@@ -17,7 +16,6 @@ const LeaveAction: FC = () => {
     const [isShowLeaveOption, setIsShowLeaveOption] = useState(false);
 
     const leaveMeetingHandler = () => {
-        console.log(meetingState);
         if (
             meetingState.localParticipant &&
             meetingState.localParticipant.isModerator &&
@@ -46,23 +44,32 @@ const LeaveAction: FC = () => {
     };
 
     return (
-        <div className='action-button-wrapper' ref={ref}>
-            <div className='action-button' onClick={leaveMeetingHandler}>
+        <div>
+            <div className='action-button' onClick={leaveMeetingHandler} ref={actionButtonRef}>
                 <RcIcon size='large' symbol={HandUp} color='#ea4335' />
                 <p className='action-text'>Leave</p>
             </div>
-            {isShowLeaveOption ? (
-                <div className='action-bar-popover'>
-                    <ul>
-                        <li className='action-bar-popover-menu-item' onClick={leaveMeeting}>
-                            Leave meeting
-                        </li>
-                        <li className='action-bar-popover-menu-item' onClick={endMeeting}>
-                            End meeting for everyone
-                        </li>
-                    </ul>
+            <RcPopover
+                open={isShowLeaveOption}
+                anchorEl={actionButtonRef.current}
+                onClose={() => setIsShowLeaveOption(false)}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}>
+                <div className='meeting-popover center-bottom'>
+                    <div className='meeting-popover-operation-item' onClick={leaveMeeting}>
+                        Leave meeting
+                    </div>
+                    <div className='meeting-popover-operation-item' onClick={endMeeting}>
+                        End meeting for everyone
+                    </div>
                 </div>
-            ) : null}
+            </RcPopover>
         </div>
     );
 };

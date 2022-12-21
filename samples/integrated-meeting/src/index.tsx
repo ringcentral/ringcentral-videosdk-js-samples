@@ -7,7 +7,7 @@ import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
 import GlobalContext from './store/global/context';
 import { MeetingContextProvider } from './store/meeting';
-import './index.less';
+import './styles/index.less';
 declare global {
     interface Window {
         initConfig: Record<string, string>;
