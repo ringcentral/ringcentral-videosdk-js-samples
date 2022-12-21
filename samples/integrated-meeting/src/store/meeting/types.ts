@@ -1,11 +1,18 @@
 import { Dispatch } from 'react';
 import { IMeetingInfo, IParticipant, RcvEngine } from '@sdk';
 
+export enum ActiveFeatureModal {
+    Participant,
+    Chat,
+}
+
 export enum MeetingReduceType {
     PARTICIPANT_LIST = 'PARTICIPANTS_LIST',
     AUDIO_MUTE_UPDATED = 'AUDIO_MUTE_UPDATED',
     VIDEO_MUTE_UPDATED = 'VIDEO_MUTE_UPDATED',
     MEETING_INFO = 'MEETING_INFO',
+    IS_MODAL_PINNED = 'IS_MODAL_PINNED',
+    ACTIVE_FEATURE_MODAL = 'ACTIVE_FEATURE_MODAL',
 }
 
 export interface IMeetingState {
@@ -14,6 +21,8 @@ export interface IMeetingState {
     participantList: IParticipant[];
     localParticipant?: IParticipant;
     meetingInfo?: IMeetingInfo;
+    isModalPinned: boolean;
+    activeFeatureModal: ActiveFeatureModal | null;
 }
 
 export interface IMeetingAction {
@@ -22,8 +31,6 @@ export interface IMeetingAction {
 }
 
 export interface IMeetingContext {
-    rcvEngine: RcvEngine | null;
     state: IMeetingState;
-    setRcvEngine: (rcvEngine: RcvEngine) => void;
     dispatch: Dispatch<IMeetingAction>;
 }

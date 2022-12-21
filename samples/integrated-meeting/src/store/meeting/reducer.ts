@@ -23,6 +23,17 @@ export function meetingReducer(state: IMeetingState, { type, payload }: IMeeting
                 ...state,
                 meetingInfo: payload.meetingInfo,
             };
+        case MeetingReduceType.IS_MODAL_PINNED:
+            return {
+                ...state,
+                isModalPinned: payload.isModalPinned,
+            };
+        case MeetingReduceType.ACTIVE_FEATURE_MODAL:
+            return {
+                ...state,
+                activeFeatureModal: payload.activeFeatureModal,
+            };
+
         default:
             return state;
     }

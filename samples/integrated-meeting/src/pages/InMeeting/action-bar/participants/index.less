@@ -5,6 +5,8 @@
         top: 10px;
         right: 15px;
     }
+}
+.participants-modal {
     .participant-item {
         display: flex;
         align-items: center;
@@ -14,13 +16,23 @@
         .participant-info {
             display: flex;
             align-items: center;
+            position: relative;
             .participant-name {
-                margin-left: 5px;
+                margin-left: 15px;
                 .role {
                     color: #5f6368;
                     transform: scale(0.9);
                     transform-origin: left;
                 }
+            }
+            .participant-moderator {
+                position: absolute;
+                top: -5px;
+                left: 20px;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #fff;
             }
         }
         .participant-operation {

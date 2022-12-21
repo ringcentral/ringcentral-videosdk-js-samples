@@ -15,19 +15,18 @@ const initState: IMeetingState = {
     isAudioMuted: true,
     isVideoMuted: true,
     participantList: [],
+    isModalPinned: false,
+    activeFeatureModal: null,
 };
 export const MeetingContext = createContext<IMeetingContext>({
-    rcvEngine: null,
     state: initState,
-    setRcvEngine: () => {},
     dispatch: () => {},
 });
 
 export const MeetingContextProvider: React.FC<PropsWithChildren<{}>> = props => {
-    const [rcvEngine, setRcvEngine] = useState(null);
     const [state, dispatch] = useReducer(meetingReducer, initState);
     return (
-        <MeetingContext.Provider value={{ state, dispatch, rcvEngine, setRcvEngine }}>
+        <MeetingContext.Provider value={{ state, dispatch }}>
             {props.children}
         </MeetingContext.Provider>
     );

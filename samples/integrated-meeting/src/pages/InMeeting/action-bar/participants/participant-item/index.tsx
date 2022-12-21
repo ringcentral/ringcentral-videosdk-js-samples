@@ -8,6 +8,8 @@ import {
     MicOffBorder,
     MicBorder,
     MoreVert,
+    HandUp,
+    Star,
 } from '@ringcentral/juno-icon';
 import { useGlobalContext } from '@src/store/global';
 
@@ -80,14 +82,36 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
         }
     };
 
+    const assignModerators = async () => {
+        try {
+            let res = await meetingController
+                ?.getUserController()
+                ?.assignModerators([participant.uid]);
+            console.log(res);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    const removeUser = () => {
+        try {
+            meetingController?.getUserController()?.removeUser(participant.uid);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     return (
         <div className='participant-item'>
             <div className='participant-info'>
                 <Avatar displaySize={30} imgSize={45} participant={participant}></Avatar>
+                <div className='participant-moderator'>
+                    <RcIcon size='small' symbol={Star} color='#FF8800' />
+                </div>
                 <div className='participant-name'>
                     {participant.displayName}
                     {participant.isMe ? ' (you)' : ''}
-                    {participant.isModerator ? <p className='role'>meeting host</p> : null}
+                    {participant.isHost ? <p className='role'>meeting host</p> : null}
                 </div>
             </div>
             <div className='participant-operation'>
@@ -111,11 +135,25 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
                                 vertical: 'top',
                                 horizontal: 'right',
                             }}>
-                            <div className='meeting-popover'>
-                                <div className='meeting-popover-operation-item'>
-                                    Assign moderator role
+                            <div className='meeting-popover right-top'>
+                                {!participant.isModerator ? (
+                                    <div
+                                        className='meeting-popover-operation-item'
+                                        onClick={assignModerators}>
+                                        <div className='operation-icon'>
+                                            <RcIcon size='small' symbol={Star} color='#5f6368' />
+                                        </div>
+                                        Assign moderator role
+                                    </div>
+                                ) : null}
+                                <div
+                                    className='meeting-popover-operation-item'
+                                    onClick={removeUser}>
+                                    <div className='operation-icon'>
+                                        <RcIcon size='small' symbol={HandUp} color='#5f6368' />
+                                    </div>
+                                    Hangup
                                 </div>
-                                <div className='meeting-popover-operation-item'>Hangup</div>
                             </div>
                         </RcPopover>
                     </>

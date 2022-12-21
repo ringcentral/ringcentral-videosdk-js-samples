@@ -6,27 +6,7 @@
     height: 70px;
     background: #1a1a1a;
 }
-.meeting-feature-modal {
-    background: #fff;
-    border-radius: 10px;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    width: 360px;
-    height: 500px;
-    transform: translate(-50%, -50%);
-    font-size: 14px;
-    color: #202124;
-    .header {
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 1px solid #e2e2e2;
-        .title {
-            font-size: 18px;
-        }
-    }
-}
+
 .meeting-popover-wrap {
     overflow: visible;
 }
@@ -68,5 +48,13 @@
         bottom: -10px;
         left: 7px;
         transform: translateX(0);
+    }
+    &.right-top:before {
+        content: '';
+        top: -10px;
+        right: 7px;
+        transform: translateX(0);
+        border: 5px solid transparent;
+        border-bottom: 5px solid #fff;
     }
 }

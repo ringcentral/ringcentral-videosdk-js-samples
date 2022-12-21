@@ -1,51 +1,42 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC } from 'react';
 import { RcIcon } from '@ringcentral/juno';
-import { Team, DeleteCircle } from '@ringcentral/juno-icon';
+import { Team } from '@ringcentral/juno-icon';
 import ParticipantItem from './participant-item';
-import { useMeetingContext } from '@src/store/meeting';
-import { useGlobalContext } from '@src/store/global';
+import { ActiveFeatureModal, MeetingReduceType, useMeetingContext } from '@src/store/meeting';
 import './index.less';
+import MeetingFeatureModal from '../meeting-feature-modal';
 
 const Participants: FC = () => {
-    const { rcvEngine } = useGlobalContext();
-    const meetingController = rcvEngine?.getMeetingController();
+    const { state: meetingState, dispatch } = useMeetingContext();
 
-    const { state: meetingState } = useMeetingContext();
-
-    const [isShowParticipantModal, setIsShowParticipantModal] = useState(false);
+    const showParticipantModal = () => {
+        dispatch({
+            type: MeetingReduceType.ACTIVE_FEATURE_MODAL,
+            payload: { activeFeatureModal: ActiveFeatureModal.Participant },
+        });
+    };
 
     return (
         <div className='participants'>
-            <div className='action-button' onClick={() => setIsShowParticipantModal(true)}>
+            <div className='action-button' onClick={showParticipantModal}>
                 <RcIcon size='large' symbol={Team} />
                 <p className='count'>{meetingState.participantList.length}</p>
                 <p className='action-text'>Participants</p>
             </div>
-            {isShowParticipantModal ? (
-                <div className='meeting-feature-modal participants-modal'>
-                    <div className='header'>
-                        <p className='title'>participants</p>
-                        <RcIcon
-                            size='large'
-                            color='#5f6368'
-                            symbol={DeleteCircle}
-                            onClick={() => setIsShowParticipantModal(false)}
-                        />
-                    </div>
-                    <div className='content'>
-                        <div className='operation-bar'></div>
-                        <div className='participant-list'>
-                            {meetingState.participantList.map(participant => {
-                                return (
-                                    <ParticipantItem
-                                        key={participant.uid}
-                                        participant={participant}></ParticipantItem>
-                                );
-                            })}
-                        </div>
+            <MeetingFeatureModal title={`participants(${meetingState.participantList.length})`}>
+                <div className='participants-modal'>
+                    <div className='operation-bar'></div>
+                    <div className='participant-list'>
+                        {meetingState.participantList.map(participant => {
+                            return (
+                                <ParticipantItem
+                                    key={participant.uid}
+                                    participant={participant}></ParticipantItem>
+                            );
+                        })}
                     </div>
                 </div>
-            ) : null}
+            </MeetingFeatureModal>
         </div>
     );
 };

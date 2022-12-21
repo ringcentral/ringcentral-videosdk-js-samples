@@ -8,6 +8,7 @@ import GalleryWrapper from './gallery-wrapper';
 import ActionBar from './action-bar';
 import { useGlobalContext } from '@src/store/global';
 import { MeetingReduceType } from '@src/store/meeting';
+import { useElementContext } from '@src/store/element';
 import './index.less';
 
 const InMeeting: FC = () => {
@@ -16,6 +17,7 @@ const InMeeting: FC = () => {
 
     const { meetingId } = useParams();
     const { state: meetingState, dispatch } = useMeetingContext();
+    const { setSidePortal } = useElementContext();
 
     const [loading, setLoading] = useState(false);
     const audioRef = useRef({} as HTMLDivElement);
@@ -136,6 +138,7 @@ const InMeeting: FC = () => {
                     <>
                         <div className='speakers-container'>
                             <GalleryWrapper></GalleryWrapper>
+                            <div ref={setSidePortal}></div>
                         </div>
                         <div className='action-bar-container'>
                             <ActionBar></ActionBar>

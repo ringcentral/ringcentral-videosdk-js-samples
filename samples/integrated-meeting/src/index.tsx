@@ -7,6 +7,7 @@ import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
 import GlobalContext from './store/global/context';
 import { MeetingContextProvider } from './store/meeting';
+import { ElementContextProvider } from './store/element';
 import './styles/index.less';
 declare global {
     interface Window {
@@ -70,21 +71,23 @@ export default function App({ config }) {
 
     return (
         <GlobalContext.Provider value={{ rcvEngine, isMeetingJoined }}>
-            <RcThemeProvider>
-                <Routes>
-                    <Route path='meeting'>
-                        <Route
-                            path=':meetingId'
-                            element={
-                                <MeetingContextProvider>
-                                    <InMeeting />
-                                </MeetingContextProvider>
-                            }
-                        />
-                    </Route>
-                    <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
-                </Routes>
-            </RcThemeProvider>
+            <ElementContextProvider>
+                <RcThemeProvider>
+                    <Routes>
+                        <Route path='meeting'>
+                            <Route
+                                path=':meetingId'
+                                element={
+                                    <MeetingContextProvider>
+                                        <InMeeting />
+                                    </MeetingContextProvider>
+                                }
+                            />
+                        </Route>
+                        <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
+                    </Routes>
+                </RcThemeProvider>
+            </ElementContextProvider>
         </GlobalContext.Provider>
     );
 }
