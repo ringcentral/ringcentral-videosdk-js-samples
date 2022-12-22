@@ -11,7 +11,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 20px;
+        padding: 12px 20px;
         font-size: 12px;
         .participant-info {
             display: flex;
@@ -40,6 +40,33 @@
             &-icon {
                 margin-left: 8px;
                 cursor: pointer;
+            }
+        }
+    }
+    .operation-bar {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9f9f9;
+        border-bottom: 1px solid #e2e2e2;
+        &-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            &:hover {
+                background: #fff;
+            }
+        }
+        &-icon {
+            color: #5f6368;
+            &.highlight {
+                color: #ea4335;
             }
         }
     }

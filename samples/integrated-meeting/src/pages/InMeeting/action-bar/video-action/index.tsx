@@ -83,7 +83,7 @@ const VideoAction: FC<IVideoAction> = () => {
                     vertical: 'bottom',
                     horizontal: 'center',
                 }}>
-                <div className='meeting-popover center-bottom'>
+                <div className='meeting-popover pad-t-10 pad-b-10 center-bottom'>
                     {videoDeviceList.map(item => {
                         return (
                             <div

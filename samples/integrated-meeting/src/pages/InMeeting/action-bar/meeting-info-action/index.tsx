@@ -54,7 +54,7 @@ const MeetingInfoAction: FC = () => {
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}>
-                <div className='meeting-popover left-bottom'>
+                <div className='meeting-popover pad-t-10 pad-b-10 left-bottom'>
                     <div className='meeting-info'>
                         <h1 className='meeting-info-title'>Meeting details</h1>
                         <div className='meeting-info-item'>

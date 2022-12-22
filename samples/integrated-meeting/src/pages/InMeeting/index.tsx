@@ -1,5 +1,13 @@
 import React, { FC, useEffect, useState, useRef } from 'react';
-import { AudioEvent, VideoEvent, IParticipant, UserEvent, StreamEvent, RcvEngine } from '@sdk';
+import {
+    AudioEvent,
+    VideoEvent,
+    IParticipant,
+    UserEvent,
+    StreamEvent,
+    RcvEngine,
+    MeetingEvent,
+} from '@sdk';
 import { useParams } from 'react-router-dom';
 import { RcLoading } from '@ringcentral/juno';
 import { useMeetingContext } from '@src/store/meeting';
@@ -100,6 +108,16 @@ const InMeeting: FC = () => {
             sinkStreamElement(stream, TrackType.AUDIO, audioRef.current);
         });
 
+        const meetingLockStateListener = meetingController.on(
+            MeetingEvent.MEETING_LOCK_STATE_CHANGED,
+            state => {
+                dispatch({
+                    type: MeetingReduceType.MEETING_LOCK_STATE,
+                    payload: { isMeetingLocked: state },
+                });
+            }
+        );
+
         return () => {
             audioLocalMuteListener?.();
             audioRemoteMuteListener?.();
@@ -109,6 +127,7 @@ const InMeeting: FC = () => {
             userLeftListener?.();
             userUpdateListener?.();
             userSpeakChangedListener();
+            meetingLockStateListener();
         };
     };
 

@@ -87,7 +87,7 @@ const AudioAction: FC<IAudioAction> = () => {
                     vertical: 'bottom',
                     horizontal: 'center',
                 }}>
-                <div className='meeting-popover center-bottom'>
+                <div className='meeting-popover pad-t-10 pad-b-10 center-bottom'>
                     {audioDeviceList.map(item => {
                         return (
                             <div

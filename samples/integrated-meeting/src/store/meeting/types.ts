@@ -13,9 +13,11 @@ export enum MeetingReduceType {
     MEETING_INFO = 'MEETING_INFO',
     IS_MODAL_PINNED = 'IS_MODAL_PINNED',
     ACTIVE_FEATURE_MODAL = 'ACTIVE_FEATURE_MODAL',
+    MEETING_LOCK_STATE = 'MEETING_LOCK_STATE',
 }
 
 export interface IMeetingState {
+    isMeetingLocked: boolean;
     isAudioMuted: boolean;
     isVideoMuted: boolean;
     participantList: IParticipant[];

@@ -7,11 +7,7 @@
     background: #1a1a1a;
 }
 
-.meeting-popover-wrap {
-    overflow: visible;
-}
 .meeting-popover {
-    padding: 10px 0;
     font-size: 12px;
     &-operation-item {
         text-align: left;
@@ -56,5 +52,26 @@
         transform: translateX(0);
         border: 5px solid transparent;
         border-bottom: 5px solid #fff;
+    }
+    &.center-top:before {
+        content: '';
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-bottom: 5px solid #fff;
+    }
+    .title {
+        font-size: 18px;
+        padding: 10px;
+        border-bottom: 1px solid #e2e2e2;
+        text-align: center;
+    }
+    .content {
+        padding: 20px;
+    }
+    .footer {
+        padding: 20px;
+        display: flex;
     }
 }

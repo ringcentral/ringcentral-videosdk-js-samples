@@ -33,6 +33,11 @@ export function meetingReducer(state: IMeetingState, { type, payload }: IMeeting
                 ...state,
                 activeFeatureModal: payload.activeFeatureModal,
             };
+        case MeetingReduceType.MEETING_LOCK_STATE:
+            return {
+                ...state,
+                isMeetingLocked: payload.isMeetingLocked,
+            };
 
         default:
             return state;

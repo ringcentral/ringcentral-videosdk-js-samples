@@ -12,6 +12,7 @@ import { IMeetingState, IMeetingContext, MeetingReduceType } from './types';
 import { meetingReducer } from './reducer';
 
 const initState: IMeetingState = {
+    isMeetingLocked: false,
     isAudioMuted: true,
     isVideoMuted: true,
     participantList: [],

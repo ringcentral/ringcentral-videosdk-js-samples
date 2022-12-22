@@ -61,7 +61,7 @@ const LeaveAction: FC = () => {
                     vertical: 'bottom',
                     horizontal: 'center',
                 }}>
-                <div className='meeting-popover center-bottom'>
+                <div className='meeting-popover pad-t-10 pad-b-10 center-bottom'>
                     <div className='meeting-popover-operation-item' onClick={leaveMeeting}>
                         Leave meeting
                     </div>

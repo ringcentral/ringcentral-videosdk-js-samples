@@ -135,7 +135,7 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
                                 vertical: 'top',
                                 horizontal: 'right',
                             }}>
-                            <div className='meeting-popover right-top'>
+                            <div className='meeting-popover pad-t-10 pad-b-10 right-top'>
                                 {!participant.isModerator ? (
                                     <div
                                         className='meeting-popover-operation-item'
