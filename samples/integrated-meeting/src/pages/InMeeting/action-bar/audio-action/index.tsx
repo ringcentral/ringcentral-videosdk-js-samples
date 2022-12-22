@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { RcIcon, RcPopover } from '@ringcentral/juno';
+import { RcButton, RcIcon, RcPopover } from '@ringcentral/juno';
 import { MicOff, Mic, ArrowUp2, Check } from '@ringcentral/juno-icon';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
+import { AudioEvent } from '@sdk';
 
-interface IAudioAction {}
-const AudioAction: FC<IAudioAction> = () => {
+const AudioAction: FC = () => {
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
@@ -20,8 +20,22 @@ const AudioAction: FC<IAudioAction> = () => {
     useEffect(() => {
         if (rcvEngine) {
             getAudioDeviceList();
+            initListener();
         }
     }, [rcvEngine]);
+
+    const [isShowAudioUnmuteDemandPop, setIsShowAudioUnmuteDemandPop] = useState(false);
+
+    const initListener = () => {
+        const audioController = meetingController?.getAudioController();
+
+        const audioMuteDemandListener = audioController?.on(AudioEvent.AUDIO_UNMUTE_DEMAND, () => {
+            setIsShowAudioUnmuteDemandPop(true);
+        });
+        return () => {
+            audioMuteDemandListener();
+        };
+    };
 
     const getAudioDeviceList = () => {
         rcvEngine
@@ -61,6 +75,12 @@ const AudioAction: FC<IAudioAction> = () => {
             meetingController?.getAudioController()?.muteLocalAudioStream();
         }
     };
+
+    const acceptUnMuteAudioDemand = () => {
+        meetingController?.getAudioController()?.unmuteLocalAudioStream();
+        setIsShowAudioUnmuteDemandPop(false);
+    };
+
     return (
         <div>
             <div className='action-button' onClick={toggleMuteAudio} ref={actionButtonRef}>
@@ -106,6 +126,43 @@ const AudioAction: FC<IAudioAction> = () => {
                             </div>
                         );
                     })}
+                </div>
+            </RcPopover>
+            <RcPopover
+                open={Boolean(actionButtonRef.current) && isShowAudioUnmuteDemandPop}
+                anchorEl={actionButtonRef.current}
+                onClose={() => setIsShowAudioUnmuteDemandPop(false)}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}>
+                <div className='meeting-popover center-bottom'>
+                    <div className='title'>Unmute</div>
+                    <div className='content'>Allow moderator to unmute you?</div>
+                    <div className='footer pad-t-5'>
+                        <RcButton
+                            radius='round'
+                            keepElevation
+                            color='#fff'
+                            size='small'
+                            style={{ width: '100px' }}
+                            onClick={() => setIsShowAudioUnmuteDemandPop(false)}>
+                            Don't Allow
+                        </RcButton>
+                        <RcButton
+                            radius='round'
+                            keepElevation
+                            color='#066fac'
+                            size='small'
+                            style={{ width: '100px', marginLeft: '10px' }}
+                            onClick={acceptUnMuteAudioDemand}>
+                            OK
+                        </RcButton>
+                    </div>
                 </div>
             </RcPopover>
         </div>

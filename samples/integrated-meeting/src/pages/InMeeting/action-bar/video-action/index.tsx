@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { RcIcon, RcPopover } from '@ringcentral/juno';
+import { RcButton, RcIcon, RcPopover } from '@ringcentral/juno';
 import { Videocam, VideocamOff, ArrowUp2, Check } from '@ringcentral/juno-icon';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
+import { VideoEvent } from '@sdk';
 
-interface IVideoAction {}
-const VideoAction: FC<IVideoAction> = () => {
+const VideoAction: FC = () => {
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
@@ -20,8 +20,22 @@ const VideoAction: FC<IVideoAction> = () => {
     useEffect(() => {
         if (rcvEngine) {
             getvideoDeviceList();
+            initListener();
         }
     }, [rcvEngine]);
+
+    const [isShowVideoUnmuteDemandPop, setIsShowVideoUnmuteDemandPop] = useState(false);
+
+    const initListener = () => {
+        const videoController = meetingController?.getVideoController();
+
+        const videoMuteDemandListener = videoController?.on(VideoEvent.VIDEO_UNMUTE_DEMAND, () => {
+            setIsShowVideoUnmuteDemandPop(true);
+        });
+        return () => {
+            videoMuteDemandListener();
+        };
+    };
 
     const getvideoDeviceList = () => {
         rcvEngine
@@ -55,6 +69,12 @@ const VideoAction: FC<IVideoAction> = () => {
             meetingController?.getVideoController()?.muteLocalVideoStream();
         }
     };
+
+    const acceptUnMuteVideoDemand = () => {
+        meetingController?.getVideoController()?.unmuteLocalVideoStream();
+        setIsShowVideoUnmuteDemandPop(false);
+    };
+
     return (
         <div>
             <div className='action-button' onClick={toggleMuteVideo} ref={actionButtonRef}>
@@ -102,6 +122,43 @@ const VideoAction: FC<IVideoAction> = () => {
                             </div>
                         );
                     })}
+                </div>
+            </RcPopover>
+            <RcPopover
+                open={Boolean(actionButtonRef.current) && isShowVideoUnmuteDemandPop}
+                anchorEl={actionButtonRef.current}
+                onClose={() => setIsShowVideoUnmuteDemandPop(false)}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}>
+                <div className='meeting-popover center-bottom'>
+                    <div className='title'>Unmute</div>
+                    <div className='content'>Allow moderator to unmute you?</div>
+                    <div className='footer pad-t-5'>
+                        <RcButton
+                            radius='round'
+                            keepElevation
+                            color='#fff'
+                            size='small'
+                            style={{ width: '100px' }}
+                            onClick={() => setIsShowVideoUnmuteDemandPop(false)}>
+                            Don't Allow
+                        </RcButton>
+                        <RcButton
+                            radius='round'
+                            keepElevation
+                            color='#066fac'
+                            size='small'
+                            style={{ width: '100px', marginLeft: '10px' }}
+                            onClick={acceptUnMuteVideoDemand}>
+                            OK
+                        </RcButton>
+                    </div>
                 </div>
             </RcPopover>
         </div>

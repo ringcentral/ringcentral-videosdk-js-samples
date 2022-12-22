@@ -3,7 +3,6 @@ import { RcIcon, RcPopover } from '@ringcentral/juno';
 import { HandUp } from '@ringcentral/juno-icon';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
-import { useOnClickOutside } from '@src/hooks';
 
 const LeaveAction: FC = () => {
     const actionButtonRef = useRef();

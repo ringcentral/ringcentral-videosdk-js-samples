@@ -2,8 +2,6 @@ import React, { FC, useEffect, useMemo } from 'react';
 import { IParticipant, NQIState } from '@sdk';
 import { RcIcon } from '@ringcentral/juno';
 import {
-    Phone,
-    PhoneOff,
     MicOff,
     Mic,
     GoodConnection,

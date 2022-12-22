@@ -8,16 +8,8 @@ import LeaveAction from './leave-action';
 import Participants from './participants';
 import MeetingInfoAction from './meeting-info-action';
 import './index.less';
-import { useMeetingContext } from '@src/store/meeting';
-import { useGlobalContext } from '@src/store/global';
 
-interface IActionBar {}
-const ActionBar: FC<IActionBar> = () => {
-    const { rcvEngine } = useGlobalContext();
-    const meetingController = rcvEngine?.getMeetingController();
-
-    const { state: meetingState } = useMeetingContext();
-
+const ActionBar: FC = () => {
     return (
         <div className='meeting-action-bar'>
             <div className='left-action-group'>
