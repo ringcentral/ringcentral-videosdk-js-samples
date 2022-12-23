@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { RcButton, RcIcon, RcPopover } from '@ringcentral/juno';
-import { MicOff, Mic, ArrowUp2, Check } from '@ringcentral/juno-icon';
+import { Button, Popover } from '@mui/material';
+import { MicOff, Mic, KeyboardArrowUp, Check } from '@mui/icons-material';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
 import { AudioEvent } from '@sdk';
@@ -84,7 +84,7 @@ const AudioAction: FC = () => {
     return (
         <div>
             <div className='action-button' onClick={toggleMuteAudio} ref={actionButtonRef}>
-                <RcIcon size='large' symbol={meetingState.isAudioMuted ? MicOff : Mic} />
+                {meetingState.isAudioMuted ? <MicOff /> : <Mic />}
                 <p className='action-text'>{meetingState.isAudioMuted ? 'Unmute' : 'Mute'}</p>
                 <div
                     className={`action-button-more ${isShowAudioDeviceList ? 'checked' : ''}`}
@@ -92,10 +92,10 @@ const AudioAction: FC = () => {
                         e.stopPropagation();
                         setIsShowAudioDeviceList(true);
                     }}>
-                    <RcIcon size='small' symbol={ArrowUp2} />
+                    <KeyboardArrowUp sx={{ fontSize: '14px' }}></KeyboardArrowUp>
                 </div>
             </div>
-            <RcPopover
+            <Popover
                 open={isShowAudioDeviceList}
                 anchorEl={actionButtonRef.current}
                 onClose={() => setIsShowAudioDeviceList(false)}
@@ -119,7 +119,7 @@ const AudioAction: FC = () => {
                                 }}>
                                 {audioActiveDevice === item.deviceId ? (
                                     <div className='operation-icon'>
-                                        <RcIcon size='small' symbol={Check} color='#039fd8' />
+                                        <Check sx={{ color: '#039fd8', fontSize: '16px' }}></Check>
                                     </div>
                                 ) : null}
                                 {item.label}
@@ -127,8 +127,8 @@ const AudioAction: FC = () => {
                         );
                     })}
                 </div>
-            </RcPopover>
-            <RcPopover
+            </Popover>
+            <Popover
                 open={Boolean(actionButtonRef.current) && isShowAudioUnmuteDemandPop}
                 anchorEl={actionButtonRef.current}
                 onClose={() => setIsShowAudioUnmuteDemandPop(false)}
@@ -144,27 +144,21 @@ const AudioAction: FC = () => {
                     <div className='title'>Unmute</div>
                     <div className='content'>Allow moderator to unmute you?</div>
                     <div className='footer pad-t-5'>
-                        <RcButton
-                            radius='round'
-                            keepElevation
-                            color='#fff'
+                        <Button
                             size='small'
                             style={{ width: '100px' }}
                             onClick={() => setIsShowAudioUnmuteDemandPop(false)}>
                             Don't Allow
-                        </RcButton>
-                        <RcButton
-                            radius='round'
-                            keepElevation
-                            color='#066fac'
+                        </Button>
+                        <Button
                             size='small'
                             style={{ width: '100px', marginLeft: '10px' }}
                             onClick={acceptUnMuteAudioDemand}>
                             OK
-                        </RcButton>
+                        </Button>
                     </div>
                 </div>
-            </RcPopover>
+            </Popover>
         </div>
     );
 };

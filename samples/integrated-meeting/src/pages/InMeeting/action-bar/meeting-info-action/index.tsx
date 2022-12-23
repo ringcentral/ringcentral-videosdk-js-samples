@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { RcIcon, RcPopover } from '@ringcentral/juno';
-import { InfoBorder, Info } from '@ringcentral/juno-icon';
+import React, { FC, useRef, useState } from 'react';
+import { Popover } from '@mui/material';
+import { Info } from '@mui/icons-material';
 import { MeetingReduceType, useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
 import './index.less';
@@ -40,9 +40,9 @@ const MeetingInfoAction: FC = () => {
     return (
         <div>
             <div className='left-action-button' onClick={showMeetingInfo} ref={actionButtonRef}>
-                <RcIcon size='large' symbol={isShowMeetingInfo ? Info : InfoBorder} />
+                <Info></Info>
             </div>
-            <RcPopover
+            <Popover
                 open={isShowMeetingInfo}
                 anchorEl={actionButtonRef.current}
                 onClose={() => setIsShowMeetingInfo(false)}
@@ -75,7 +75,7 @@ const MeetingInfoAction: FC = () => {
                         </div>
                     </div>
                 </div>
-            </RcPopover>
+            </Popover>
         </div>
     );
 };

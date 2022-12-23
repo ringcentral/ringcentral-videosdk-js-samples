@@ -1,14 +1,13 @@
 import React, { FC, useCallback, useState, useRef } from 'react';
 import {
-    RcButton,
-    RcDialog,
-    RcDialogActions,
-    RcDialogContent,
-    RcDialogTitle,
-    RcIcon,
-    RcTextField,
-} from '@ringcentral/juno';
-import { StartMeeting, JoinMeeting } from '@ringcentral/juno-icon';
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    TextField,
+} from '@mui/material';
+
 import { RcvEngine } from '@sdk';
 import './index.less';
 interface IProps {
@@ -60,55 +59,45 @@ const StartView: FC<IProps> = props => {
                 <div className='meeting-button-wrapper'>
                     <div
                         className='meeting-button'
-                        onClick={!isStartLoading ? startMeetingHandler : null}>
-                        <RcIcon size='xxxlarge' symbol={StartMeeting} color='#039fd8' />
-                    </div>
+                        onClick={!isStartLoading ? startMeetingHandler : null}></div>
                     <p className='meeting-button-text'>Start Meeting</p>
                 </div>
                 <div className='meeting-button-wrapper' onClick={() => setIsShowModal(true)}>
-                    <div className='meeting-button'>
-                        <RcIcon size='xxxlarge' symbol={JoinMeeting} color='#039fd8' />
-                    </div>
+                    <div className='meeting-button'></div>
                     <p className='meeting-button-text'>Join Meeting</p>
                 </div>
             </div>
-            <RcDialog open={isShowModal} onClose={() => setIsShowModal(false)} maxWidth='xs'>
-                <RcDialogTitle>Join a meeting</RcDialogTitle>
-                <RcDialogContent>
-                    <RcTextField
+            <Dialog open={isShowModal} onClose={() => setIsShowModal(false)} maxWidth='xs'>
+                <DialogTitle>Join a meeting</DialogTitle>
+                <DialogContent>
+                    <TextField
                         required
                         label='Meeting Id'
                         id='control'
                         inputRef={inputMeetingIdRef}
                     />
-                    <RcTextField
+                    <TextField
                         className='mar-l-15'
                         label='Password'
                         id='control'
                         inputRef={inputPwdRef}
                     />
-                </RcDialogContent>
-                <RcDialogActions>
-                    <RcButton
-                        radius='round'
-                        keepElevation
-                        color='#fff'
+                </DialogContent>
+                <DialogActions>
+                    <Button
                         size='small'
                         style={{ width: '100px' }}
                         onClick={() => setIsShowModal(false)}>
                         Cancel
-                    </RcButton>
-                    <RcButton
-                        radius='round'
-                        keepElevation
-                        color='#066fac'
+                    </Button>
+                    <Button
                         size='small'
                         style={{ width: '100px', marginLeft: '10px' }}
                         onClick={!isJoinLoading ? joinMeetingHandler : null}>
                         Join
-                    </RcButton>
-                </RcDialogActions>
-            </RcDialog>
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };

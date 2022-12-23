@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { RcButton, RcIcon, RcPopover } from '@ringcentral/juno';
-import { Videocam, VideocamOff, ArrowUp2, Check } from '@ringcentral/juno-icon';
+
+import { Button, Popover } from '@mui/material';
+import { Videocam, VideocamOff, KeyboardArrowUp, Check } from '@mui/icons-material';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
 import { VideoEvent } from '@sdk';
@@ -78,7 +79,7 @@ const VideoAction: FC = () => {
     return (
         <div>
             <div className='action-button' onClick={toggleMuteVideo} ref={actionButtonRef}>
-                <RcIcon size='large' symbol={meetingState.isVideoMuted ? VideocamOff : Videocam} />
+                {meetingState.isVideoMuted ? <VideocamOff /> : <Videocam />}
                 <p className='action-text'>
                     {meetingState.isVideoMuted ? 'Start Video' : 'Stop Video'}
                 </p>
@@ -88,10 +89,10 @@ const VideoAction: FC = () => {
                         e.stopPropagation();
                         setIsShowVideoDeviceList(!isShowVideoDeviceList);
                     }}>
-                    <RcIcon size='small' symbol={ArrowUp2} />
+                    <KeyboardArrowUp sx={{ fontSize: '14px' }}></KeyboardArrowUp>
                 </div>
             </div>
-            <RcPopover
+            <Popover
                 open={isShowVideoDeviceList}
                 anchorEl={actionButtonRef.current}
                 onClose={() => setIsShowVideoDeviceList(false)}
@@ -115,7 +116,7 @@ const VideoAction: FC = () => {
                                 }}>
                                 {videoActiveDevice === item.deviceId ? (
                                     <div className='operation-icon'>
-                                        <RcIcon size='small' symbol={Check} color='#039fd8' />
+                                        <Check sx={{ color: '#039fd8', fontSize: '16px' }} />
                                     </div>
                                 ) : null}
                                 {item.label}
@@ -123,8 +124,8 @@ const VideoAction: FC = () => {
                         );
                     })}
                 </div>
-            </RcPopover>
-            <RcPopover
+            </Popover>
+            <Popover
                 open={Boolean(actionButtonRef.current) && isShowVideoUnmuteDemandPop}
                 anchorEl={actionButtonRef.current}
                 onClose={() => setIsShowVideoUnmuteDemandPop(false)}
@@ -140,27 +141,21 @@ const VideoAction: FC = () => {
                     <div className='title'>Unmute</div>
                     <div className='content'>Allow moderator to unmute you?</div>
                     <div className='footer pad-t-5'>
-                        <RcButton
-                            radius='round'
-                            keepElevation
-                            color='#fff'
+                        <Button
                             size='small'
                             style={{ width: '100px' }}
                             onClick={() => setIsShowVideoUnmuteDemandPop(false)}>
                             Don't Allow
-                        </RcButton>
-                        <RcButton
-                            radius='round'
-                            keepElevation
-                            color='#066fac'
+                        </Button>
+                        <Button
                             size='small'
                             style={{ width: '100px', marginLeft: '10px' }}
                             onClick={acceptUnMuteVideoDemand}>
                             OK
-                        </RcButton>
+                        </Button>
                     </div>
                 </div>
-            </RcPopover>
+            </Popover>
         </div>
     );
 };

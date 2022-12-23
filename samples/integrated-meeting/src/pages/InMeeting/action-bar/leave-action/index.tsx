@@ -1,6 +1,6 @@
 import React, { FC, useRef, useState } from 'react';
-import { RcIcon, RcPopover } from '@ringcentral/juno';
-import { HandUp } from '@ringcentral/juno-icon';
+import { Popover } from '@mui/material';
+import { CallEnd } from '@mui/icons-material';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
 
@@ -45,10 +45,10 @@ const LeaveAction: FC = () => {
     return (
         <div>
             <div className='action-button' onClick={leaveMeetingHandler} ref={actionButtonRef}>
-                <RcIcon size='large' symbol={HandUp} color='#ea4335' />
+                <CallEnd sx={{ color: '#ea4335' }}></CallEnd>
                 <p className='action-text'>Leave</p>
             </div>
-            <RcPopover
+            <Popover
                 open={isShowLeaveOption}
                 anchorEl={actionButtonRef.current}
                 onClose={() => setIsShowLeaveOption(false)}
@@ -68,7 +68,7 @@ const LeaveAction: FC = () => {
                         End meeting for everyone
                     </div>
                 </div>
-            </RcPopover>
+            </Popover>
         </div>
     );
 };

@@ -1,16 +1,9 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { IParticipant } from '@sdk';
 import Avatar from '@src/pages/InMeeting/avatar';
-import { RcIcon, RcPopover } from '@ringcentral/juno';
-import {
-    VideocamOffBorder,
-    VideocamBorder,
-    MicOffBorder,
-    MicBorder,
-    MoreVert,
-    HandUp,
-    Star,
-} from '@ringcentral/juno-icon';
+
+import { Popover } from '@mui/material';
+import { MicOff, Mic, VideocamOff, Videocam, MoreVert, CallEnd, Star } from '@mui/icons-material';
 import { useGlobalContext } from '@src/store/global';
 
 interface IParticipantItem {
@@ -106,7 +99,7 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
             <div className='participant-info'>
                 <Avatar displaySize={30} imgSize={45} participant={participant}></Avatar>
                 <div className='participant-moderator'>
-                    <RcIcon size='small' symbol={Star} color='#FF8800' />
+                    <Star color='#FF8800'></Star>
                 </div>
                 <div className='participant-name'>
                     {participant.displayName}
@@ -117,13 +110,11 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
             <div className='participant-operation'>
                 {!participant.isMe ? (
                     <>
-                        <RcIcon
-                            size='medium'
-                            className='participant-operation-icon more'
-                            symbol={MoreVert}
-                            onClick={showMoreOperation}
-                        />
-                        <RcPopover
+                        <div onClick={showMoreOperation}>
+                            <MoreVert className='participant-operation-icon more'></MoreVert>
+                        </div>
+
+                        <Popover
                             open={Boolean(anchorEl)}
                             anchorEl={anchorEl}
                             onClose={() => setAnchorEl(null)}
@@ -141,7 +132,7 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
                                         className='meeting-popover-operation-item'
                                         onClick={assignModerators}>
                                         <div className='operation-icon'>
-                                            <RcIcon size='small' symbol={Star} color='#5f6368' />
+                                            <Star color='#5f6368'></Star>
                                         </div>
                                         Assign moderator role
                                     </div>
@@ -150,27 +141,20 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
                                     className='meeting-popover-operation-item'
                                     onClick={removeUser}>
                                     <div className='operation-icon'>
-                                        <RcIcon size='small' symbol={HandUp} color='#5f6368' />
+                                        <CallEnd color='#5f6368'></CallEnd>
                                     </div>
                                     Hangup
                                 </div>
                             </div>
-                        </RcPopover>
+                        </Popover>
                     </>
                 ) : null}
-
-                <RcIcon
-                    size='medium'
-                    className='participant-operation-icon'
-                    symbol={participant.isAudioMuted ? MicOffBorder : MicBorder}
-                    onClick={toggleMuteAudio}
-                />
-                <RcIcon
-                    size='medium'
-                    className='participant-operation-icon'
-                    symbol={participant.isVideoMuted ? VideocamOffBorder : VideocamBorder}
-                    onClick={toggleMuteVideo}
-                />
+                <div onClick={toggleMuteAudio} className='participant-operation-icon'>
+                    {participant.isAudioMuted ? <MicOff></MicOff> : <Mic></Mic>}
+                </div>
+                <div onClick={toggleMuteVideo} className='participant-operation-icon'>
+                    {participant.isVideoMuted ? <VideocamOff></VideocamOff> : <Videocam></Videocam>}
+                </div>
             </div>
         </div>
     );

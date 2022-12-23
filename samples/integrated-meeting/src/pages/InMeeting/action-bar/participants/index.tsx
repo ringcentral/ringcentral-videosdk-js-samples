@@ -1,6 +1,7 @@
 import React, { FC, useRef, useState } from 'react';
-import { RcButton, RcIcon, RcPopover } from '@ringcentral/juno';
-import { Team, Lock, Unlock, MicOff, Mic } from '@ringcentral/juno-icon';
+import { Button, Popover } from '@mui/material';
+import { Lock, People, LockOpen, MicOff, Mic } from '@mui/icons-material';
+
 import ParticipantItem from './participant-item';
 import { ActiveFeatureModal, MeetingReduceType, useMeetingContext } from '@src/store/meeting';
 import './index.less';
@@ -51,35 +52,30 @@ const Participants: FC = () => {
     return (
         <div className='participants'>
             <div className='action-button' onClick={showParticipantModal}>
-                <RcIcon size='large' symbol={Team} />
+                <People></People>
                 <p className='count'>{meetingState.participantList.length}</p>
                 <p className='action-text'>Participants</p>
             </div>
             <MeetingFeatureModal title={`participants(${meetingState.participantList.length})`}>
                 <div className='participants-modal'>
                     <div className='operation-bar'>
-                        <div className='operation-bar-icon-wrapper'>
-                            <RcIcon
-                                size='large'
-                                className={`operation-bar-icon ${
-                                    meetingState.isMeetingLocked ? 'highlight' : ''
-                                }`}
-                                symbol={meetingState.isMeetingLocked ? Lock : Unlock}
-                                onClick={toggleLockMeeting}
-                            />
+                        <div className='operation-bar-icon-wrapper' onClick={toggleLockMeeting}>
+                            {meetingState.isMeetingLocked ? (
+                                <Lock className='operation-bar-icon highlight'></Lock>
+                            ) : (
+                                <LockOpen className='operation-bar-icon'></LockOpen>
+                            )}
                         </div>
-                        <div className='operation-bar-icon-wrapper' ref={muteAllButtonRef}>
-                            <RcIcon
-                                size='large'
-                                className='operation-bar-icon'
-                                symbol={MicOff}
-                                onClick={() => setIsShowMuteAllPopover(true)}
-                            />
+                        <div
+                            className='operation-bar-icon-wrapper'
+                            ref={muteAllButtonRef}
+                            onClick={() => setIsShowMuteAllPopover(true)}>
+                            <MicOff className='operation-bar-icon'></MicOff>
                         </div>
                         <div className='operation-bar-icon-wrapper'>
-                            <RcIcon size='large' className='operation-bar-icon' symbol={Mic} />
+                            <Mic className='operation-bar-icon'></Mic>
                         </div>
-                        <RcPopover
+                        <Popover
                             open={isShowMuteAllPopover}
                             anchorEl={muteAllButtonRef.current}
                             onClose={() => setIsShowMuteAllPopover(false)}
@@ -95,27 +91,23 @@ const Participants: FC = () => {
                                 <div className='title'>Mute All</div>
                                 <div className='content'>All participants will be muted.</div>
                                 <div className='footer'>
-                                    <RcButton
-                                        radius='round'
-                                        keepElevation
-                                        color='#fff'
+                                    <Button
+                                        variant='outlined'
                                         size='small'
                                         style={{ width: '80px' }}
                                         onClick={() => setIsShowMuteAllPopover(false)}>
                                         Cancel
-                                    </RcButton>
-                                    <RcButton
-                                        radius='round'
-                                        keepElevation
-                                        color='#066fac'
+                                    </Button>
+                                    <Button
+                                        variant='contained'
                                         size='small'
                                         style={{ width: '80px', marginLeft: '10px' }}
                                         onClick={muteAll}>
                                         Continue
-                                    </RcButton>
+                                    </Button>
                                 </div>
                             </div>
-                        </RcPopover>
+                        </Popover>
                     </div>
                     <div className='participant-list'>
                         {meetingState.participantList.map(participant => {

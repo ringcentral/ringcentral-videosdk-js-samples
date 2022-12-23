@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@sdk';
-import { RcThemeProvider } from '@ringcentral/juno';
 import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
 import GlobalContext from './store/global/context';
@@ -72,21 +71,19 @@ export default function App({ config }) {
     return (
         <GlobalContext.Provider value={{ rcvEngine, isMeetingJoined }}>
             <ElementContextProvider>
-                <RcThemeProvider>
-                    <Routes>
-                        <Route path='meeting'>
-                            <Route
-                                path=':meetingId'
-                                element={
-                                    <MeetingContextProvider>
-                                        <InMeeting />
-                                    </MeetingContextProvider>
-                                }
-                            />
-                        </Route>
-                        <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
-                    </Routes>
-                </RcThemeProvider>
+                <Routes>
+                    <Route path='meeting'>
+                        <Route
+                            path=':meetingId'
+                            element={
+                                <MeetingContextProvider>
+                                    <InMeeting />
+                                </MeetingContextProvider>
+                            }
+                        />
+                    </Route>
+                    <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
+                </Routes>
             </ElementContextProvider>
         </GlobalContext.Provider>
     );
