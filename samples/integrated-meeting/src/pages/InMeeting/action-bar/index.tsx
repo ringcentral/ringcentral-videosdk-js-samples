@@ -1,7 +1,4 @@
-import React, { FC, useEffect } from 'react';
-import { IParticipant } from '@sdk';
-import { RcButton, RcIcon, RcIconButton } from '@ringcentral/juno';
-import { MicOff, Mic, Videocam, VideocamOff, HandUp } from '@ringcentral/juno-icon';
+import React, { FC } from 'react';
 import AudioAction from './audio-action';
 import VideoAction from './video-action';
 import LeaveAction from './leave-action';

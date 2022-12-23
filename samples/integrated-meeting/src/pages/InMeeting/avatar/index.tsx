@@ -1,39 +1,36 @@
 import type { IParticipant } from '@sdk';
 import type { FC } from 'react';
 import React, { useEffect, useState } from 'react';
+import { useAvatarContext } from '@src/store/avatar';
 
 interface IAvatarProps {
     participant: IParticipant;
     displaySize?: number | string;
     imgSize?: number;
-    avatar?: string;
-    getAvatarSucceed?: (url: string) => void;
 }
 
 const Avatar: FC<IAvatarProps> = ({
     participant,
     displaySize = 45,
     imgSize = 45,
-    avatar,
-    getAvatarSucceed,
 }: IAvatarProps) => {
+    const { getAvatar: getAvatarFromStore, saveAvatar: saveAvatarToStore } = useAvatarContext();
     const [url, setUrl] = useState<string>('');
 
     /**
      * need cache avatars, otherwise, the backend will cause a 429 error if the avatar is requested frequently
      */
     const getAvatar = async () => {
-        if (avatar) {
-            setUrl(avatar);
+        const url = getAvatarFromStore(participant.uid, imgSize);
+        if (url) {
+            setUrl(url);
         } else {
             try {
                 const avatarUrl = await participant.getHeadshotUrlWithSize(imgSize);
                 const avatarRes = await fetch(avatarUrl);
                 const blobUrl = URL.createObjectURL(await avatarRes.blob());
                 setUrl(blobUrl);
-                if (getAvatarSucceed) {
-                    getAvatarSucceed(blobUrl);
-                }
+                saveAvatarToStore(participant.uid, imgSize, blobUrl);
             } catch (e) {}
         }
     };

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { IParticipant } from '@sdk';
-import Avatar from '@src/components/avatar';
+import Avatar from '../avatar';
 import './index.less';
 
 interface IGalleryOnlySelf {

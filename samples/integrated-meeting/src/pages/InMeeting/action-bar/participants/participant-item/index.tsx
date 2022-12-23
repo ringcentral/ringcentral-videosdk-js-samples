@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { IParticipant } from '@sdk';
-import Avatar from '@src/components/avatar';
+import Avatar from '@src/pages/InMeeting/avatar';
 import { RcIcon, RcPopover } from '@ringcentral/juno';
 import {
     VideocamOffBorder,

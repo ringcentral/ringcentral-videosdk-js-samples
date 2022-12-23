@@ -9,7 +9,7 @@ import {
     MeetingEvent,
 } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { RcLoading } from '@ringcentral/juno';
+
 import { useMeetingContext } from '@src/store/meeting';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '@src/utils/dom';
 import GalleryWrapper from './gallery-wrapper';
@@ -17,6 +17,7 @@ import ActionBar from './action-bar';
 import { useGlobalContext } from '@src/store/global';
 import { MeetingReduceType } from '@src/store/meeting';
 import { useElementContext } from '@src/store/element';
+import { AvatarContextProvider } from '@src/store/avatar';
 import './index.less';
 
 const InMeeting: FC = () => {
@@ -152,7 +153,7 @@ const InMeeting: FC = () => {
 
     return (
         <div className='meeting-wrapper'>
-            <RcLoading loading={loading}>
+            <AvatarContextProvider>
                 {isMeetingJoined ? (
                     <>
                         <div className='speakers-container'>
@@ -165,7 +166,7 @@ const InMeeting: FC = () => {
                         <div ref={audioRef} />
                     </>
                 ) : null}
-            </RcLoading>
+            </AvatarContextProvider>
         </div>
     );
 };

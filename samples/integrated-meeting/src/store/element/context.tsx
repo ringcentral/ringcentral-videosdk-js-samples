@@ -25,4 +25,3 @@ export const ElementContextProvider: React.FC<PropsWithChildren<{}>> = props => 
 };
 
 export { useElementContext };
-export default ElementContext;

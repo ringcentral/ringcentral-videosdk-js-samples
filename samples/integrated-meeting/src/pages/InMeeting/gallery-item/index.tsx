@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { IParticipant } from '@sdk';
-import Avatar from '@src/components/avatar';
+import Avatar from '../avatar';
 import VideoInfo from './gallery-video-info';
 import './index.less';
 
