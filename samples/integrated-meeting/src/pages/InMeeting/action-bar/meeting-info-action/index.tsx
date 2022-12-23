@@ -4,8 +4,11 @@ import { Info } from '@mui/icons-material';
 import { MeetingReduceType, useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
 import './index.less';
+import { useSnackbar } from 'notistack';
 
 const MeetingInfoAction: FC = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const actionButtonRef = useRef();
 
     const { rcvEngine } = useGlobalContext();
@@ -22,10 +25,10 @@ const MeetingInfoAction: FC = () => {
                 type: MeetingReduceType.MEETING_INFO,
                 payload: { meetingInfo },
             });
-
-            console.log(meetingInfo);
         } catch (e) {
-            console.log(e);
+            enqueueSnackbar('Get meeting info failed', {
+                variant: 'error',
+            });
         }
     };
 
@@ -34,7 +37,9 @@ const MeetingInfoAction: FC = () => {
         if (!meetingState.meetingInfo) {
             await getMeetingInfo();
         }
-        setIsShowMeetingInfo(true);
+        if (meetingState.meetingInfo) {
+            setIsShowMeetingInfo(true);
+        }
     };
 
     return (

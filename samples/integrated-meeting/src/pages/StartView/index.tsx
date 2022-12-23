@@ -7,10 +7,9 @@ import {
     DialogTitle,
     TextField,
 } from '@mui/material';
-
 import { VideoCameraFrontRounded, QueuePlayNextRounded } from '@mui/icons-material';
-
 import { RcvEngine } from '@sdk';
+import { useSnackbar } from 'notistack';
 import './index.less';
 interface IProps {
     rcvEngine: RcvEngine;
@@ -18,6 +17,7 @@ interface IProps {
 
 const StartView: FC<IProps> = props => {
     const { rcvEngine } = props;
+    const { enqueueSnackbar } = useSnackbar();
     const [isStartLoading, setStartLoading] = useState(false);
     const [isJoinLoading, setJoinLoading] = useState(false);
 
@@ -28,12 +28,15 @@ const StartView: FC<IProps> = props => {
     const startMeetingHandler = useCallback(async () => {
         if (rcvEngine) {
             setStartLoading(true);
-            rcvEngine
-                .startInstantMeeting()
-                .catch(e => {
-                    alert(`Error occurs due to :${e.message}`);
-                })
-                .finally(() => setStartLoading(false));
+            try {
+                await rcvEngine.startInstantMeeting();
+            } catch (e) {
+                enqueueSnackbar(`Error occurs due to :${e.message}`, {
+                    variant: 'error',
+                });
+            } finally {
+                setStartLoading(false);
+            }
         }
     }, [rcvEngine]);
 
@@ -44,14 +47,18 @@ const StartView: FC<IProps> = props => {
                 return;
             }
             setJoinLoading(true);
-            rcvEngine
-                .joinMeeting(inputMeetingIdRef.current.value, {
+
+            try {
+                rcvEngine.joinMeeting(inputMeetingIdRef.current.value, {
                     password: inputPwdRef.current.value,
-                })
-                .catch(e => {
-                    alert(`Error occurs due to :${e.message}`);
-                })
-                .finally(() => setJoinLoading(false));
+                });
+            } catch (e) {
+                enqueueSnackbar(`Error occurs due to :${e.message}`, {
+                    variant: 'error',
+                });
+            } finally {
+                setJoinLoading(false);
+            }
         }
     }, [rcvEngine]);
 

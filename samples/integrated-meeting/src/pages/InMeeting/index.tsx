@@ -1,14 +1,7 @@
 import React, { FC, useEffect, useState, useRef } from 'react';
-import {
-    AudioEvent,
-    VideoEvent,
-    IParticipant,
-    UserEvent,
-    StreamEvent,
-    RcvEngine,
-    MeetingEvent,
-} from '@sdk';
+import { AudioEvent, VideoEvent, IParticipant, UserEvent, StreamEvent, MeetingEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 import { useMeetingContext } from '@src/store/meeting';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '@src/utils/dom';
@@ -21,6 +14,7 @@ import { AvatarContextProvider } from '@src/store/avatar';
 import './index.less';
 
 const InMeeting: FC = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const { rcvEngine, isMeetingJoined } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
@@ -36,8 +30,15 @@ const InMeeting: FC = () => {
             // when do refreshing
             if (!isMeetingJoined) {
                 setLoading(true);
-                await rcvEngine.joinMeeting(meetingId);
-                setLoading(false);
+                try {
+                    await rcvEngine.joinMeeting(meetingId);
+                } catch (e) {
+                    enqueueSnackbar('Join meeting failed', {
+                        variant: 'error',
+                    });
+                } finally {
+                    setLoading(false);
+                }
             }
             getParticipants();
             initListener();
@@ -131,10 +132,6 @@ const InMeeting: FC = () => {
             meetingLockStateListener();
         };
     };
-
-    useEffect(() => {
-        console.log(meetingState.participantList);
-    }, [meetingState.participantList]);
 
     const getParticipants = () => {
         const users = meetingController.getUserController()?.getMeetingUsers();

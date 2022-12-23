@@ -3,8 +3,11 @@ import { Popover } from '@mui/material';
 import { CallEnd } from '@mui/icons-material';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
+import { useSnackbar } from 'notistack';
 
 const LeaveAction: FC = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const actionButtonRef = useRef();
 
     const { rcvEngine } = useGlobalContext();
@@ -30,7 +33,9 @@ const LeaveAction: FC = () => {
         try {
             await meetingController.leaveMeeting();
         } catch (e) {
-            console.log(e);
+            enqueueSnackbar('Leave meeting failed', {
+                variant: 'error',
+            });
         }
     };
 
@@ -38,7 +43,9 @@ const LeaveAction: FC = () => {
         try {
             await meetingController.endMeeting();
         } catch (e) {
-            console.log(e);
+            enqueueSnackbar('End meeting failed', {
+                variant: 'error',
+            });
         }
     };
 

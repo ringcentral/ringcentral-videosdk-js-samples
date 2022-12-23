@@ -5,8 +5,11 @@ import { Videocam, VideocamOff, KeyboardArrowUp, Check } from '@mui/icons-materi
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
 import { VideoEvent } from '@sdk';
+import { useSnackbar } from 'notistack';
 
 const VideoAction: FC = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
@@ -38,42 +41,57 @@ const VideoAction: FC = () => {
         };
     };
 
-    const getvideoDeviceList = () => {
-        rcvEngine
-            .getVideoDeviceManager()
-            .enumerateVideoDevices()
-            .then(devices => {
-                setVideoDeviceList(devices || []);
-                devices.length && setVideoActiveDevice(devices[0].deviceId);
+    const getvideoDeviceList = async () => {
+        try {
+            let devices = await rcvEngine.getVideoDeviceManager().enumerateVideoDevices();
+            setVideoDeviceList(devices || []);
+            devices.length && setVideoActiveDevice(devices[0].deviceId);
+        } catch (e) {
+            enqueueSnackbar('Get audio device list failed', {
+                variant: 'error',
             });
+        }
     };
 
-    const handleChangeVideoDevice = (deviceId: string) => {
+    const handleChangeVideoDevice = async (deviceId: string) => {
         if (videoActiveDevice === deviceId) {
             return;
         }
-        meetingController
-            .getAudioController()
-            .enableAudio({ deviceId })
-            .then(() => {
-                setVideoActiveDevice(deviceId);
-            })
-            .catch(e => {
-                console.log(e);
+        try {
+            await meetingController
+                .getVideoController()
+                .unmuteLocalVideoStream({ advanced: [{ deviceId }] });
+            setVideoActiveDevice(deviceId);
+        } catch (e) {
+            enqueueSnackbar('Change video device failed', {
+                variant: 'error',
             });
-    };
-
-    const toggleMuteVideo = () => {
-        if (meetingState.isVideoMuted) {
-            meetingController?.getVideoController()?.unmuteLocalVideoStream();
-        } else {
-            meetingController?.getVideoController()?.muteLocalVideoStream();
         }
     };
 
-    const acceptUnMuteVideoDemand = () => {
-        meetingController?.getVideoController()?.unmuteLocalVideoStream();
-        setIsShowVideoUnmuteDemandPop(false);
+    const toggleMuteVideo = async () => {
+        try {
+            if (meetingState.isVideoMuted) {
+                await meetingController?.getVideoController()?.unmuteLocalVideoStream();
+            } else {
+                await meetingController?.getVideoController()?.muteLocalVideoStream();
+            }
+        } catch (e) {
+            enqueueSnackbar('Toggle mute video failed', {
+                variant: 'error',
+            });
+        }
+    };
+
+    const acceptUnMuteVideoDemand = async () => {
+        try {
+            await meetingController?.getVideoController()?.unmuteLocalVideoStream();
+            setIsShowVideoUnmuteDemandPop(false);
+        } catch (e) {
+            enqueueSnackbar('Unmute video failed', {
+                variant: 'error',
+            });
+        }
     };
 
     return (

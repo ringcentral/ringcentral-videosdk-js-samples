@@ -2,6 +2,7 @@ import type { IParticipant } from '@sdk';
 import type { FC } from 'react';
 import React, { useEffect, useState } from 'react';
 import { useAvatarContext } from '@src/store/avatar';
+import { useSnackbar } from 'notistack';
 
 interface IAvatarProps {
     participant: IParticipant;
@@ -14,6 +15,7 @@ const Avatar: FC<IAvatarProps> = ({
     displaySize = 45,
     imgSize = 45,
 }: IAvatarProps) => {
+    const { enqueueSnackbar } = useSnackbar();
     const { getAvatar: getAvatarFromStore, saveAvatar: saveAvatarToStore } = useAvatarContext();
     const [url, setUrl] = useState<string>('');
 
@@ -31,7 +33,11 @@ const Avatar: FC<IAvatarProps> = ({
                 const blobUrl = URL.createObjectURL(await avatarRes.blob());
                 setUrl(blobUrl);
                 saveAvatarToStore(participant.uid, imgSize, blobUrl);
-            } catch (e) {}
+            } catch (e) {
+                enqueueSnackbar('Get avatar failed', {
+                    variant: 'error',
+                });
+            }
         }
     };
 

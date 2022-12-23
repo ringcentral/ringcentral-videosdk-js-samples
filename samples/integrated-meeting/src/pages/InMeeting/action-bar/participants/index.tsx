@@ -1,6 +1,7 @@
 import React, { FC, useRef, useState } from 'react';
 import { Button, Popover } from '@mui/material';
 import { Lock, People, LockOpen, MicOff, Mic } from '@mui/icons-material';
+import { useSnackbar } from 'notistack';
 
 import ParticipantItem from './participant-item';
 import { ActiveFeatureModal, MeetingReduceType, useMeetingContext } from '@src/store/meeting';
@@ -9,6 +10,8 @@ import MeetingFeatureModal from '../meeting-feature-modal';
 import { useGlobalContext } from '@src/store/global';
 
 const Participants: FC = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
@@ -29,13 +32,17 @@ const Participants: FC = () => {
             try {
                 await meetingController.unlockMeeting();
             } catch (e) {
-                console.log(e);
+                enqueueSnackbar('Unlock meeting failed', {
+                    variant: 'error',
+                });
             }
         } else {
             try {
                 await meetingController.lockMeeting();
             } catch (e) {
-                console.log(e);
+                enqueueSnackbar('Lock meeting failed', {
+                    variant: 'error',
+                });
             }
         }
     };
@@ -45,7 +52,9 @@ const Participants: FC = () => {
             await meetingController?.getAudioController()?.muteAllRemoteAudioStreams();
             setIsShowMuteAllPopover(false);
         } catch (e) {
-            console.log(e);
+            enqueueSnackbar('Mute all audio failed', {
+                variant: 'error',
+            });
         }
     };
 
@@ -53,7 +62,9 @@ const Participants: FC = () => {
         try {
             await meetingController?.getAudioController()?.unmuteAllRemoteAudioStreams();
         } catch (e) {
-            console.log(e);
+            enqueueSnackbar('Unmute all audio failed', {
+                variant: 'error',
+            });
         }
     };
 

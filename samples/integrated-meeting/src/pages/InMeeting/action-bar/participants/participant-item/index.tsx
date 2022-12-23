@@ -2,6 +2,7 @@ import React, { FC, useEffect, useRef } from 'react';
 import { IParticipant } from '@sdk';
 import Avatar from '@src/pages/InMeeting/avatar';
 
+import { useSnackbar } from 'notistack';
 import { Popover } from '@mui/material';
 import {
     MicOffOutlined,
@@ -18,6 +19,8 @@ interface IParticipantItem {
     participant: IParticipant;
 }
 const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const showMoreOperation = (event: React.MouseEvent<HTMLElement>) => {
@@ -27,35 +30,67 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
-    const toggleMuteLocalAudio = () => {
-        if (participant.isAudioMuted) {
-            meetingController?.getAudioController()?.unmuteLocalAudioStream();
-        } else {
-            meetingController?.getAudioController()?.muteLocalAudioStream();
+    const toggleMuteLocalAudio = async () => {
+        try {
+            if (participant.isAudioMuted) {
+                await meetingController?.getAudioController()?.unmuteLocalAudioStream();
+            } else {
+                await meetingController?.getAudioController()?.muteLocalAudioStream();
+            }
+        } catch (e) {
+            enqueueSnackbar('Toggle mute audio failed', {
+                variant: 'error',
+            });
         }
     };
 
-    const toggleMuteRemoteAudio = () => {
-        if (participant.isAudioMuted) {
-            meetingController?.getAudioController()?.unmuteRemoteAudioStream(participant.uid);
-        } else {
-            meetingController?.getAudioController()?.muteRemoteAudioStream(participant.uid);
+    const toggleMuteRemoteAudio = async () => {
+        try {
+            if (participant.isAudioMuted) {
+                await meetingController
+                    ?.getAudioController()
+                    ?.unmuteRemoteAudioStream(participant.uid);
+            } else {
+                await meetingController
+                    ?.getAudioController()
+                    ?.muteRemoteAudioStream(participant.uid);
+            }
+        } catch (e) {
+            enqueueSnackbar('Toggle mute remote audio failed', {
+                variant: 'error',
+            });
         }
     };
 
-    const toggleMuteLocalVideo = () => {
-        if (participant.isVideoMuted) {
-            meetingController?.getVideoController()?.unmuteLocalVideoStream();
-        } else {
-            meetingController?.getVideoController()?.muteLocalVideoStream();
+    const toggleMuteLocalVideo = async () => {
+        try {
+            if (participant.isVideoMuted) {
+                await meetingController?.getVideoController()?.unmuteLocalVideoStream();
+            } else {
+                await meetingController?.getVideoController()?.muteLocalVideoStream();
+            }
+        } catch (e) {
+            enqueueSnackbar('Toggle mute video failed', {
+                variant: 'error',
+            });
         }
     };
 
-    const toggleMuteRemoteVideo = () => {
-        if (participant.isVideoMuted) {
-            meetingController?.getVideoController()?.unmuteRemoteVideoStream(participant.uid);
-        } else {
-            meetingController?.getVideoController()?.muteRemoteVideoStream(participant.uid);
+    const toggleMuteRemoteVideo = async () => {
+        try {
+            if (participant.isVideoMuted) {
+                await meetingController
+                    ?.getVideoController()
+                    ?.unmuteRemoteVideoStream(participant.uid);
+            } else {
+                await meetingController
+                    ?.getVideoController()
+                    ?.muteRemoteVideoStream(participant.uid);
+            }
+        } catch (e) {
+            enqueueSnackbar('Toggle mute remote video failed', {
+                variant: 'error',
+            });
         }
     };
 
@@ -76,13 +111,25 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
     };
 
     const assignModerators = async () => {
-        await meetingController?.getUserController()?.assignModerators([participant.uid]);
-        setAnchorEl(null);
+        try {
+            await meetingController?.getUserController()?.assignModerators([participant.uid]);
+            setAnchorEl(null);
+        } catch (e) {
+            enqueueSnackbar('Assign moderator failed', {
+                variant: 'error',
+            });
+        }
     };
 
     const removeUser = async () => {
-        await meetingController?.getUserController()?.removeUser(participant.uid);
-        setAnchorEl(null);
+        try {
+            await meetingController?.getUserController()?.removeUser(participant.uid);
+            setAnchorEl(null);
+        } catch (e) {
+            enqueueSnackbar('Remove participant failed', {
+                variant: 'error',
+            });
+        }
     };
 
     return (

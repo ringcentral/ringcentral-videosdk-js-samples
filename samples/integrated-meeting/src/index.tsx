@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { SnackbarProvider } from 'notistack';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@sdk';
 import StartView from './pages/StartView';
@@ -69,23 +70,25 @@ export default function App({ config }) {
     }, []);
 
     return (
-        <GlobalContext.Provider value={{ rcvEngine, isMeetingJoined }}>
-            <ElementContextProvider>
-                <Routes>
-                    <Route path='meeting'>
-                        <Route
-                            path=':meetingId'
-                            element={
-                                <MeetingContextProvider>
-                                    <InMeeting />
-                                </MeetingContextProvider>
-                            }
-                        />
-                    </Route>
-                    <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
-                </Routes>
-            </ElementContextProvider>
-        </GlobalContext.Provider>
+        <SnackbarProvider autoHideDuration={3000} preventDuplicate>
+            <GlobalContext.Provider value={{ rcvEngine, isMeetingJoined }}>
+                <ElementContextProvider>
+                    <Routes>
+                        <Route path='meeting'>
+                            <Route
+                                path=':meetingId'
+                                element={
+                                    <MeetingContextProvider>
+                                        <InMeeting />
+                                    </MeetingContextProvider>
+                                }
+                            />
+                        </Route>
+                        <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
+                    </Routes>
+                </ElementContextProvider>
+            </GlobalContext.Provider>
+        </SnackbarProvider>
     );
 }
 
