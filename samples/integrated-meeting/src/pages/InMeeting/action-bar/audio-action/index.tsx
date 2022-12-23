@@ -4,8 +4,11 @@ import { MicOff, Mic, KeyboardArrowUp, Check } from '@mui/icons-material';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
 import { AudioEvent } from '@sdk';
+import { useSnackbar } from 'notistack';
 
 const AudioAction: FC = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
 
@@ -37,48 +40,60 @@ const AudioAction: FC = () => {
         };
     };
 
-    const getAudioDeviceList = () => {
-        rcvEngine
-            .getAudioDeviceManager()
-            .enumerateRecordingDevices()
-            .then(devices => {
-                console.log(devices);
-                setAudioDeviceList(devices || []);
-                if (devices.length) {
-                    const audioController = meetingController.getAudioController();
-                    const deviceId = devices[0].deviceId;
-                    audioController.enableAudio({ deviceId });
-                    setAudioActiveDevice(deviceId);
-                }
+    const getAudioDeviceList = async () => {
+        try {
+            let devices = await rcvEngine.getAudioDeviceManager().enumerateRecordingDevices();
+            setAudioDeviceList(devices || []);
+            if (devices.length) {
+                const audioController = meetingController.getAudioController();
+                const deviceId = devices[0].deviceId;
+                audioController.enableAudio({ deviceId });
+                setAudioActiveDevice(deviceId);
+            }
+        } catch (e) {
+            enqueueSnackbar('Get audio device list failed', {
+                variant: 'error',
             });
+        }
     };
 
-    const handleChangeAudioDevice = (deviceId: string) => {
+    const handleChangeAudioDevice = async (deviceId: string) => {
         if (audioActiveDevice === deviceId) {
             return;
         }
-        meetingController
-            .getAudioController()
-            .enableAudio({ deviceId })
-            .then(() => {
-                setAudioActiveDevice(deviceId);
-            })
-            .catch(e => {
-                console.log(e);
+        try {
+            await meetingController.getAudioController().enableAudio({ deviceId });
+            setAudioActiveDevice(deviceId);
+        } catch (e) {
+            enqueueSnackbar('Change audio device failed', {
+                variant: 'error',
             });
-    };
-
-    const toggleMuteAudio = () => {
-        if (meetingState.isAudioMuted) {
-            meetingController?.getAudioController()?.unmuteLocalAudioStream();
-        } else {
-            meetingController?.getAudioController()?.muteLocalAudioStream();
         }
     };
 
-    const acceptUnMuteAudioDemand = () => {
-        meetingController?.getAudioController()?.unmuteLocalAudioStream();
-        setIsShowAudioUnmuteDemandPop(false);
+    const toggleMuteAudio = async () => {
+        try {
+            if (meetingState.isAudioMuted) {
+                await meetingController?.getAudioController()?.unmuteLocalAudioStream();
+            } else {
+                await meetingController?.getAudioController()?.muteLocalAudioStream();
+            }
+        } catch (e) {
+            enqueueSnackbar('Toggle mute audio failed', {
+                variant: 'error',
+            });
+        }
+    };
+
+    const acceptUnMuteAudioDemand = async () => {
+        try {
+            await meetingController?.getAudioController()?.unmuteLocalAudioStream();
+            setIsShowAudioUnmuteDemandPop(false);
+        } catch (e) {
+            enqueueSnackbar('Unåmute audio failed', {
+                variant: 'error',
+            });
+        }
     };
 
     return (
