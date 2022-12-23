@@ -53,15 +53,7 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
 
     const toggleMuteRemoteVideo = () => {
         if (participant.isVideoMuted) {
-            meetingController
-                ?.getVideoController()
-                ?.unmuteRemoteVideoStream(participant.uid)
-                .then(res => {
-                    console.log(res);
-                })
-                .catch(e => {
-                    console.log(e);
-                });
+            meetingController?.getVideoController()?.unmuteRemoteVideoStream(participant.uid);
         } else {
             meetingController?.getVideoController()?.muteRemoteVideoStream(participant.uid);
         }
@@ -84,22 +76,13 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
     };
 
     const assignModerators = async () => {
-        try {
-            let res = await meetingController
-                ?.getUserController()
-                ?.assignModerators([participant.uid]);
-            console.log(res);
-        } catch (e) {
-            console.log(e);
-        }
+        await meetingController?.getUserController()?.assignModerators([participant.uid]);
+        setAnchorEl(null);
     };
 
-    const removeUser = () => {
-        try {
-            meetingController?.getUserController()?.removeUser(participant.uid);
-        } catch (e) {
-            console.log(e);
-        }
+    const removeUser = async () => {
+        await meetingController?.getUserController()?.removeUser(participant.uid);
+        setAnchorEl(null);
     };
 
     return (
@@ -140,7 +123,8 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
                                         className='meeting-popover-operation-item'
                                         onClick={assignModerators}>
                                         <div className='operation-icon'>
-                                            <Star color='#5f6368'></Star>
+                                            <Star
+                                                sx={{ color: '#5f6368', fontSize: '14px' }}></Star>
                                         </div>
                                         Assign moderator role
                                     </div>
@@ -149,7 +133,8 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
                                     className='meeting-popover-operation-item'
                                     onClick={removeUser}>
                                     <div className='operation-icon'>
-                                        <CallEnd color='#5f6368'></CallEnd>
+                                        <CallEnd
+                                            sx={{ color: '#5f6368', fontSize: '14px' }}></CallEnd>
                                     </div>
                                     Hangup
                                 </div>

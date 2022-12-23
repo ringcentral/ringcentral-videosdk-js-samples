@@ -49,6 +49,14 @@ const Participants: FC = () => {
         }
     };
 
+    const unmuteAll = async () => {
+        try {
+            await meetingController?.getAudioController()?.unmuteAllRemoteAudioStreams();
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     return (
         <div className='participants'>
             <div className='action-button' onClick={showParticipantModal}>
@@ -73,7 +81,7 @@ const Participants: FC = () => {
                             <MicOff className='operation-bar-icon'></MicOff>
                         </div>
                         <div className='operation-bar-icon-wrapper'>
-                            <Mic className='operation-bar-icon'></Mic>
+                            <Mic className='operation-bar-icon' onClick={unmuteAll}></Mic>
                         </div>
                         <Popover
                             open={isShowMuteAllPopover}
