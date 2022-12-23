@@ -8,6 +8,8 @@ import {
     TextField,
 } from '@mui/material';
 
+import { VideoCameraFrontRounded, QueuePlayNextRounded } from '@mui/icons-material';
+
 import { RcvEngine } from '@sdk';
 import './index.less';
 interface IProps {
@@ -59,11 +61,17 @@ const StartView: FC<IProps> = props => {
                 <div className='meeting-button-wrapper'>
                     <div
                         className='meeting-button'
-                        onClick={!isStartLoading ? startMeetingHandler : null}></div>
+                        onClick={!isStartLoading ? startMeetingHandler : null}>
+                        <VideoCameraFrontRounded
+                            sx={{ color: '#1e7795', fontSize: '30px' }}></VideoCameraFrontRounded>
+                    </div>
                     <p className='meeting-button-text'>Start Meeting</p>
                 </div>
                 <div className='meeting-button-wrapper' onClick={() => setIsShowModal(true)}>
-                    <div className='meeting-button'></div>
+                    <div className='meeting-button'>
+                        <QueuePlayNextRounded
+                            sx={{ color: '#1e7795', fontSize: '30px' }}></QueuePlayNextRounded>
+                    </div>
                     <p className='meeting-button-text'>Join Meeting</p>
                 </div>
             </div>

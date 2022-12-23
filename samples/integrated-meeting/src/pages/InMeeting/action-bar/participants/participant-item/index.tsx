@@ -3,7 +3,15 @@ import { IParticipant } from '@sdk';
 import Avatar from '@src/pages/InMeeting/avatar';
 
 import { Popover } from '@mui/material';
-import { MicOff, Mic, VideocamOff, Videocam, MoreVert, CallEnd, Star } from '@mui/icons-material';
+import {
+    MicOffOutlined,
+    MicNoneOutlined,
+    VideocamOffOutlined,
+    VideocamOutlined,
+    MoreVert,
+    CallEnd,
+    Star,
+} from '@mui/icons-material';
 import { useGlobalContext } from '@src/store/global';
 
 interface IParticipantItem {
@@ -99,7 +107,7 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
             <div className='participant-info'>
                 <Avatar displaySize={30} imgSize={45} participant={participant}></Avatar>
                 <div className='participant-moderator'>
-                    <Star color='#FF8800'></Star>
+                    <Star sx={{ color: '#FF8800', fontSize: '16px' }}></Star>
                 </div>
                 <div className='participant-name'>
                     {participant.displayName}
@@ -150,10 +158,18 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
                     </>
                 ) : null}
                 <div onClick={toggleMuteAudio} className='participant-operation-icon'>
-                    {participant.isAudioMuted ? <MicOff></MicOff> : <Mic></Mic>}
+                    {participant.isAudioMuted ? (
+                        <MicOffOutlined></MicOffOutlined>
+                    ) : (
+                        <MicNoneOutlined></MicNoneOutlined>
+                    )}
                 </div>
                 <div onClick={toggleMuteVideo} className='participant-operation-icon'>
-                    {participant.isVideoMuted ? <VideocamOff></VideocamOff> : <Videocam></Videocam>}
+                    {participant.isVideoMuted ? (
+                        <VideocamOffOutlined></VideocamOffOutlined>
+                    ) : (
+                        <VideocamOutlined></VideocamOutlined>
+                    )}
                 </div>
             </div>
         </div>

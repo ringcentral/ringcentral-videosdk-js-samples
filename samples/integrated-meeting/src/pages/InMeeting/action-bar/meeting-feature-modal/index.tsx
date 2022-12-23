@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import { Portal } from '@mui/material';
-import { Cancel, PushPin } from '@mui/icons-material';
+import { Cancel, PushPinRounded } from '@mui/icons-material';
 import { useMeetingContext, ActiveFeatureModal, MeetingReduceType } from '@src/store/meeting';
 import './index.less';
 import { useElementContext } from '@src/store/element';
@@ -41,11 +41,22 @@ const MeetingFeatureModal: FC<IMeetingFeatureModal> = prop => {
                 <div className='header'>
                     <p className='title'>{title}</p>
                     <div>
-                        <PushPin fontSize='medium' color='#5f6368' onClick={togglePin}></PushPin>
+                        <PushPinRounded
+                            sx={{
+                                color: '#5f6368',
+                                cursor: 'pointer',
+                                transform: meetingState.isModalPinned
+                                    ? 'rotate(0)'
+                                    : 'rotate(45deg)',
+                            }}
+                            onClick={togglePin}></PushPinRounded>
+
                         <Cancel
-                            style={{ marginLeft: '10px' }}
-                            fontSize='medium'
-                            color='#5f6368'
+                            sx={{
+                                color: '#5f6368',
+                                cursor: 'pointer',
+                                marginLeft: '10px',
+                            }}
                             onClick={closeActiveFeatureModal}></Cancel>
                     </div>
                 </div>
