@@ -5,6 +5,7 @@ import LeaveAction from './leave-action';
 import Participants from './participants';
 import MeetingInfoAction from './meeting-info-action';
 import ClosedCaption from './closed-caption';
+import Chat from './chat';
 import './index.less';
 
 const ActionBar: FC = () => {
@@ -17,6 +18,7 @@ const ActionBar: FC = () => {
                 <AudioAction></AudioAction>
                 <VideoAction></VideoAction>
                 <Participants></Participants>
+                <Chat></Chat>
                 <ClosedCaption></ClosedCaption>
                 <LeaveAction></LeaveAction>
             </div>

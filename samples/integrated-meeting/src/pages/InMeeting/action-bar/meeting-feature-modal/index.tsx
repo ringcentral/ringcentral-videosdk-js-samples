@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 import { Portal } from '@mui/material';
 import { Cancel, PushPinRounded } from '@mui/icons-material';
-import { useMeetingContext, ActiveFeatureModal, MeetingReduceType } from '@src/store/meeting';
+import { useMeetingContext, MeetingReduceType } from '@src/store/meeting';
 import './index.less';
 import { useElementContext } from '@src/store/element';
 
@@ -27,10 +27,6 @@ const MeetingFeatureModal: FC<IMeetingFeatureModal> = prop => {
             payload: { isModalPinned: !meetingState.isModalPinned },
         });
     };
-
-    if (meetingState.activeFeatureModal !== ActiveFeatureModal.Participant) {
-        return null;
-    }
 
     return (
         <Portal container={sidePortal.current} disablePortal={!meetingState.isModalPinned}>
