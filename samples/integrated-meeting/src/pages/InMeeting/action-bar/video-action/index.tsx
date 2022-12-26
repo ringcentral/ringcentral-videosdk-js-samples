@@ -98,9 +98,6 @@ const VideoAction: FC = () => {
         <div>
             <div className='action-button' onClick={toggleMuteVideo} ref={actionButtonRef}>
                 {meetingState.isVideoMuted ? <VideocamOff /> : <Videocam />}
-                <p className='action-text'>
-                    {meetingState.isVideoMuted ? 'Start Video' : 'Stop Video'}
-                </p>
                 <div
                     className={`action-button-more ${isShowVideoDeviceList ? 'checked' : ''}`}
                     onClick={e => {
@@ -161,11 +158,13 @@ const VideoAction: FC = () => {
                     <div className='footer pad-t-5'>
                         <Button
                             size='small'
+                            variant='outlined'
                             style={{ width: '100px' }}
                             onClick={() => setIsShowVideoUnmuteDemandPop(false)}>
-                            Don't Allow
+                            Refuse
                         </Button>
                         <Button
+                            variant='contained'
                             size='small'
                             style={{ width: '100px', marginLeft: '10px' }}
                             onClick={acceptUnMuteVideoDemand}>

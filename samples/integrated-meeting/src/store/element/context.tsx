@@ -3,10 +3,14 @@ import React, { MutableRefObject, PropsWithChildren, useContext, useRef } from '
 interface IElementContext {
     sidePortal: MutableRefObject<HTMLDivElement | null>;
     setSidePortal: (ref: HTMLDivElement) => void;
+    ccPortal: MutableRefObject<HTMLDivElement | null>;
+    setCcPortal: (ref: HTMLDivElement) => void;
 }
 const ElementContext = React.createContext<IElementContext>({
     sidePortal: null,
     setSidePortal: () => {},
+    ccPortal: null,
+    setCcPortal: () => {},
 } as any);
 
 const useElementContext = () => useContext<IElementContext>(ElementContext);
@@ -17,8 +21,14 @@ export const ElementContextProvider: React.FC<PropsWithChildren<{}>> = props => 
     const setSidePortal = ref => {
         sidePortal.current = ref;
     };
+
+    const ccPortal = useRef(null);
+
+    const setCcPortal = ref => {
+        ccPortal.current = ref;
+    };
     return (
-        <ElementContext.Provider value={{ sidePortal, setSidePortal }}>
+        <ElementContext.Provider value={{ sidePortal, setSidePortal, ccPortal, setCcPortal }}>
             {props.children}
         </ElementContext.Provider>
     );

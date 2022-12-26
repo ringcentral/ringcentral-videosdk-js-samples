@@ -73,7 +73,6 @@ const Participants: FC = () => {
             <div className='action-button' onClick={showParticipantModal}>
                 <People></People>
                 <p className='count'>{meetingState.participantList.length}</p>
-                <p className='action-text'>Participants</p>
             </div>
             <MeetingFeatureModal title={`participants(${meetingState.participantList.length})`}>
                 <div className='participants-modal'>

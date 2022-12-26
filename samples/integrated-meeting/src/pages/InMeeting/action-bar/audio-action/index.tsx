@@ -100,7 +100,6 @@ const AudioAction: FC = () => {
         <div>
             <div className='action-button' onClick={toggleMuteAudio} ref={actionButtonRef}>
                 {meetingState.isAudioMuted ? <MicOff /> : <Mic />}
-                <p className='action-text'>{meetingState.isAudioMuted ? 'Unmute' : 'Mute'}</p>
                 <div
                     className={`action-button-more ${isShowAudioDeviceList ? 'checked' : ''}`}
                     onClick={e => {
@@ -161,12 +160,14 @@ const AudioAction: FC = () => {
                     <div className='footer pad-t-5'>
                         <Button
                             size='small'
+                            variant='outlined'
                             style={{ width: '100px' }}
                             onClick={() => setIsShowAudioUnmuteDemandPop(false)}>
-                            Don't Allow
+                            Refuse
                         </Button>
                         <Button
                             size='small'
+                            variant='contained'
                             style={{ width: '100px', marginLeft: '10px' }}
                             onClick={acceptUnMuteAudioDemand}>
                             OK

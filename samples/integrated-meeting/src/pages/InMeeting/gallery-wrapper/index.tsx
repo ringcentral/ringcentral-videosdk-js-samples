@@ -8,7 +8,6 @@ import useNodeBoundingRect from '@src/hooks/useNodeBoundingRect';
 import { calculateFinalGridRule, FinalGridRule } from '@src/utils/gallery-layout';
 import GalleryItem from '../gallery-item';
 import GalleryOnlySelf from '../gallery-only-self';
-import './index.less';
 
 const getGridRule = calculateFinalGridRule(32);
 const GALLERY_ITEM_ASPECT_RATIO = 1.8;

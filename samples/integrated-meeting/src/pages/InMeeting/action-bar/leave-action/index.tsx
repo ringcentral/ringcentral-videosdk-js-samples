@@ -53,7 +53,6 @@ const LeaveAction: FC = () => {
         <div>
             <div className='action-button' onClick={leaveMeetingHandler} ref={actionButtonRef}>
                 <CallEnd sx={{ color: '#ea4335' }}></CallEnd>
-                <p className='action-text'>Leave</p>
             </div>
             <Popover
                 open={isShowLeaveOption}

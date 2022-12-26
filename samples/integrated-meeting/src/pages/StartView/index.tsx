@@ -87,12 +87,16 @@ const StartView: FC<IProps> = props => {
                 <DialogContent>
                     <TextField
                         required
+                        fullWidth
+                        variant='standard'
                         label='Meeting Id'
                         id='control'
                         inputRef={inputMeetingIdRef}
                     />
                     <TextField
-                        className='mar-l-15'
+                        style={{ marginTop: '20px' }}
+                        fullWidth
+                        variant='standard'
                         label='Password'
                         id='control'
                         inputRef={inputPwdRef}
