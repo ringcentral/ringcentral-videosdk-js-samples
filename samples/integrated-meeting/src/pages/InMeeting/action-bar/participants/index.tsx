@@ -1,5 +1,5 @@
 import React, { FC, useRef, useState } from 'react';
-import { Button, Popover } from '@mui/material';
+import { Button, Popover, Tooltip } from '@mui/material';
 import { Lock, People, LockOpen, MicOff, Mic } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 
@@ -79,19 +79,36 @@ const Participants: FC = () => {
                     <div className='operation-bar'>
                         <div className='operation-bar-icon-wrapper' onClick={toggleLockMeeting}>
                             {meetingState.isMeetingLocked ? (
-                                <Lock className='operation-bar-icon highlight'></Lock>
+                                <Tooltip
+                                    title='Allow new participants to join'
+                                    placement='top'
+                                    arrow>
+                                    <Lock className='operation-bar-icon highlight'></Lock>
+                                </Tooltip>
                             ) : (
-                                <LockOpen className='operation-bar-icon'></LockOpen>
+                                <Tooltip
+                                    title='Prevent new users from joining the meeting'
+                                    placement='top'
+                                    arrow>
+                                    <LockOpen className='operation-bar-icon'></LockOpen>
+                                </Tooltip>
                             )}
                         </div>
                         <div
                             className='operation-bar-icon-wrapper'
                             ref={muteAllButtonRef}
                             onClick={() => setIsShowMuteAllPopover(true)}>
-                            <MicOff className='operation-bar-icon'></MicOff>
+                            <Tooltip title='Mute audio for all attendees' placement='top' arrow>
+                                <MicOff className='operation-bar-icon'></MicOff>
+                            </Tooltip>
                         </div>
                         <div className='operation-bar-icon-wrapper'>
-                            <Mic className='operation-bar-icon' onClick={unmuteAll}></Mic>
+                            <Tooltip
+                                title='Request all attendees to ummute their audio'
+                                placement='top'
+                                arrow>
+                                <Mic className='operation-bar-icon' onClick={unmuteAll}></Mic>
+                            </Tooltip>
                         </div>
                         <Popover
                             open={isShowMuteAllPopover}

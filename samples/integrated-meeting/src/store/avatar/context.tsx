@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback, useContext, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useContext, useState } from 'react';
 import { deepmerge } from '@src/utils/tools';
 
 interface IAvatarContext {

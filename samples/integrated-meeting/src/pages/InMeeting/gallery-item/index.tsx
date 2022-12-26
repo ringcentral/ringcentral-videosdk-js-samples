@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { IParticipant } from '@sdk';
 import Avatar from '../avatar';
 import VideoInfo from './gallery-video-info';

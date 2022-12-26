@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC } from 'react';
 import { IParticipant, NQIState } from '@sdk';
 
 import { MicOff, Mic } from '@mui/icons-material';
