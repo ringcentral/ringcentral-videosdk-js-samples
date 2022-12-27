@@ -70,18 +70,19 @@ export default {
             {
                 test: /\.less$/i,
                 use: [
-                    'style-loader',
-                    'css-loader',
+                    "style-loader",
+                    "css-loader",
                     {
                         loader: 'less-loader',
                         options: {
                             lessOptions: {
-                                javascriptEnabled: true,
-                            },
-                        },
-                    },
-                ],
-            },
+                                javascriptEnabled: true
+                            }
+                        }
+                    }
+                ]
+            }
+
         ],
     },
     target: 'web',
