@@ -1,0 +1,75 @@
+.participants {
+    .count {
+        position: absolute;
+        font-size: 12px;
+        top: 15px;
+        right: 15px;
+    }
+}
+.participants-modal {
+    .participant-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        font-size: 12px;
+        .participant-info {
+            display: flex;
+            align-items: center;
+            position: relative;
+            .participant-name {
+                margin-left: 15px;
+                .role {
+                    color: #5f6368;
+                    transform: scale(0.9);
+                    transform-origin: left;
+                }
+            }
+            .participant-moderator {
+                position: absolute;
+                top: -3px;
+                left: 18px;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #fff;
+            }
+        }
+        .participant-operation {
+            color: #5f6368;
+            display: flex;
+            &-icon {
+                margin-left: 8px;
+                cursor: pointer;
+            }
+        }
+    }
+    .operation-bar {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9f9f9;
+        border-bottom: 1px solid #e2e2e2;
+        &-icon-wrapper {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin: 0 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            &:hover {
+                box-shadow: rgba(100, 100, 111, 0.2) 0px 4px 10px 0px;
+            }
+        }
+        &-icon {
+            color: #5f6368;
+            &.highlight {
+                color: #ea4335;
+            }
+        }
+    }
+}

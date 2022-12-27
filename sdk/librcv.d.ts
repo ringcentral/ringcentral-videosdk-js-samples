@@ -30,6 +30,7 @@ export declare class AudioController extends EventEmitter<AudioEvent> {
     private _librctHelper;
     private readonly _streamManager;
     private _initConfig;
+    private _runtimeConfig;
 
     private get _librct();
     private get _sfu();
@@ -198,14 +199,6 @@ declare enum BridgeWaitingRoomMode {
     OtherAccount = 3
 }
 
-export declare interface Channel {
-    createTime: string;
-    id: string;
-    isPrivate: true;
-    sessionId: string;
-    type: string;
-}
-
 /**
  * The ChatController class is a managing class to control the in-meeting chat related functions and states in an active meeting.
  */
@@ -291,25 +284,29 @@ export declare enum ChatType {
 /**
  * The ClosedCaptionsController class is a managing class to control the closed captions related functions and states in an active meeting session, such as start closed captions or stop closed captions.
  */
-declare class ClosedCaptionsController extends EventEmitter<ClosedCaptionsEvent> {
+export declare class ClosedCaptionsController extends EventEmitter<ClosedCaptionsEvent> {
     private _librctHelper;
     private _libsfuHelper;
     private _meetingProvider;
+    private readonly _userController;
+    private _streamManager;
     private _channel;
     private _closedCaptionsState;
     private _cacheClosedCaptionsState;
     private _dataChannel;
     private _dataChannelMessage;
+    private _captionsStreamProcessor;
     private get _librct();
     private get _sfu();
     private get _meeting();
     private get _isClosedCaptionsEnabled();
     private get _isE2eeEnabled();
+    private _onVisibleCaptionsChanged;
     private _checkStartClosedCaptions;
     private _triggerStateChangedEvent;
     /**
      * Start the closed captions and creates the data channel in an active meeting.
-     * @description A successful call of the startClosedCaptions triggers the onClosedCaptionsStateChanged event callback.
+     * @description A successful call of the startClosedCaptions triggers the onClosedCaptionsStateChanged event {@link ClosedCaptionsEvent.CLOSED_CAPTIONS_STATE_CHANGED} callback.
      * @returns 0 means the action succeeds or fails otherwise
      */
     startClosedCaptions(): Promise<ErrorCodeType>;
@@ -331,11 +328,20 @@ declare class ClosedCaptionsController extends EventEmitter<ClosedCaptionsEvent>
     isClosedCaptionsAllowed(): boolean;
 }
 
+export declare interface ClosedCaptionsData {
+    participant: IParticipant;
+    transcript: string;
+    timestamp: number;
+}
+
 /**
  * @desc events about ClosedCaptionsController
  */
 export declare enum ClosedCaptionsEvent {
-    CLOSED_CAPTIONS_STATE_CHANGED = "closed-captions-state-changed"
+    /** Occurs when the closed captions state is changed, refer to {@link ClosedCaptionsState} */
+    CLOSED_CAPTIONS_STATE_CHANGED = "closed-captions-state-changed",
+    /** Occurs when the closed captions data is changed, refer to {@link ClosedCaptionsData} */
+    CLOSED_CAPTIONS_DATA = "closed-captions-data"
 }
 
 export declare enum ClosedCaptionsState {
@@ -422,31 +428,6 @@ declare enum ConferenceWaitingRoomMode {
     EVERY = "EveryBody",
     GUEST = "GuestsOnly",
     OTHER = "OtherAccount"
-}
-
-export declare abstract class DataChannel {
-    abstract on(event: string, listener: (...args: any[]) => void): void;
-    abstract emit(event: string, ...args: any[]): void;
-    abstract removeAllListeners(): void;
-    abstract open(): void;
-    abstract close(): void;
-}
-
-export declare enum DataChannelLabel {
-    CLOSED_CAPTIONS = "cc"
-}
-
-export declare interface DataChannelMessage {
-    event: string;
-    final: boolean;
-    first_word_time: number;
-    last_word_time: number;
-    participant_id: string;
-    sseq: number;
-    sseq_end: number;
-    sseq_start: number;
-    transcript: string;
-    update_part: number;
 }
 
 declare class DeviceManager<T extends string> extends EventEmitter<T> {
@@ -562,6 +543,10 @@ export declare interface EngineInitConfig {
     enableVcg?: boolean;
 
 
+
+
+
+
 }
 
 /**
@@ -651,10 +636,8 @@ export declare enum ErrorCodeType {
     ERR_CONCURRENT_MEETING_LIMIT_EXCEEDED = 10016,
     /** A specific function does not support in E2EE mode. */
     ERR_FUNCTION_NOT_SUPPORTED_IN_E2EE = 10017,
-    /** Which function depends meeting initial has been called before meeting not initial **/
+    /** Which function depends on meeting initial has been called before meeting not initial **/
     ERR_MEETING_IS_NOT_READY = 10018,
-    /** Which function depends meeting initial has been called before meeting media not ready **/
-    ERR_MEETING_MEDIA_IS_NOT_READY = 10019,
     /** A base error code for the meeting user category.  */
     ERR_MEETING_USER_BASE = 11000,
     /** Not allowed to delete yourself.  */
@@ -671,6 +654,18 @@ export declare enum ErrorCodeType {
     ERR_MEETING_RECORDING_SERVER_NOT_ENABLE = 13001,
     /** A base error code for the meeting live-transcription category. */
     ERR_LIVE_TRANSCRIPTION_BASE = 14000,
+    /** librct get entrypoints failed */
+    ERR_LIVE_TRANSCRIPTION_GET_ENTRY_POINTS_FAILED = 14001,
+    /** open live transcription server failed*/
+    ERR_LIVE_TRANSCRIPTION_SEVER_OPEN_FAILED = 14002,
+    /** Receive invalid data from Live Transcription AI Server */
+    ERR_LIVE_TRANSCRIPTION_SERVER_DATA_ERROR = 14003,
+    /** Receive invalid participantId from Live Transcription AI Server */
+    ERR_LIVE_TRANSCRIPTION_INVALID_PARTICIPANT = 14004,
+    /** open live transcription failed when user not join audio */
+    ERR_LIVE_TRANSCRIPTION_NOT_JOIN_AUDIO = 14005,
+    /** Live Transcription AI Server not available */
+    ERR_LIVE_TRANSCRIPTION_SERVICE_NOT_AVAILABLE = 14006,
     /** A base error code for the meeting closed captions category. */
     ERR_CLOSED_CAPTIONS_BASE = 15000,
     /** Server does not allow closed captions */
@@ -715,10 +710,12 @@ export declare enum ErrorCodeType {
     ERR_MEETING_CONTEXT_E2EE_NOT_SUPPORTED_JOIN_TYPE = 20003,
     /** In e2ee mode, meeting password must be set. */
     ERR_MEETING_CONTEXT_E2EE_NEED_MEETING_PASSWORD = 20004,
-    /** In e2ee mode, waiting room mode not support for join type is onlycoworkersjoin. */
+    /** In e2ee mode, waiting room mode not support for join type is only coworkers join. */
     ERR_MEETING_CONTEXT_E2EE_WAITING_ROOM_MODE_NOT_SUPPORT_FOR_JOIN_TYPE_IS_ONLY_COWORKERS_JOIN = 20005,
+    /** In e2ee mode, waiting room mode not support for join type is only auth user join. */
+    ERR_MEETING_CONTEXT_E2EE_WAITING_ROOM_MODE_NOT_SUPPORT_FOR_JOIN_TYPE_IS_ONLY_AUTH_USER_JOIN = 20006,
     /** In e2ee mode, allowJoinBeforeHost must be false for waiting room for everyone. */
-    ERR_MEETING_CONTEXT_E2EE_ALLOW_JOIN_BEFORE_HOST_MUST_BE_FALSE_FOR_WAITING_ROOM_FOR_EVERYONE = 20006,
+    ERR_MEETING_CONTEXT_E2EE_ALLOW_JOIN_BEFORE_HOST_MUST_BE_FALSE_FOR_WAITING_ROOM_FOR_EVERYONE = 20007,
     /** A base error code for the audio category. */
     ERR_AUDIO_BASE = 30000,
     /** A base error code for the video category. */
@@ -829,6 +826,70 @@ declare interface IHost {
 }
 
 /**
+ * live transcript data
+ */
+export declare interface ILiveTranscription {
+    /**
+     * Uniq id of the live transcript
+     */
+    phraseId: string;
+    /**
+     * text content of the live transcript
+     */
+    text: string;
+    /**
+     * participant of the live transcript
+     */
+    participant: IParticipant;
+    /**
+     * language of live Transcript
+     */
+    currentLanguage: string;
+    /**
+     * identify whether the transcript is final result
+     */
+    final: boolean;
+    /**
+     * words of live transcript
+     */
+    words: {
+        /**
+         * end time of the word
+         */
+        endTime: number;
+        /**
+         * start time of the word
+         */
+        startTime: number;
+        /**
+         * word content
+         */
+        word: string;
+    }[];
+}
+
+/**
+ * setting and status of live transcription
+ */
+export declare interface ILiveTranscriptionSettings {
+    autostartTranscription: boolean;
+    meetingLanguage: string;
+    transcriptActivated: boolean;
+    transcriptDownloadAndCopy: string;
+    transcriptDownloadAndCopySetting: {
+        value: string;
+        locked: boolean;
+    };
+    transcriptVisibility: string;
+    transcriptVisibilitySetting: {
+        value: string;
+        locked: boolean;
+    };
+    transcriptionActive: boolean;
+    transcriptionAllowed: boolean;
+}
+
+/**
  * MeetingController.getMeetingInfo() response interface
  */
 export declare interface IMeetingInfo {
@@ -881,10 +942,8 @@ export declare interface InstantMeetingSettings {
     waitingRoomMode?: WaitingRoomMode;
     /** Configure whether to allow users other than host/moderator to share the screen, default is true */
     allowScreenSharing?: boolean;
-    /** Configure that only logged in users can join the meeting, default is false */
-    onlyAuthUserCanJoin?: boolean;
-    /** Configure that only coworkers can join the meeting, default is false */
-    onlyCoworkersCanJoin?: boolean;
+    /** Configure that which type of users can join the meeting */
+    onlyAuthUserJoinMode?: OnlyAuthUserJoinMode;
     /** Enable End-to-End Encryption for meeting .(e2ee feature land in the future , so is forced to false)*/
     enableE2ee?: boolean;
 }
@@ -1027,10 +1086,8 @@ export declare interface IPersonalMeetingSettings {
     waitingRoomMode?: WaitingRoomMode;
     /** Configure whether to allow users other than host/moderator to share the screen, default is true */
     allowScreenSharing?: boolean;
-    /** Configure that only logged in users can join the meeting, default is false */
-    onlyAuthUserCanJoin?: boolean;
-    /** Configure that only coworkers can join the meeting, default is false */
-    onlyCoworkersCanJoin?: boolean;
+    /** Configure that which type of users can join the meeting */
+    onlyAuthUserJoinMode?: OnlyAuthUserJoinMode;
     /** Configure personal meeting id */
     shortId?: string;
     /** Configure personal meeting name */
@@ -1135,6 +1192,107 @@ export declare enum LeaveReason {
     REMOVE_BY_HOST = 5
 }
 
+declare class LiveTranscriptionController extends EventEmitter<LiveTranscriptionEvent> {
+    private _librctHelper;
+    private _libsfuHelper;
+    private _meetingProvider;
+    private _userController;
+    private _streamManager;
+    private _transcriptionUrl;
+    /**
+     * last transcript of live transcription
+     * @private
+     */
+    private _lastTranscript?;
+    private _liveTranscriptionSettings;
+    private get _librct();
+    private get _sfu();
+    private get _meeting();
+    private get meetingId();
+    private get _isConnectionOpen();
+    private _getEntrypoints;
+    private _handleTranscriptStateMessage;
+    private _handleSupportedLanguagesMessage;
+    private _handleSwitchLanguageMessage;
+    private _addConnectionListeners;
+    private _handleMessage;
+    private _handleTranscriptHistoryMessage;
+    private _handleTranscriptReadyMessage;
+    private _formatRawTranscript;
+    private _validateConnection;
+    /**
+     * Init the LiveTranscription
+     * @returns 0 means the action succeeds or fails otherwise
+     */
+    init(): Promise<ErrorCodeType>;
+    /**
+     * Starts the live transcriptions in an active meeting
+     * Triggers the {@link} LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED event callback
+     */
+    startLiveTranscription(): Promise<ErrorCodeType>;
+    /**
+     * Send request to get history recordings of live transcriptions
+     * Triggers the onLiveTranscriptionHistoryChanged event callback
+     */
+    getLiveTranscriptionHistory: () => ErrorCodeType;
+    /**
+     * Send a request to get supported languages of live transcriptions
+     * Triggers the onLiveTranscriptionSupportedLanguages event callback
+     */
+    getSupportLanguages: () => ErrorCodeType;
+    /**
+     * Send a request to switch the active language
+     * Triggers the onLiveTranscriptionLanguageChanged event callback
+     */
+    switchLanguage(language: string): ErrorCodeType;
+    getLiveTranscriptionSettings(): ILiveTranscriptionSettings | null;
+    /**
+     * Pauses the live transcriptions in an active meeting
+     * Triggers the onLiveTranscriptionSettingChanged event callback
+     */
+    pauseLiveTranscription(): ErrorCodeType;
+}
+
+/**
+ * Update type of onLiveTranscriptionDataChanged event
+ */
+export declare enum LiveTranscriptionDataType {
+    /**
+     * Update pre emitted transcript
+     */
+    UPDATE = 0,
+    /**
+     * new transcript
+     */
+    NEW = 1
+}
+
+/**
+ * @desc events about LiveTranscription controller
+ */
+export declare enum LiveTranscriptionEvent {
+    /**
+     * Occurs when live transcriptions data changes
+     */
+    LIVE_TRANSCRIPTION_DATA_CHANGED = "live-transcription-data-changed",
+    /**
+     * Occurs when live transcriptions settings changes
+     */
+    LIVE_TRANSCRIPTION_SETTING_CHANGED = "live-transcription-setting-changed",
+    /**
+     * Occurs when live transcriptions history changes
+     */
+    LIVE_TRANSCRIPTION_HISTORY_CHANGED = "live-transcription-history-changed",
+    /**
+     * Occurs when get live transcriptions supported languages
+     */
+    LIVE_TRANSCRIPTION_SUPPORTED_LANGUAGES = "live-transcription-support-languages",
+    /**
+     * Occurs when live transcriptions active language changes
+     */
+    LIVE_TRANSCRIPTION_LANGUAGE_CHANGED = "live-transcription-language-changed"
+}
+
 /**
  * log level of rwc logs
  */
@@ -1205,6 +1363,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private _sharingController;
     private _recordingController;
     private _chatController;
+    private _liveTranscriptionController;
     private _runtimeConfig;
     private _closedCaptionsController;
     private _sfu?;
@@ -1217,7 +1376,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
 
     private _setEstablished;
 
-
+    private _createLibSfu;
     /**
      * listen meeting change, trigger MeetingEvent
      */
@@ -1299,6 +1458,11 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * @returns The ClosedCaptionsController instance
      */
     getClosedCaptionsController(): ClosedCaptionsController;
+    /**
+     * Gets the LiveTranscription instance.
+     * @reuturns The LiveTranscription instance
+     */
+    getLiveTranscriptionController(): LiveTranscriptionController;
     /**
      * Gets the current active meeting details.
      * @return The meeting information object or error code 10000
@@ -1409,10 +1573,24 @@ export declare interface OauthOptions {
     username?: string;
     /**The RingCentral extension password */
     password?: string;
+    /**The RingCentral extension ID */
+    extension?: string;
     /**The JWT credential string */
     jwt?: string;
     /**Default value is TRUE. If it's TRUE, the access token will be refreshed automatically once it expired */
     autoRefresh?: boolean;
+}
+
+/**
+ * The enumeration class for the only auth user join mode of the meeting.
+ */
+export declare enum OnlyAuthUserJoinMode {
+    /**When this mode is selected, everyone can join the meeting. */
+    OFF = 0,
+    /**When this mode is selected, only signed in users can join the meeting. */
+    SIGNED_IN_USERS = 1,
+    /**When this mode is selected, only coworkers can join the meeting. */
+    CO_WORKERS = 2
 }
 
 declare type Participant = Omit<IParticipant, 'nqiStatus'>;
@@ -1836,6 +2014,11 @@ export declare enum SharingState {
     SHARING_RESUMED = 5
 }
 
+declare enum SRS_EVENT {
+    UPDATE = "transcriptUpdate",
+    RESET = "transcriptReset"
+}
+
 /**
  * @desc events about StreamManager
  */
@@ -1871,6 +2054,7 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
     private _localStreams;
     private _remoteStreams;
     private _tapIdStreamMap;
+    private _participantBySessionMap;
     private get _librct();
     private get _sfu();
     private _eventQueueSet;
@@ -1885,6 +2069,7 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
     private static _getStreamSplitTracks;
     private _deleteTapIdStreamMap;
     private _addTapIdStreamMap;
+    private _initParticipantBySessionMap;
     private _initialEventListener;
     /** wrapped emit start **/
     private _emitLocalVideoTrackAdded;
@@ -1952,13 +2137,16 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
 
 
 
+
 }
 
 export declare type StreamProcessor = (stream: MediaStream) => MediaStream;
 
 export declare enum StreamType {
     VIDEO_MAIN = "video/main",
-    VIDEO_SCREENSHARING = "video/screensharing"
+    VIDEO_SCREENSHARING = "video/screensharing",
+    VIDEO_WHITEBOARD = "video/whiteboard",
+    AUDIO_MAIN = "audio/main"
 }
 
 export declare type TEventCB = (...args: any[]) => void;
@@ -2244,11 +2432,11 @@ export declare enum VideoEvent {
  * The enumeration class for the waiting room mode of the meeting.
  */
 export declare enum WaitingRoomMode {
-    /** When the waiting room option is enabled and this mode is elected, everyone will enter the waiting room and wait for the host's admissio */
+    /** When the waiting room option is enabled and this mode is selected, everyone will enter the waiting room and wait for the host's admissio */
     EVERYONE = 0,
-    /** When the waiting room option is enabled and this mode is elected, anyone not signed in will enter the waiting room and wait for the host's admission */
+    /** When the waiting room option is enabled and this mode is selected, anyone not signed in will enter the waiting room and wait for the host's admission */
     NOT_AUTH_USER = 1,
-    /** When the waiting room option is enabled and this mode is elected, anyone outside of the meeting host company will enter the waiting room and wait for the host's admission */
+    /** When the waiting room option is enabled and this mode is selected, anyone outside of the meeting host company will enter the waiting room and wait for the host's admission */
     NOT_COWORKERS = 2
 }
 

@@ -1,0 +1,39 @@
+.gallery-item {
+    box-sizing: border-box;
+    padding: 5px;
+    --width: calc((100% / var(--cols, 1)));
+    height: auto;
+    width: var(--width);
+    aspect-ratio: var(--aspect-ratio);
+    position: relative;
+    .gallery-item-inner {
+        position: relative;
+        background: #1a1a1a;
+        border-radius: 10px;
+        width: 100%;
+        height: 100%;
+    }
+    .video-container {
+        width: 100%;
+        height: 100%;
+    }
+    .avatar-wrapper {
+        width: 25%;
+        height: auto;
+        position: absolute;
+        aspect-ratio: 1;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .video-info-wrapper {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+    }
+}
+.heightLimited .gallery-item {
+    --height: calc(100% / var(--rows, 1));
+    height: var(--height);
+    width: auto;
+}

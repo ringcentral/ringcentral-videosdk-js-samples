@@ -1,0 +1,75 @@
+.generate(100);
+
+.generate(@n, @i: 5) when (@i =< @n) {
+    .mar-@{i} {
+        margin: @i*1px;
+    }
+
+    .mar-l-@{i} {
+        margin-left: @i*1px;
+    }
+
+    .mar-r-@{i} {
+        margin-right: @i*1px;
+    }
+
+    .mar-t-@{i} {
+        margin-top: @i*1px;
+    }
+
+    .mar-b-@{i} {
+        margin-bottom: @i*1px;
+    }
+
+    .pad-@{i} {
+        padding: @i*1px;
+    }
+
+    .pad-l-@{i} {
+        padding-left: @i*1px;
+    }
+
+    .pad-r-@{i} {
+        padding-right: @i*1px;
+    }
+
+    .pad-t-@{i} {
+        padding-top: @i*1px;
+    }
+
+    .pad-b-@{i} {
+        padding-bottom: @i*1px;
+    }
+
+    .generate(@n, (@i + 5));
+}
+
+.clearfix:before,
+.clearfix:after {
+    content: ' ';
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

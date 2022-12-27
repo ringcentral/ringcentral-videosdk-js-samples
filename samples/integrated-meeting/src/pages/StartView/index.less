@@ -1,0 +1,32 @@
+.start-view {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    text-align: center;
+
+    .meeting-button-group {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .meeting-button-wrapper {
+            text-align: center;
+            font-size: 14px;
+            color: #2f2f2f;
+        }
+        .meeting-button {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 20px 10px 20px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            &:hover {
+                background: #f9f9f9;
+            }
+        }
+    }
+}
