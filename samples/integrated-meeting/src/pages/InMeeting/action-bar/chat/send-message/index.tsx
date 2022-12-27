@@ -1,5 +1,7 @@
-import { Button, OutlinedInput } from '@mui/material';
-import React, { useCallback, useContext } from 'react';
+import React, { FC } from 'react';
+
+import { IconButton, OutlinedInput } from '@mui/material';
+import { Send as SendIcon } from '@mui/icons-material';
 
 interface ISendMessageOptions {
     send: () => void;
@@ -7,27 +9,28 @@ interface ISendMessageOptions {
     hasPrivilege: boolean;
     onChange: (value: string) => void;
 }
-
-const SendMessage = ({ msg, send, onChange, hasPrivilege }: ISendMessageOptions) => {
-    const isICanSend = useCallback(() => {
-        if (hasPrivilege) return true;
-        return false;
-    }, [hasPrivilege]);
+const SendMessage: FC<ISendMessageOptions> = props => {
+    const { send, msg, hasPrivilege, onChange } = props;
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div className='send-message'>
             <OutlinedInput
-                disabled={!isICanSend}
                 margin='dense'
+                size='small'
                 placeholder='send message'
                 style={{ flex: 1 }}
                 type='text'
                 value={msg}
                 onChange={e => onChange(e.target.value)}
+                onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                        send();
+                    }
+                }}
             />
-            <Button color='primary' disabled={!isICanSend} onClick={send}>
-                send
-            </Button>
+            <IconButton color='primary' onClick={send} disabled={!hasPrivilege}>
+                <SendIcon />
+            </IconButton>
         </div>
     );
 };

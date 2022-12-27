@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { IMeetingInfo, IParticipant, RcvEngine } from '@sdk';
+import { IMeetingInfo, IParticipant, Message, RcvEngine } from '@sdk';
 
 export enum ActiveFeatureModal {
     Participant,
@@ -14,6 +14,7 @@ export enum MeetingReduceType {
     IS_MODAL_PINNED = 'IS_MODAL_PINNED',
     ACTIVE_FEATURE_MODAL = 'ACTIVE_FEATURE_MODAL',
     MEETING_LOCK_STATE = 'MEETING_LOCK_STATE',
+    CHAT_MESSAGES = 'CHAT_MESSAGES',
 }
 
 export interface IMeetingState {
@@ -25,6 +26,7 @@ export interface IMeetingState {
     meetingInfo?: IMeetingInfo;
     isModalPinned: boolean;
     activeFeatureModal: ActiveFeatureModal | null;
+    chatMessages: Message[];
 }
 
 export interface IMeetingAction {

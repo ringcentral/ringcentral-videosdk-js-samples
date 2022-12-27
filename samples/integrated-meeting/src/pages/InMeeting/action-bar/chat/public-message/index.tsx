@@ -1,24 +1,22 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
+import { ChatPrivilege, ChatType } from '@sdk';
 
 import { useMeetingContext } from '@src/store/meeting';
-import './index.less';
 import { useGlobalContext } from '@src/store/global';
 
-import { ChatType, Message } from '@sdk';
 import MessageList from '../message-list';
 import SendMessage from '../send-message';
 
-const PublicMessage: FC<{ messages: Message[] }> = props => {
+const PublicMessage: FC = () => {
     const { enqueueSnackbar } = useSnackbar();
-
-    const { messages } = props;
 
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
     const chatController = meetingController?.getChatController();
+    const privilege = chatController?.getCurrentChatPrivilege();
 
-    const { state: meetingState, dispatch } = useMeetingContext();
+    const { state: meetingState } = useMeetingContext();
 
     const [msg, setMsg] = useState<string>('');
 
@@ -32,19 +30,29 @@ const PublicMessage: FC<{ messages: Message[] }> = props => {
             });
         }
     };
-    const displayMessages = messages.filter(msg => msg.chatType === ChatType.PUBLIC);
+    const displayMessages = meetingState.chatMessages.filter(
+        msg => msg.chatType === ChatType.PUBLIC
+    );
+
+    const hasPrivilege = useMemo(
+        () =>
+            meetingState.localParticipant.isHost ||
+            meetingState.localParticipant.isModerator ||
+            privilege === ChatPrivilege.EVERYONE,
+        [meetingState.localParticipant, privilege]
+    );
 
     return (
-        <div className='chat-modal-content'>
-            <MessageList messages={displayMessages} participants={meetingState.participantList} />
-
+        <>
+            <div className='chat-message mar-t-15'>
+                <MessageList messages={displayMessages} />
+            </div>
             <SendMessage
-                hasPrivilege={true}
                 msg={msg}
                 send={sendMessage}
-                onChange={msg => setMsg(msg)}
-            />
-        </div>
+                onChange={setMsg}
+                hasPrivilege={hasPrivilege}></SendMessage>
+        </>
     );
 };
 

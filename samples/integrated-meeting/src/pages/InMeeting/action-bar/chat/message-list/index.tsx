@@ -1,30 +1,32 @@
 import type { IParticipant, Message } from '@sdk';
-import React from 'react';
+import React, { FC } from 'react';
+import { useMeetingContext } from '@src/store/meeting';
+import Avatar from '@src/pages/InMeeting/avatar';
+import './index.less';
 
 export function MessageComp({ data, participant }: { data: Message; participant: IParticipant }) {
     const time = new Date(data.timestamp);
     const hour = time.getHours().toString().padStart(2, '0');
     const minute = time.getMinutes().toString().padStart(2, '0');
     return (
-        <div>
-            <div>
-                <div>{participant.displayName}</div>
-                <div>
+        <div className='message-item'>
+            <div className='message-user-info'>
+                <Avatar participant={participant} displaySize={20} imgSize={20} />
+                <p className='message-user'>{participant.displayName}</p>
+                <p className='message-time'>
                     {hour}:{minute}
-                </div>
+                </p>
             </div>
-            <div>{data.message}</div>
+            <p className='message-content'>{data.message}</p>
         </div>
     );
 }
 
-interface IProps {
-    participants: IParticipant[];
-    messages: Message[];
-}
+const MessageList: FC<{ messages: Message[] }> = props => {
+    const { state: meetingState } = useMeetingContext();
+    const { messages } = props;
 
-function MessageList({ messages, participants }: IProps) {
-    const participantMap = participants.reduce(
+    const participantMap = meetingState.participantList.reduce(
         (res, participant) => ({
             ...res,
             [participant.uid]: participant,
@@ -36,13 +38,12 @@ function MessageList({ messages, participants }: IProps) {
         <div>
             {messages.map((item: Message) => (
                 <MessageComp
-                    data={item}
                     key={item.timestamp}
                     participant={participantMap[item.from]}
-                />
+                    data={item}></MessageComp>
             ))}
         </div>
     );
-}
+};
 
 export default React.memo(MessageList);

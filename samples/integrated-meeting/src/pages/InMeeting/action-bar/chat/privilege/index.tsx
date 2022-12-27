@@ -1,8 +1,8 @@
-import { Divider, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { ChatPrivilege } from '@sdk';
 import { useGlobalContext } from '@src/store/global';
 import { useSnackbar } from 'notistack';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 const PRIVILEGES = [ChatPrivilege.EVERYONE, ChatPrivilege.HOST_MODERATOR];
 
@@ -25,12 +25,12 @@ const SetPrivilege = () => {
     };
 
     return (
-        <FormControl size='small'>
+        <FormControl size='small' sx={{ width: '320px' }}>
             <InputLabel>Allow</InputLabel>
             <Select
                 label={'Allow'}
                 placeholder='select'
-                style={{ width: 300, marginBottom: 20 }}
+                style={{ width: 300, marginBottom: 15 }}
                 value={privilege}
                 onChange={handleChange}>
                 {PRIVILEGES.map(privilege => (

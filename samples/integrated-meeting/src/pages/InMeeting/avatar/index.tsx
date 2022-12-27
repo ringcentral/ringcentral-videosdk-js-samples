@@ -45,11 +45,10 @@ const Avatar: FC<IAvatarProps> = ({
         getAvatar();
     }, []);
 
-    if (!url) {
-        return null;
-    }
-    return (
+    return url ? (
         <img src={url} style={{ borderRadius: '50%', width: displaySize, height: displaySize }} />
+    ) : (
+        <div style={{ borderRadius: '50%', width: displaySize, height: displaySize }}></div>
     );
 };
 

@@ -9,6 +9,7 @@ const initState: IMeetingState = {
     participantList: [],
     isModalPinned: false,
     activeFeatureModal: null,
+    chatMessages: [],
 };
 export const MeetingContext = createContext<IMeetingContext>({
     state: initState,

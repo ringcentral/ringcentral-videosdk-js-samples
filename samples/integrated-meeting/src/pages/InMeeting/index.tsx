@@ -1,5 +1,13 @@
-import React, { FC, useEffect, useState, useRef } from 'react';
-import { AudioEvent, VideoEvent, IParticipant, UserEvent, StreamEvent, MeetingEvent } from '@sdk';
+import React, { FC, useEffect, useRef } from 'react';
+import {
+    AudioEvent,
+    VideoEvent,
+    IParticipant,
+    UserEvent,
+    StreamEvent,
+    MeetingEvent,
+    ChatEvent,
+} from '@sdk';
 import { useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
@@ -19,32 +27,55 @@ const InMeeting: FC = () => {
     const meetingController = rcvEngine?.getMeetingController();
 
     const { meetingId } = useParams();
-    const { state: meetingState, dispatch } = useMeetingContext();
+    const { dispatch } = useMeetingContext();
     const { setSidePortal, setCcPortal } = useElementContext();
 
-    const [loading, setLoading] = useState(false);
     const audioRef = useRef({} as HTMLDivElement);
 
     useEffect(() => {
-        const initController = async () => {
-            // when do refreshing
-            if (!isMeetingJoined) {
-                setLoading(true);
-                try {
-                    await rcvEngine.joinMeeting(meetingId);
-                } catch (e) {
-                    enqueueSnackbar('Join meeting failed', {
-                        variant: 'error',
-                    });
-                } finally {
-                    setLoading(false);
-                }
-            }
-            getParticipants();
-            initListener();
-        };
-        rcvEngine && initController();
+        if (isMeetingJoined) {
+            const removeListener = initListener();
+            return () => {
+                removeListener();
+            };
+        }
+    }, [isMeetingJoined]);
+
+    useEffect(() => {
+        if (rcvEngine) {
+            const removeChatListener = initChatListener();
+            initController();
+            return () => {
+                removeChatListener();
+            };
+        }
     }, [meetingId, rcvEngine]);
+
+    const initChatListener = () => {
+        const chatController = meetingController?.getChatController();
+        const chatListener = chatController?.on(ChatEvent.CHAT_MESSAGE_RECEIVED, msgs => {
+            dispatch({
+                type: MeetingReduceType.CHAT_MESSAGES,
+                payload: { chatMessages: msgs },
+            });
+        });
+        return () => {
+            chatListener();
+        };
+    };
+
+    const initController = async () => {
+        if (!isMeetingJoined) {
+            try {
+                await rcvEngine.joinMeeting(meetingId);
+            } catch (e) {
+                enqueueSnackbar('Join meeting failed', {
+                    variant: 'error',
+                });
+            }
+        }
+        getParticipants();
+    };
 
     const initListener = () => {
         const audioController = meetingController?.getAudioController();

@@ -38,6 +38,11 @@ export function meetingReducer(state: IMeetingState, { type, payload }: IMeeting
                 ...state,
                 isMeetingLocked: payload.isMeetingLocked,
             };
+        case MeetingReduceType.CHAT_MESSAGES:
+            return {
+                ...state,
+                chatMessages: state.chatMessages.concat(payload.chatMessages),
+            };
 
         default:
             return state;
