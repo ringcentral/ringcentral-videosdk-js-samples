@@ -8,9 +8,9 @@ import useNodeBoundingRect from '@src/hooks/useNodeBoundingRect';
 import { calculateFinalGridRule, FinalGridRule } from '@src/utils/gallery-layout';
 import GalleryItem from '../gallery-item';
 import GalleryOnlySelf from '../gallery-only-self';
+import { GALLERY_ITEM_ASPECT_RATIO, MAX_GALLERY_ITEM_COUNT_PER_PAGE } from '@src/consts/layout';
 
-const getGridRule = calculateFinalGridRule(32);
-const GALLERY_ITEM_ASPECT_RATIO = 1.8;
+const getGridRule = calculateFinalGridRule(MAX_GALLERY_ITEM_COUNT_PER_PAGE);
 
 const GalleryWrapper: FC = () => {
     const { rcvEngine, isMeetingJoined } = useGlobalContext();
