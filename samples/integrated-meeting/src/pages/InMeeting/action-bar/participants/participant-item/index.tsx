@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { IParticipant } from '@sdk';
 import Avatar from '@src/pages/InMeeting/avatar';
 
@@ -17,8 +17,9 @@ import { useGlobalContext } from '@src/store/global';
 
 interface IParticipantItem {
     participant: IParticipant;
+    localParticipantIsHost: boolean;
 }
-const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
+const ParticipantItem: FC<IParticipantItem> = ({ participant, localParticipantIsHost }) => {
     const { enqueueSnackbar } = useSnackbar();
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -29,6 +30,10 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
 
     const { rcvEngine } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
+
+    const hasPermission = useMemo(() => {
+        return localParticipantIsHost || participant.isMe;
+    }, [localParticipantIsHost, participant.isMe]);
 
     const toggleMuteLocalAudio = async () => {
         try {
@@ -95,6 +100,9 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
     };
 
     const toggleMuteAudio = () => {
+        if (!hasPermission) {
+            return;
+        }
         if (participant.isMe) {
             toggleMuteLocalAudio();
         } else {
@@ -103,6 +111,9 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
     };
 
     const toggleMuteVideo = () => {
+        if (!hasPermission) {
+            return;
+        }
         if (participant.isMe) {
             toggleMuteLocalVideo();
         } else {
@@ -146,7 +157,7 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
                 </div>
             </div>
             <div className='participant-operation'>
-                {!participant.isMe ? (
+                {localParticipantIsHost && !participant.isMe ? (
                     <>
                         <div onClick={showMoreOperation}>
                             <MoreVert className='participant-operation-icon more'></MoreVert>
@@ -189,14 +200,18 @@ const ParticipantItem: FC<IParticipantItem> = ({ participant }) => {
                         </Popover>
                     </>
                 ) : null}
-                <div onClick={toggleMuteAudio} className='participant-operation-icon'>
+                <div
+                    onClick={toggleMuteAudio}
+                    className={`participant-operation-icon ${!hasPermission ? 'disabled' : ''}`}>
                     {participant.isAudioMuted ? (
                         <MicOffOutlined></MicOffOutlined>
                     ) : (
                         <MicNoneOutlined></MicNoneOutlined>
                     )}
                 </div>
-                <div onClick={toggleMuteVideo} className='participant-operation-icon'>
+                <div
+                    onClick={toggleMuteVideo}
+                    className={`participant-operation-icon ${!hasPermission ? 'disabled' : ''}`}>
                     {participant.isVideoMuted ? (
                         <VideocamOffOutlined></VideocamOffOutlined>
                     ) : (

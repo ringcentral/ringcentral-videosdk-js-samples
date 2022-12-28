@@ -162,7 +162,11 @@ const Participants: FC = () => {
                                 return (
                                     <ParticipantItem
                                         key={participant.uid}
-                                        participant={participant}></ParticipantItem>
+                                        participant={participant}
+                                        localParticipantIsHost={
+                                            meetingState.localParticipant.isHost ||
+                                            meetingState.localParticipant.isModerator
+                                        }></ParticipantItem>
                                 );
                             })}
                         </div>

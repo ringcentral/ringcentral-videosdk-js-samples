@@ -34,34 +34,25 @@ const InMeeting: FC = () => {
 
     useEffect(() => {
         if (isMeetingJoined) {
-            const removeListener = initListener();
-            return () => {
-                removeListener();
-            };
+            initListener();
         }
     }, [isMeetingJoined]);
 
     useEffect(() => {
         if (rcvEngine) {
-            const removeChatListener = initChatListener();
+            initChatListener();
             initController();
-            return () => {
-                removeChatListener();
-            };
         }
     }, [meetingId, rcvEngine]);
 
     const initChatListener = () => {
         const chatController = meetingController?.getChatController();
-        const chatListener = chatController?.on(ChatEvent.CHAT_MESSAGE_RECEIVED, msgs => {
+        chatController?.on(ChatEvent.CHAT_MESSAGE_RECEIVED, msgs => {
             dispatch({
                 type: MeetingReduceType.CHAT_MESSAGES,
                 payload: { chatMessages: msgs },
             });
         });
-        return () => {
-            chatListener();
-        };
     };
 
     const initController = async () => {
@@ -82,55 +73,40 @@ const InMeeting: FC = () => {
         const videoController = meetingController?.getVideoController();
 
         // listen for audio unmute/mute events
-        const audioLocalMuteListener = audioController?.on(
-            AudioEvent.LOCAL_AUDIO_MUTE_CHANGED,
-            mute => {
-                dispatch({
-                    type: MeetingReduceType.AUDIO_MUTE_UPDATED,
-                    payload: { isAudioMuted: mute },
-                });
-                getParticipants();
-            }
-        );
-        const audioRemoteMuteListener = audioController?.on(
-            AudioEvent.REMOTE_AUDIO_MUTE_CHANGED,
-            () => {
-                getParticipants();
-            }
-        );
+        audioController?.on(AudioEvent.LOCAL_AUDIO_MUTE_CHANGED, mute => {
+            dispatch({
+                type: MeetingReduceType.AUDIO_MUTE_UPDATED,
+                payload: { isAudioMuted: mute },
+            });
+            getParticipants();
+        });
+        audioController?.on(AudioEvent.REMOTE_AUDIO_MUTE_CHANGED, () => {
+            getParticipants();
+        });
         // listen for video unmute/mute events
-        const videoLocalMuteListener = videoController?.on(
-            VideoEvent.LOCAL_VIDEO_MUTE_CHANGED,
-            mute => {
-                dispatch({
-                    type: MeetingReduceType.VIDEO_MUTE_UPDATED,
-                    payload: { isVideoMuted: mute },
-                });
-                getParticipants();
-            }
-        );
-        const videoRemoteMuteListener = videoController?.on(
-            VideoEvent.REMOTE_VIDEO_MUTE_CHANGED,
-            () => {
-                getParticipants();
-            }
-        );
+        videoController?.on(VideoEvent.LOCAL_VIDEO_MUTE_CHANGED, mute => {
+            dispatch({
+                type: MeetingReduceType.VIDEO_MUTE_UPDATED,
+                payload: { isVideoMuted: mute },
+            });
+            getParticipants();
+        });
+        videoController?.on(VideoEvent.REMOTE_VIDEO_MUTE_CHANGED, () => {
+            getParticipants();
+        });
         const userController = meetingController?.getUserController();
-        const userJoinedListener = userController.on(UserEvent.USER_JOINED, () => {
+        userController.on(UserEvent.USER_JOINED, () => {
             getParticipants();
         });
-        const userLeftListener = userController.on(UserEvent.USER_LEFT, () => {
+        userController.on(UserEvent.USER_LEFT, () => {
             getParticipants();
         });
-        const userUpdateListener = userController.on(UserEvent.USER_UPDATED, () => {
+        userController.on(UserEvent.USER_UPDATED, () => {
             getParticipants();
         });
-        const userSpeakChangedListener = userController.on(
-            UserEvent.ACTIVE_SPEAKER_USER_CHANGED,
-            (participant: IParticipant) => {
-                getParticipants();
-            }
-        );
+        userController.on(UserEvent.ACTIVE_SPEAKER_USER_CHANGED, (participant: IParticipant) => {
+            getParticipants();
+        });
 
         // audio
         const streamManager = meetingController?.getStreamManager();
@@ -141,27 +117,12 @@ const InMeeting: FC = () => {
             sinkStreamElement(stream, TrackType.AUDIO, audioRef.current);
         });
 
-        const meetingLockStateListener = meetingController.on(
-            MeetingEvent.MEETING_LOCK_STATE_CHANGED,
-            state => {
-                dispatch({
-                    type: MeetingReduceType.MEETING_LOCK_STATE,
-                    payload: { isMeetingLocked: state },
-                });
-            }
-        );
-
-        return () => {
-            audioLocalMuteListener?.();
-            audioRemoteMuteListener?.();
-            videoLocalMuteListener?.();
-            videoRemoteMuteListener?.();
-            userJoinedListener?.();
-            userLeftListener?.();
-            userUpdateListener?.();
-            userSpeakChangedListener();
-            meetingLockStateListener();
-        };
+        meetingController.on(MeetingEvent.MEETING_LOCK_STATE_CHANGED, state => {
+            dispatch({
+                type: MeetingReduceType.MEETING_LOCK_STATE,
+                payload: { isMeetingLocked: state },
+            });
+        });
     };
 
     const getParticipants = () => {

@@ -1,0 +1,2 @@
+export const GALLERY_ITEM_ASPECT_RATIO = 1.8;
+export const MAX_GALLERY_ITEM_COUNT_PER_PAGE = 64;
