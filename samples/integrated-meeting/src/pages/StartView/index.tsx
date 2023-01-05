@@ -64,6 +64,9 @@ const StartView: FC<IProps> = props => {
 
     return (
         <div className='start-view'>
+            {isStartLoading && <p>Starting a Meeting<span className="dotting"></span></p>}
+            {isJoinLoading && <p>Joining a Meeting<span className="dotting"></span></p>}
+            <br />
             <div className='meeting-button-group'>
                 <div className='meeting-button-wrapper'>
                     <div

@@ -1,12 +1,14 @@
-## Basic Meeting Sample app
+## Basic Meeting Sample app with UI components
 
 ### Feature List
 
 - Start/Join a meeting
-- Join a password-required meeting
 - Mute/unmute audio in the meeting
 - Mute/unmute video in the meeting
-- Show active video user in the meeting
+- Switch audio/video devices
+- Participants management
+- Chat
+- Closed Captions
 - Leave/End the meeting
 
 ### How to Run?

@@ -542,11 +542,6 @@ export declare interface EngineInitConfig {
      */
     enableVcg?: boolean;
 
-
-
-
-
-
 }
 
 /**
@@ -666,6 +661,8 @@ export declare enum ErrorCodeType {
     ERR_LIVE_TRANSCRIPTION_NOT_JOIN_AUDIO = 14005,
     /** Live Transcription AI Server not available */
     ERR_LIVE_TRANSCRIPTION_SERVICE_NOT_AVAILABLE = 14006,
+    /** Can't enable Live Transcription on e2ee mode */
+    ERR_LIVE_TRANSCRIPTION_NO_SUPPORTED_IN_E2EE = 14007,
     /** A base error code for the meeting closed captions category. */
     ERR_CLOSED_CAPTIONS_BASE = 15000,
     /** Server does not allow closed captions */
@@ -700,6 +697,8 @@ export declare enum ErrorCodeType {
     ERR_MEETING_E2EE_IS_DISABLING = 18008,
     /** Is main recording is ongoing **/
     ERR_MEETING_E2EE_IS_MAIN_RECORDING_IS_ONGOING = 18009,
+    /** Can't enable e2ee if Live Transcription is enabled */
+    ERR_MEETING_E2EE_NOT_SUPPORTED_IN_LIVE_TRANSCRIPTION = 18010,
     /** A base error code for the meeting-context. */
     ERR_MEETING_CONTEXT_NOT_SUPPORTED = 20000,
     /** In e2ee mode, usePersonalMeetingId must be not true. */
@@ -741,7 +740,7 @@ export declare enum ErrorCodeType {
 /**
  * The EventEmitter is a managing class to manage events subscribe and unsubscribe.
  */
-declare class EventEmitter<T extends string> {
+declare class EventEmitter<T extends string = string> {
     private _eventListeners;
     /**
      * Adds the listener function to the end of the listeners array for the event named eventName.
@@ -887,6 +886,10 @@ export declare interface ILiveTranscriptionSettings {
     };
     transcriptionActive: boolean;
     transcriptionAllowed: boolean;
+    /**
+     * check if transcript server connected
+     */
+    transcriptServerConnected: boolean;
 }
 
 /**
@@ -948,7 +951,7 @@ export declare interface InstantMeetingSettings {
     enableE2ee?: boolean;
 }
 
-declare interface IOptions_2 {
+declare interface IOptions {
     recordings?: IRecording[];
 }
 
@@ -1196,35 +1199,70 @@ declare class LiveTranscriptionController extends EventEmitter<LiveTranscription
     private _librctHelper;
     private _libsfuHelper;
     private _meetingProvider;
+    private _meetingController;
     private _userController;
     private _streamManager;
     private _transcriptionUrl;
     /**
      * last transcript of live transcription
-     * @private
      */
     private _lastTranscript?;
     private _liveTranscriptionSettings;
+    private _heartbeatTimer?;
+    /**
+     * the timestamp of last message
+     */
+    private _lastMessageTimestamp;
+    /**
+     * Mark the connection stale
+     * @description
+     *  Whenever receiving message from server, _isConnectionMarkedStale will be reset to false;
+     *  But
+     *      if _lastMessageTimestamp from now is bigger than LIFE_CHECK_INTERVAL_MS
+     *          this connection will be marked as stale, and the client should send a ping to server, and if the server responses, that means the connection is still alive, _isConnectionMarkedStale will be marked as false.
+     *          After pinging, if there is still no response from server after LIFE_CHECK_INTERVAL_MS, this means the server is down or some other problems from connection, client will close connection.
+     */
+    private _isConnectionMarkedStale;
+    /**
+     * Check is live transcription connecting web server
+     */
+    private _isConnecting;
     private get _librct();
     private get _sfu();
     private get _meeting();
-    private get meetingId();
+    private get _meetingId();
     private get _isConnectionOpen();
-    private _getEntrypoints;
+    private _handleRemoteParticipantsChanged;
+    private _handleLocalParticipantChanged;
+    private _isAnyoneEnableAudio;
+    private _handleCloseConnectionOnOffline;
+    private _addHeartbeatListeners;
+    private _startHeartbeat;
+    private _stopHeartbeat;
+    private _heartbeatCallback;
+    private _ping;
     private _handleTranscriptStateMessage;
     private _handleSupportedLanguagesMessage;
     private _handleSwitchLanguageMessage;
+    private _handleConnectionClosedMessage;
     private _addConnectionListeners;
     private _handleMessage;
     private _handleTranscriptHistoryMessage;
     private _handleTranscriptReadyMessage;
     private _formatRawTranscript;
     private _validateConnection;
+    private _getLiveTranscriptUrl;
+    private _connectWebsocketServer;
     /**
-     * Init the LiveTranscription
+     * Connect to the LiveTranscription server
      * @returns 0 means the action succeeds or fails otherwise
      */
-    init(): Promise<ErrorCodeType>;
+    private _connect;
+    /**
+     * Connect to the LiveTranscription server if needed
+     */
+    connectIfNeeded(): Promise<ErrorCodeType | undefined>;
+
     /**
      * Starts the live transcriptions in an active meeting
      * Triggers the {@link} LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED event callback
@@ -1245,7 +1283,27 @@ declare class LiveTranscriptionController extends EventEmitter<LiveTranscription
      * Triggers the onLiveTranscriptionLanguageChanged event callback
      */
     switchLanguage(language: string): ErrorCodeType;
-    getLiveTranscriptionSettings(): ILiveTranscriptionSettings | null;
+    /**
+     * Return the settings of live transcriptions
+     */
+    getLiveTranscriptionSettings(): {
+        transcriptServerConnected: boolean;
+        autostartTranscription: boolean;
+        meetingLanguage: string;
+        transcriptActivated: boolean;
+        transcriptDownloadAndCopy: string;
+        transcriptDownloadAndCopySetting: {
+            value: string;
+            locked: boolean;
+        };
+        transcriptVisibility: string;
+        transcriptVisibilitySetting: {
+            value: string;
+            locked: boolean;
+        };
+        transcriptionActive: boolean;
+        transcriptionAllowed: boolean;
+    } | null;
     /**
      * Pauses the live transcriptions in an active meeting
      * Triggers the onLiveTranscriptionSettingChanged event callback
@@ -1593,6 +1651,8 @@ export declare enum OnlyAuthUserJoinMode {
     CO_WORKERS = 2
 }
 
+export declare type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 declare type Participant = Omit<IParticipant, 'nqiStatus'>;
 
 export declare class PreferenceController {
@@ -1641,7 +1701,7 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      * @param config
      * @returns
      */
-    static create(config?: EngineInitConfig): RcvEngine;
+    static create(config: PartialBy<EngineInitConfig, 'external'>): RcvEngine;
     /**
      * Returns the RcvEngine singleton instance.
      * @returns The engine instance if success or undefined otherwise
@@ -2064,7 +2124,6 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
     /**
      * @description
      * @param stream {MediaStream}
-     * @private
      */
     private static _getStreamSplitTracks;
     private _deleteTapIdStreamMap;
@@ -2094,7 +2153,6 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
      * @param msid {string} MediaStream.id
      * @param tapId {string}
      * @param isMixedAudio {boolean}
-     * @private
      * @description ControlClient.event.REMOTE_STREAM_ADDED Event Handler
      */
     private _handleRemoteStreamAdded;
@@ -2103,7 +2161,6 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
      * @param stream {MediaStream}
      * @param streamId {string}
      * @param tapId {string}
-     * @private
      * @description ControlClient.event.REMOTE_STREAM_REMOVED Event Handler
      */
     private _handleRemoteStreamRemoved;
@@ -2113,7 +2170,6 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
      * @param stream {MediaStream}
      * @param msid {string} MediaStream.id
      * @param tapId {string}
-     * @private
      * @description ControlClient.event.LOCAL_STREAM_ADDED & ControlClient.event.LOCAL_STREAM_REPLACED Event Handler
      * @description Because when first addLocalStream the stream maybe have no video track and user will not sink
      * element so there will always emit add event let user sink stream into element.
@@ -2124,7 +2180,6 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
      * @param stream {MediaStream}
      * @param streamId {string}
      * @param tapId {string}
-     * @private
      */
     private _handleLocalStreamRemoved;
     private _handleRemoteStreamReplaced;

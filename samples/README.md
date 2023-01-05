@@ -9,3 +9,5 @@
 - `/startMeetingWithSettings`: Demonstrates starting a meeting with customized settings
 - `/initSdkByScript`: Demonstrates initial SDK by `<script type="text/javascript" src="librcv/index.js"></script>`
 - `/chat`: Demonstrates the meeting chat feature
+- `/multipleSDKInstance`: Demonstrates how to create multi RcvEngine instances in broswer
+- `/integrated-meeting`: Demonstrates primary meeting features with UI components.

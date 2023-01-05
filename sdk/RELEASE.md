@@ -1,4 +1,10 @@
 ## release notes
+#### 0.7.0
+- New Features
+  - Closed Captions
+  - Live Transcriptions
+- Enhancements to existing features
+  - Support enum OnlyAuthUserJoinMode to scheduleMeeting() and startInstantMeeting().
 #### 0.6.0
 - New Features: Preference
 - Enhancements to existing features
