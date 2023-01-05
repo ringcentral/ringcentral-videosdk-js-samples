@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { RcButtonGroup, RcButton } from '@ringcentral/juno';
+import { ButtonGroup, Button } from '@mui/material';
 import { SharingEvent, SharingState, StreamEvent, StreamType } from '@sdk';
 import { useGlobalContext } from '../context';
 
@@ -57,12 +57,12 @@ const InMeeting = ({ meetingController }) => {
     return (
         <>
             <video className='sharing-video' autoPlay={true} muted={true} ref={screenSharingRef} />
-            <RcButtonGroup>
-                <RcButton onClick={toggleSharing}>
+            <ButtonGroup>
+                <Button onClick={toggleSharing} variant="outlined">
                     {sharingStarted ? 'Stop sharing' : 'Start sharing'}
-                </RcButton>
-                <RcButton color="danger.b03" onClick={handleEndMeeting}>End Meeting</RcButton>
-            </RcButtonGroup>
+                </Button>
+                <Button variant="contained" color="error" onClick={handleEndMeeting}>End Meeting</Button>
+            </ButtonGroup>
         </>
     )
 }

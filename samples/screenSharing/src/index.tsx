@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { RcvEngine, GrantType } from '@sdk';
 import Sharing from './Sharing';
 import GlobalContext from './context';
-import { RcThemeProvider, RcAppBar } from '@ringcentral/juno';
+import { AppBar } from '@mui/material';
 import './index.less'
 declare global {
     interface Window {
@@ -36,12 +36,10 @@ export default function App({ config }) {
 
     return (
         <GlobalContext.Provider value={{ isMeetingJoined, setMeetingJoined: value => setMeetingJoined(value) }} >
-            <RcThemeProvider>
-                <RcAppBar className='header'>
-                    Demo: screen sharing
-                </RcAppBar>
-                <Sharing rcvEngine={rcvEngine} />
-            </RcThemeProvider>
+            <AppBar className='header' position='static'>
+                Demo: screen sharing
+            </AppBar>
+            <Sharing rcvEngine={rcvEngine} />
         </GlobalContext.Provider>
     )
 }
