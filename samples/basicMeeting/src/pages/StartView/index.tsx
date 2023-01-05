@@ -58,13 +58,13 @@ const StartView: FC<IProps> = (props) => {
                 <TextField
                     className='item'
                     label="Meeting Id"
-                    id="control"
+                    variant="standard"
                     inputRef={inputMeetingIdRef}
                 />
                 <TextField
                     className='item'
                     label="Password"
-                    id="control"
+                    variant="standard"
                     inputRef={inputPwdRef}
                 />
                 <Button

@@ -1,6 +1,6 @@
 import React from 'react';
 import { RcvEngine } from '@sdk';
-import { RcButton } from '@ringcentral/juno';
+import { Button } from '@mui/material';
 
 const BtnAccessToken = ({ setRcvEngine, config }) => {
 
@@ -24,9 +24,9 @@ const BtnAccessToken = ({ setRcvEngine, config }) => {
     }
 
     return (
-        <RcButton onClick={tokenModeHandler}>
+        <Button onClick={tokenModeHandler} variant="outlined">
             Init SDK by access token
-        </RcButton>
+        </Button>
     )
 }
 

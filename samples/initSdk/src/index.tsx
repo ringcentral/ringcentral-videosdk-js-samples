@@ -4,7 +4,7 @@ import BtnHttpClient from './BtnHttpClient'
 import BtnAccessToken from './BtnAccessToken'
 import BtnJWT from './BtnJWT'
 import BtnPwd from './BtnPwd'
-import { RcThemeProvider, RcAppBar } from '@ringcentral/juno';
+import { AppBar } from '@mui/material';
 import './index.less'
 declare global {
     interface Window {
@@ -24,23 +24,28 @@ export default function App({ config }) {
         }
         else {
             return <>
-                <BtnHttpClient config={config} setRcvEngine={setRcvEngine} />
-                <BtnAccessToken config={config} setRcvEngine={setRcvEngine} />
-                <BtnJWT config={config} setRcvEngine={setRcvEngine} />
-                <BtnPwd config={config} setRcvEngine={setRcvEngine} />
+                <div>
+                    <BtnHttpClient config={config} setRcvEngine={setRcvEngine} />
+                    <BtnAccessToken config={config} setRcvEngine={setRcvEngine} />
+                </div>
+                <br />
+                <div>
+                    <BtnJWT config={config} setRcvEngine={setRcvEngine} />
+                    <BtnPwd config={config} setRcvEngine={setRcvEngine} />
+                </div>
             </>
         }
     }
 
     return (
-        <RcThemeProvider>
-            <RcAppBar className='header'>
+        <div>
+            <AppBar className='header' position="static">
                 Demo: init SDK
-            </RcAppBar>
+            </AppBar>
             <div className='start-view'>
                 {renderContent()}
             </div>
-        </RcThemeProvider>
+        </div>
     )
 }
 

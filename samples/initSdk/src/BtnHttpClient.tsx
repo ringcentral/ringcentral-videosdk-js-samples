@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RcvEngine } from '@sdk';
-import { RcButton } from '@ringcentral/juno';
+import { Button } from '@mui/material';
 
 const BtnHttpClient = ({ setRcvEngine, config }) => {
     const [isLoading, setLoading] = useState(false)
@@ -48,13 +48,11 @@ const BtnHttpClient = ({ setRcvEngine, config }) => {
     }
 
     return (
-        <RcButton
-            color="success.b03"
-            loadingMode="prefix"
-            loading={isLoading}
+        <Button
+            variant="outlined"
             onClick={usernameModeHandler}>
-            Init SDK by httpClient
-        </RcButton>
+            Init SDK by httpClient{isLoading ? '...' : ''}
+        </Button>
     )
 }
 
