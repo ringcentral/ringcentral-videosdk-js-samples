@@ -1,5 +1,5 @@
 import React from 'react';
-import { RcTable, RcTableHead, RcTableRow, RcTableCell, RcTableBody, RcLink } from '@ringcentral/juno';
+import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import { AttendeeStatus } from '@sdk';
 
 const ATTENDEE_STATUS_DESC = {
@@ -18,32 +18,32 @@ const ATTENDEE_STATUS_DESC = {
 const ParticipantTable = ({ participantList }) => {
 
     return (
-        <RcTable>
-            <RcTableHead>
-                <RcTableRow>
-                    <RcTableCell>Uid</RcTableCell>
-                    <RcTableCell>DisplayName</RcTableCell>
-                    <RcTableCell>Status</RcTableCell>
-                    <RcTableCell>Host</RcTableCell>
-                    <RcTableCell>Moderator</RcTableCell>
-                    <RcTableCell>isSpeaking</RcTableCell>
-                </RcTableRow>
-            </RcTableHead>
-            <RcTableBody>
+        <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell>Uid</TableCell>
+                    <TableCell>DisplayName</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Host</TableCell>
+                    <TableCell>Moderator</TableCell>
+                    <TableCell>isSpeaking</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
                 {participantList.map(participant => {
                     return (
-                        <RcTableRow key={participant.uid}>
-                            <RcTableCell> {participant.uid}</RcTableCell>
-                            <RcTableCell> {participant.displayName}{participant.isMe ? '(Me)' : ''}</RcTableCell>
-                            <RcTableCell> {ATTENDEE_STATUS_DESC[participant.status] || ''}</RcTableCell>
-                            <RcTableCell> {participant.isHost ? 'YES' : 'NO'}</RcTableCell>
-                            <RcTableCell> {participant.isModerator ? 'YES' : 'NO'}</RcTableCell>
-                            <RcTableCell> {participant.isSpeaking ? 'YES' : 'NO'}</RcTableCell>
-                        </RcTableRow>
+                        <TableRow key={participant.uid}>
+                            <TableCell> {participant.uid}</TableCell>
+                            <TableCell> {participant.displayName}{participant.isMe ? '(Me)' : ''}</TableCell>
+                            <TableCell> {ATTENDEE_STATUS_DESC[participant.status] || ''}</TableCell>
+                            <TableCell> {participant.isHost ? 'YES' : 'NO'}</TableCell>
+                            <TableCell> {participant.isModerator ? 'YES' : 'NO'}</TableCell>
+                            <TableCell> {participant.isSpeaking ? 'YES' : 'NO'}</TableCell>
+                        </TableRow>
                     )
                 })}
-            </RcTableBody>
-        </RcTable>
+            </TableBody>
+        </Table>
     )
 }
 

@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { RcIcon } from '@ringcentral/juno';
 import { IParticipant, StreamEvent, UserEvent } from '@sdk';
-import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
+import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/dom'
 import { useGlobalContext } from '../../context';
 interface IAttendeeListProps {
@@ -42,8 +41,6 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
         }
     }, [isMeetingJoined])
 
-
-
     return (
         <>
             <p style={{ textAlign: 'center' }}>
@@ -56,13 +53,8 @@ const AttendeeVideoList: FC<IAttendeeListProps> = ({
                             <div>
                                 <h4>{participant.displayName} {participant.isMe ? '(Me)' : ''}</h4>
                                 <div className='video-card-status-bar'>
-                                    <RcIcon
-                                        className='video-card-status-bar'
-                                        symbol={participant.isAudioMuted ? PhoneOff : Phone} />
-                                    <RcIcon
-                                        className='video-card-status-bar'
-                                        color="success.b03"
-                                        symbol={participant.isVideoMuted ? VideocamOff : Videocam} />
+                                    {participant.isAudioMuted ?<MicOff /> : <Mic />}
+                                    {participant.isVideoMuted ?<VideocamOff /> : <Videocam />}
                                     <br />
                                 </div>
                                 <div

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from "@sdk";
-import { RcThemeProvider, RcAppBar } from "@ringcentral/juno";
+import { AppBar } from "@mui/material";
 import StartView from "./pages/StartView";
 import InMeeting from "./pages/InMeeting";
 import GlobalContext from "./context";
@@ -54,10 +54,9 @@ export default function App({ config }) {
 
   return (
     <GlobalContext.Provider value={{ isMeetingJoined }}>
-      <RcThemeProvider>
-        <RcAppBar className="header">
+        <AppBar position="static" className="header">
           Demo: basic meeting with mute/unmute audio/video
-        </RcAppBar>
+        </AppBar>
         <Routes>
           <Route path="meeting">
             <Route
@@ -67,7 +66,6 @@ export default function App({ config }) {
           </Route>
           <Route path="/" element={<StartView rcvEngine={rcvEngine} />} />
         </Routes>
-      </RcThemeProvider>
     </GlobalContext.Provider>
   );
 }

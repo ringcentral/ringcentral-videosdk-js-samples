@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useState, useRef } from 'react'
 import { RcvEngine, AudioEvent, VideoEvent, IParticipant, UserEvent, StreamEvent } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { RcButtonGroup, RcButton, RcIcon, RcLoading, RcSelect, RcMenuItem, RcGrid } from '@ringcentral/juno';
-import { Phone, PhoneOff, Videocam, VideocamOff } from '@ringcentral/juno-icon';
+import { ButtonGroup, Button, Alert, Select, MenuItem, Grid } from '@mui/material';
+import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material';
 import AttendeeVideoList from './AttendeeVideoList';
 import ParticipantTable from './ParticipantTable';
 import { useGlobalContext } from '../../context';
@@ -146,9 +146,9 @@ const InMeeting: FC<IProps> = (props) => {
     const toggleMuteAudio = () => {
         if (audioMuted) {
             meetingController?.getAudioController()?.unmuteLocalAudioStream()
-            .catch((e) => {
-                alert(`Error occurs due to :${e.message}`)
-            });
+                .catch((e) => {
+                    alert(`Error occurs due to :${e.message}`)
+                });
         }
         else {
             meetingController?.getAudioController()?.muteLocalAudioStream()
@@ -161,9 +161,9 @@ const InMeeting: FC<IProps> = (props) => {
     const toggleMuteVideo = () => {
         if (videoMute) {
             meetingController?.getVideoController()?.unmuteLocalVideoStream()
-            .catch((e) => {
-                alert(`Error occurs due to :${e.message}`)
-            });
+                .catch((e) => {
+                    alert(`Error occurs due to :${e.message}`)
+                });
         }
         else {
             meetingController?.getVideoController()?.muteLocalVideoStream()
@@ -203,46 +203,57 @@ const InMeeting: FC<IProps> = (props) => {
     // ---------------------------- end: button click handler ----------------------------
 
     return (
-        <div className='meeting-wrapper'>
-            <RcLoading loading={loading}>
-                <div>Meeting Id: {meetingId}</div>
+        <>
+            <Alert severity="info"> {loading ? 'loading...' : 'Meeting Id:' + meetingId}</Alert>
+            <div className='meeting-wrapper'>
                 <AttendeeVideoList meetingController={meetingController} participantList={participantList} />
-                <RcButtonGroup>
-                    <RcButton
+                <ButtonGroup>
+                    <Button
+                        variant="outlined"
                         onClick={toggleMuteAudio}
-                        startIcon={<RcIcon symbol={audioMuted ? PhoneOff : Phone} />}>
+                        startIcon={audioMuted ? <MicOff /> : <Mic />}>
                         Audio
-                    </RcButton>
-                    <RcButton
-                        color="success.b03"
+                    </Button>
+                    <Button
+                        variant="outlined"
                         onClick={toggleMuteVideo}
-                        startIcon={<RcIcon symbol={videoMute ? VideocamOff : Videocam} />}>
+                        startIcon={videoMute ? <VideocamOff /> : <Videocam />}>
                         Video
-                    </RcButton>
-                    <RcButton color="highlight.b03" onClick={handleLeaveMeeting}>Leave</RcButton>
-                    <RcButton color="danger.b03" onClick={handleEndMeeting}>End</RcButton>
-                </RcButtonGroup>
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleLeaveMeeting}>
+                        Leave
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleEndMeeting}>
+                        End
+                    </Button>
+                </ButtonGroup>
                 <br />
-                <RcGrid container>
-                    <RcGrid item xs={6}>
-                        <RcSelect label="select Microphone" value={audioActiveDevice} style={{ width: 400 }}
+                <Grid container>
+                    <Grid item xs={6}>
+                        <Select label="select Microphone" value={audioActiveDevice} style={{ width: 400 }}
                             onChange={handleChangeAudioRecordingDevice}>
-                            {audioDeviceList.map((device) => <RcMenuItem key={device.deviceId} value={device.deviceId}>{device.label}</RcMenuItem>)}
-                        </RcSelect>
-                    </RcGrid>
-                    <RcGrid item xs={6}>
-                        <RcSelect label="select Camera" value={videoActiveDevice} style={{ width: 400 }}
+                            {audioDeviceList.map((device) => <MenuItem key={device.deviceId} value={device.deviceId}>{device.label}</MenuItem>)}
+                        </Select>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Select label="select Camera" value={videoActiveDevice} style={{ width: 400 }}
                             onChange={handleChangVideoMedia}>
-                            {videoDeviceList.map((device) => <RcMenuItem key={device.deviceId} value={device.deviceId}>{device.label}</RcMenuItem>)}
-                        </RcSelect>
-                    </RcGrid>
-                </RcGrid>
+                            {videoDeviceList.map((device) => <MenuItem key={device.deviceId} value={device.deviceId}>{device.label}</MenuItem>)}
+                        </Select>
+                    </Grid>
+                </Grid>
                 <br />
                 <ParticipantTable
                     participantList={participantList} />
                 <div ref={audioRef} />
-            </RcLoading>
-        </div>
+            </div>
+        </>
     )
 }
 

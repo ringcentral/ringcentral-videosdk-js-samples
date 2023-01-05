@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState, useRef } from 'react'
-import { RcButton, RcIcon, RcTextField } from '@ringcentral/juno';
-import { StartMeeting, JoinMeeting } from '@ringcentral/juno-icon';
+import { Button, Alert, TextField } from '@mui/material';
+import { VideoCameraFrontRounded, QueuePlayNextRounded } from '@mui/icons-material';
 import { RcvEngine } from '@sdk';
 interface IProps {
     rcvEngine: RcvEngine
@@ -41,40 +41,51 @@ const StartView: FC<IProps> = (props) => {
         }
     }, [rcvEngine])
 
+    const getAlertText = ()=>{
+        if (isStartLoading){
+            return <span>Starting a meeting<span className="dotting"></span></span>
+        }
+        else if (isJoinLoading){
+            return <span>Joining a meeting<span className="dotting"></span></span>
+        }
+        return "Please start or join a meeting."
+    }
+
     return (
-        <div className='start-view'>
-            <RcTextField
-                className='item'
-                label="Meeting Id"
-                id="control"
-                inputRef={inputMeetingIdRef}
-            />
-            <RcTextField
-                className='item'
-                label="Password"
-                id="control"
-                inputRef={inputPwdRef}
-            />
-            <RcButton
-                className='item'
-                loadingMode="prefix"
-                startIcon={<RcIcon symbol={StartMeeting} />}
-                loading={isJoinLoading}
-                disabled={isJoinLoading || isStartLoading}
-                onClick={!isJoinLoading ? joinMeetingHandler : null}>
-                Join meeting
-            </RcButton>
-            <RcButton
-                className='item'
-                loadingMode="prefix"
-                color="success.b03"
-                startIcon={<RcIcon symbol={JoinMeeting} />}
-                loading={isStartLoading}
-                disabled={isJoinLoading || isStartLoading}
-                onClick={!isStartLoading ? startMeetingHandler : null}>
-                Start meeting
-            </RcButton>
-        </div>
+        <>
+            <Alert severity="info"> {getAlertText()}</Alert>
+            <div className='start-view'>
+                <TextField
+                    className='item'
+                    label="Meeting Id"
+                    id="control"
+                    inputRef={inputMeetingIdRef}
+                />
+                <TextField
+                    className='item'
+                    label="Password"
+                    id="control"
+                    inputRef={inputPwdRef}
+                />
+                <Button
+                    className='item'
+                    variant="contained"
+                    startIcon={<QueuePlayNextRounded />}
+                    disabled={isJoinLoading || isStartLoading}
+                    onClick={!isStartLoading ? startMeetingHandler : null}>
+                    Start meeting
+                </Button>
+                <Button
+                    className='item'
+                    variant="contained"
+                    color="success"
+                    startIcon={<VideoCameraFrontRounded />}
+                    disabled={isJoinLoading || isStartLoading}
+                    onClick={!isJoinLoading ? joinMeetingHandler : null}>
+                    Join meeting
+                </Button>
+            </div>
+        </>
     )
 }
 
