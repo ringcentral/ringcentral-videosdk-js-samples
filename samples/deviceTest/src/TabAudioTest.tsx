@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useRef, useState } from 'react'
 import { RcvEngine } from '@sdk'
-import { RcButton } from '@ringcentral/juno';
+import { Button } from '@mui/material';
 interface IProps {
     rcvEngine: RcvEngine
 }
@@ -58,14 +58,14 @@ const TabAudioTest: FC<IProps> = ({ rcvEngine }) => {
         <>
             <div className='card-wrapper'>
                 <h5>Playback Device Test</h5>
-                <RcButton onClick={handlePlaybackStart} color="success.b03">Start Playback Test</RcButton>
-                <RcButton onClick={handlePlaybackkStop} color="danger.b03">Stop Playback Test</RcButton>
+                <Button onClick={handlePlaybackStart} variant="outlined">Start Playback Test</Button>
+                <Button onClick={handlePlaybackkStop} variant="outlined" color='error'>Stop Playback Test</Button>
             </div>
             <div className='card-wrapper'>
                 <h5>Recording Device Test</h5>
                 <div>
-                    <RcButton onClick={handleRecordStart} disabled={isRecording} color="success.b03">Start Recording Test</RcButton>
-                    <RcButton onClick={handleRecordStop} color="danger.b03">Stop Recording Test</RcButton>
+                    <Button onClick={handleRecordStart} disabled={isRecording} variant="outlined">Start Recording Test</Button>
+                    <Button onClick={handleRecordStop} variant="outlined" color='error'>Stop Recording Test</Button>
                 </div>
                 <audio ref={audioRef} controls />
                 <p> Recording status: {isRecording ? 'is recording...' : 'stopped'}</p>

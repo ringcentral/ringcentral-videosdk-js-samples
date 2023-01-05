@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useRef, useState, useEffect } from 'react'
 import { RcvEngine } from '@sdk'
-import { RcButton, RcSelect, RcMenuItem } from '@ringcentral/juno';
+import { Button, Select, MenuItem, FormControl } from '@mui/material';
 interface IProps {
     rcvEngine: RcvEngine
 }
@@ -46,14 +46,16 @@ const TabVideoTest: FC<IProps> = ({ rcvEngine }) => {
 
     return (
         <div className='card-wrapper'>
-            <RcSelect label="Set Video Device" value={activeDevice} style={{ width: 200 }}
-                onChange={handleVideoDeviceChange}>
-                {deviceList.map((item) => <RcMenuItem key={item.deviceId} value={item.deviceId}> {item.label}</RcMenuItem>)}
-            </RcSelect>
             <div style={{ marginTop: 20 }}>
+                <FormControl size="small" variant="standard">
+                    <Select label="Set Video Device" value={activeDevice} fullWidth style={{ width: 200 }}
+                        onChange={handleVideoDeviceChange}>
+                        {deviceList.map((item) => <MenuItem key={item.deviceId} value={item.deviceId}> {item.label}</MenuItem>)}
+                    </Select>
+                </FormControl>
                 <h5>Video device test</h5>
-                <RcButton onClick={handleVideoTestStart} color="success.b03" disabled={isTesting}>Start Video Test</RcButton>
-                <RcButton onClick={handleVideoTestStop} color="danger.b03">Stop Video Test</RcButton>
+                <Button onClick={handleVideoTestStart} variant="outlined" disabled={isTesting}>Start Video Test</Button>
+                <Button onClick={handleVideoTestStop} variant="outlined" color='error'>Stop Video Test</Button>
             </div>
             <video ref={videoRef} width={400} height={320} muted controls />
             <p> Video test status: {isTesting ? 'is tesing...' : 'stopped'}</p>

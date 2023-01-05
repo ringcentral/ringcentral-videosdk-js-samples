@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RcThemeProvider, RcAppBar, RcTab, RcTabs, RcTabPanel, RcTabContext } from '@ringcentral/juno';
+import { AppBar, Tab, Tabs, Box } from '@mui/material';
 import { RcvEngine } from '@sdk'
 import TabAudioTest from './TabAudioTest'
 import TabVideoTest from './TabVideoTest'
@@ -9,6 +9,27 @@ declare global {
     interface Window {
         initConfig: Record<string, string>
     }
+}
+
+interface TabPanelProps {
+    children?: React.ReactNode;
+    tab: string;
+    value: string;
+}
+
+function TabPanel(props: TabPanelProps) {
+    const { children, value, tab } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== tab}
+            id={`simple-tabpanel-${tab}`}
+            aria-labelledby={`simple-tab-${tab}`}
+        >
+            {value === tab && <div>{children}</div>}
+        </div>
+    );
 }
 
 export default function App({ config }) {
@@ -28,25 +49,25 @@ export default function App({ config }) {
     }, [])
 
     return (
-        <RcThemeProvider>
-            <RcAppBar className='header'>
+        <div>
+            <AppBar className='header' position='static'>
                 Demo: audio/video device test
-            </RcAppBar>
+            </AppBar>
             <div className='start-view'>
-                <RcTabContext value={tab}>
-                    <RcTabs value={tab} onChange={(event: React.ChangeEvent<{}>, value: any) => setTab(value)}>
-                        <RcTab value="audio" label="Audio Test" />
-                        <RcTab value="video" label="Video Test" />
-                    </RcTabs>
-                    <RcTabPanel value="audio">
-                        <TabAudioTest rcvEngine={rcvEngine} />
-                    </RcTabPanel>
-                    <RcTabPanel value="video">
-                        <TabVideoTest rcvEngine={rcvEngine} />
-                    </RcTabPanel>
-                </RcTabContext>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs value={tab} onChange={(event: React.ChangeEvent<{}>, value: any) => setTab(value)}>
+                        <Tab value="audio" label="Audio Test" />
+                        <Tab value="video" label="Video Test" />
+                    </Tabs>
+                </Box>
+                <TabPanel value="audio" tab={tab}>
+                    <TabAudioTest rcvEngine={rcvEngine} />
+                </TabPanel>
+                <TabPanel value="video" tab={tab}>
+                    <TabVideoTest rcvEngine={rcvEngine} />
+                </TabPanel>
             </div>
-        </RcThemeProvider>
+        </div>
     )
 }
 
