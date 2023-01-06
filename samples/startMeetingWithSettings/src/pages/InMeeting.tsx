@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { RcvEngine, UserEvent, IParticipant, AttendeeStatus } from '@sdk';
-import { RcButton, RcButtonGroup, RcTable, RcTableHead, RcTableRow, RcTableCell, RcTableBody } from '@ringcentral/juno';
+import { Button, ButtonGroup, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import { useGlobalContext } from '../context';
 
 const ATTENDEE_STATUS_DESC = {
@@ -77,50 +77,51 @@ const InMeeting: FC<IProps> = (props) => {
 
     return (
         <div className='meeting-wrapper'>
-            <RcButtonGroup>
+            <ButtonGroup>
                 {meetingController?.isWaitingRoomEnabled && (
-                    <RcButton
-                        onClick={handleAdmitAll}
-                        color="success.b03">
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleAdmitAll}>
                         Admit all
-                    </RcButton>
+                    </Button>
                 )}
-                <RcButton color="danger.b03" onClick={handleEndMeeting}>End meeting</RcButton>
-            </RcButtonGroup>
-            <RcTable>
-                <RcTableHead>
-                    <RcTableRow>
-                        <RcTableCell>Uid</RcTableCell>
-                        <RcTableCell>DisplayName</RcTableCell>
-                        <RcTableCell>Status</RcTableCell>
-                        <RcTableCell>Me</RcTableCell>
-                        <RcTableCell>Host</RcTableCell>
-                        <RcTableCell>Moderator</RcTableCell>
-                        <RcTableCell>VideoMuted</RcTableCell>
-                        <RcTableCell>AudioMuted</RcTableCell>
-                        <RcTableCell>isScreenSharing</RcTableCell>
-                        <RcTableCell>isSpeaking</RcTableCell>
-                    </RcTableRow>
-                </RcTableHead>
-                <RcTableBody>
+                <Button variant="outlined" onClick={handleEndMeeting}>End meeting</Button>
+            </ButtonGroup>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Uid</TableCell>
+                        <TableCell>DisplayName</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Me</TableCell>
+                        <TableCell>Host</TableCell>
+                        <TableCell>Moderator</TableCell>
+                        <TableCell>VideoMuted</TableCell>
+                        <TableCell>AudioMuted</TableCell>
+                        <TableCell>isScreenSharing</TableCell>
+                        <TableCell>isSpeaking</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
                     {participantList.map(participant => {
                         return (
-                            <RcTableRow>
-                                <RcTableCell> {participant.uid}</RcTableCell>
-                                <RcTableCell> {participant.displayName}</RcTableCell>
-                                <RcTableCell> {ATTENDEE_STATUS_DESC[participant.status] || 'Not included in enum'}</RcTableCell>
-                                <RcTableCell> {participant.isMe ? 'YES' : 'NO'}</RcTableCell>
-                                <RcTableCell> {participant.isHost ? 'YES' : 'NO'}</RcTableCell>
-                                <RcTableCell> {participant.isModerator ? 'YES' : 'NO'}</RcTableCell>
-                                <RcTableCell> {participant.isVideoMuted ? 'MUTE' : 'UNMUTE'}</RcTableCell>
-                                <RcTableCell> {participant.isAudioMuted ? 'YES' : 'NO'}</RcTableCell>
-                                <RcTableCell> {participant.isScreenSharing ? 'YES' : 'NO'}</RcTableCell>
-                                <RcTableCell> {participant.isSpeaking ? 'YES' : 'NO'}</RcTableCell>
-                            </RcTableRow>
+                            <TableRow>
+                                <TableCell> {participant.uid}</TableCell>
+                                <TableCell> {participant.displayName}</TableCell>
+                                <TableCell> {ATTENDEE_STATUS_DESC[participant.status] || 'Not included in enum'}</TableCell>
+                                <TableCell> {participant.isMe ? 'YES' : 'NO'}</TableCell>
+                                <TableCell> {participant.isHost ? 'YES' : 'NO'}</TableCell>
+                                <TableCell> {participant.isModerator ? 'YES' : 'NO'}</TableCell>
+                                <TableCell> {participant.isVideoMuted ? 'MUTE' : 'UNMUTE'}</TableCell>
+                                <TableCell> {participant.isAudioMuted ? 'YES' : 'NO'}</TableCell>
+                                <TableCell> {participant.isScreenSharing ? 'YES' : 'NO'}</TableCell>
+                                <TableCell> {participant.isSpeaking ? 'YES' : 'NO'}</TableCell>
+                            </TableRow>
                         )
                     })}
-                </RcTableBody>
-            </RcTable>
+                </TableBody>
+            </Table>
         </div>
     )
 }
