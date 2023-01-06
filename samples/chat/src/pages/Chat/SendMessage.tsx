@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { ChatType } from '@sdk';
-import { RcButton, RcTextField } from '@ringcentral/juno';
+import { Button, TextField } from '@mui/material';
 
 interface ISendMessageOptions {
     send: () => void;
@@ -18,18 +18,16 @@ const SendMessage = ({ send, onChange, hasPrivilege, currentType }: ISendMessage
 
     return (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <RcTextField
+            <TextField
                 style={{ flex: 1 }}
-                variant="outline"
                 placeholder='send message'
                 onChange={e => onChange(e.target.value)}
                 disabled={!isICanSend}
                 fullWidth
-                gutterBottom
             />
-            <RcButton onClick={send} disabled={!isICanSend}>
+            <Button variant="contained" onClick={send} disabled={!isICanSend}>
                 send
-            </RcButton>
+            </Button>
         </div>
     );
 };

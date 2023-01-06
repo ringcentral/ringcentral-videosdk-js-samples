@@ -1,6 +1,6 @@
 import React from 'react';
 import { IParticipant } from '@sdk';
-import { RcSelect, RcMenuItem } from '@ringcentral/juno';
+import { Select, MenuItem } from '@mui/material';
 
 interface IParticipantsProps {
     uid: string;
@@ -9,7 +9,7 @@ interface IParticipantsProps {
 }
 const Participants = ({ participants, uid, changeParticipants }: IParticipantsProps) => {
     return (
-        <RcSelect
+        <Select
             label="Select Participant"
             placeholder='chat with'
             style={{ width: 300, marginBottom: 20 }}
@@ -18,11 +18,11 @@ const Participants = ({ participants, uid, changeParticipants }: IParticipantsPr
             {participants
                 .filter(participant => !participant.isMe)
                 .map(participant => (
-                    <RcMenuItem key={participant.uid} value={participant.uid}>
+                    <MenuItem key={participant.uid} value={participant.uid}>
                         {participant.displayName}
-                    </RcMenuItem>
+                    </MenuItem>
                 ))}
-        </RcSelect>
+        </Select>
     );
 };
 

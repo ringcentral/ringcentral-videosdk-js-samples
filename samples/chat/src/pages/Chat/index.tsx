@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState, useEffect } from 'react'
 import { ChatController, IParticipant, Message, ChatPrivilege, ChatType, ChatEvent } from '@sdk';
-import { RcTabs, RcTab, RcTabPanel, RcTabContext } from '@ringcentral/juno';
+import { Tabs, Tab, Box } from '@mui/material';
 import ChatContext from './context';
 import SetPrivilege from './Privilege';
 import MessageList from './MessageList';
@@ -67,35 +67,55 @@ const InMeeting: FC<IProps> = ({
             {isHostOrModerator && (
                 <SetPrivilege defaultPrivilege={chatController?.getCurrentChatPrivilege()} />
             )}
-            <RcTabContext value={currentType}>
-                <RcTabs value={currentType}
-                    onChange={(event: React.ChangeEvent<{}>, value: any) => {
-                        setCurrentType(value);
-                        setUid('');
-                    }}>
-                    <RcTab value={ChatType.PUBLIC} label="public" />
-                    <RcTab value={ChatType.PRIVATE} label="private" />
-                </RcTabs>
-                <RcTabPanel value={ChatType.PRIVATE} >
-                    <Participants
-                        participants={participants}
-                        uid={uid}
-                        changeParticipants={id => setUid(id)}
-                    />
-                </RcTabPanel>
-                <MessageList messages={displayMessages} participants={participants} />
-                {(uid || currentType !== ChatType.PRIVATE) && (
-                    <SendMessage
-                        hasPrivilege={isHostOrModerator || chatController?.getCurrentChatPrivilege() === ChatPrivilege.EVERYONE}
-                        onChange={msg => setMsg(msg)}
-                        send={sendMessage}
-                        currentType={currentType}
-                    />
-                )}
-            </RcTabContext>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs value={currentType} onChange={(event: React.ChangeEvent<{}>, value: any) => {
+                    setCurrentType(value);
+                    setUid('');
+                }}>
+                    <Tab value={ChatType.PUBLIC} label="public" />
+                    <Tab value={ChatType.PRIVATE} label="private" />
+                </Tabs>
+            </Box>
+            <TabPanel value={ChatType.PRIVATE} tab={currentType}>
+                <Participants
+                    participants={participants}
+                    uid={uid}
+                    changeParticipants={id => setUid(id)}
+                />
+            </TabPanel>
+            <MessageList messages={displayMessages} participants={participants} />
+            {(uid || currentType !== ChatType.PRIVATE) && (
+                <SendMessage
+                    hasPrivilege={isHostOrModerator || chatController?.getCurrentChatPrivilege() === ChatPrivilege.EVERYONE}
+                    onChange={msg => setMsg(msg)}
+                    send={sendMessage}
+                    currentType={currentType}
+                />
+            )}
         </ChatContext.Provider>
 
     )
+}
+
+interface TabPanelProps {
+    children?: React.ReactNode;
+    tab: string;
+    value: string;
+}
+
+function TabPanel(props: TabPanelProps) {
+    const { children, value, tab } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== tab}
+            id={`simple-tabpanel-${tab}`}
+            aria-labelledby={`simple-tab-${tab}`}
+        >
+            {value === tab && <div>{children}</div>}
+        </div>
+    );
 }
 
 export default InMeeting

@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import { RcvEngine, UserEvent, IParticipant } from '@sdk';
 import { useParams } from 'react-router-dom';
-import { RcButtonGroup, RcButton, RcDialog, RcDialogTitle, RcLoading } from '@ringcentral/juno';
+import { ButtonGroup, Button, Dialog, DialogTitle, Alert, DialogContent } from '@mui/material';
 import { useGlobalContext } from '../../context';
 import ParticipantTable from './ParticipantTable'
 import ChatContent from '../Chat'
@@ -77,27 +77,31 @@ const InMeeting: FC<IProps> = (props) => {
     // ---------------------------- end: button click handler ----------------------------
 
     return (
-        <div className='meeting-wrapper'>
-            <RcLoading loading={loading}>
-                <RcButtonGroup>
-                    <RcButton color="success.b03" onClick={() => setChatVisible(true)}>Chat</RcButton>
-                    <RcButton color="highlight.b03" onClick={handleLeaveMeeting}>Leave</RcButton>
-                    <RcButton color="danger.b03" onClick={handleEndMeeting}>End</RcButton>
-                </RcButtonGroup>
+        <>
+            <Alert severity="info"> {loading ? 'loading...' : 'Meeting Id:' + meetingId}</Alert>
+            <div className='meeting-wrapper'>
+                <ButtonGroup>
+                    <Button variant="contained" onClick={() => setChatVisible(true)}>Chat</Button>
+                    <Button variant="outlined" color="secondary" onClick={handleLeaveMeeting}>Leave</Button>
+                    <Button variant="contained" color="error" onClick={handleEndMeeting}>End</Button>
+                </ButtonGroup>
                 <br />
                 <ParticipantTable participantList={participantList} />
-            </RcLoading>
-            <RcDialog
-                onClose={() => setChatVisible(false)}
-                open={chatVisible}>
-                <RcDialogTitle>Chat</RcDialogTitle>
-                <ChatContent
-                    chatController={meetingController?.getChatController()}
-                    participants={participantList}
-                />
-            </RcDialog>
-
-        </div>
+                <Dialog
+                    maxWidth="md"
+                    fullWidth={true}
+                    onClose={() => setChatVisible(false)}
+                    open={chatVisible}>
+                    <DialogTitle>Chat</DialogTitle>
+                    <DialogContent>
+                        <ChatContent
+                            chatController={meetingController?.getChatController()}
+                            participants={participantList}
+                        />
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </>
     )
 }
 

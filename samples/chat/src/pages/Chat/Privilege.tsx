@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { ChatPrivilege } from '@sdk';
-import { RcSelect, RcMenuItem } from '@ringcentral/juno';
+import { Select, MenuItem, FormControl, InputLabel, FormHelperText } from '@mui/material';
 import ChatContext from './context';
 
 const PRIVILEGES = [ChatPrivilege.EVERYONE, ChatPrivilege.HOST_MODERATOR];
@@ -21,15 +21,16 @@ const SetPrivilege = ({ defaultPrivilege }) => {
     }
 
     return (
-        <div style={{ margin: 20 }}>
-            <RcSelect
-                label="Set privilege"
-                helperText="Host or moderator can do!"
+        <FormControl variant="standard">
+            <InputLabel id="select-privilege">Set privilege</InputLabel>
+            <Select
+                id="select-privilege"
                 value={privilege}
                 onChange={handleChange}>
-                {PRIVILEGES.map((item) => <RcMenuItem key={item} value={item}>{item}</RcMenuItem>)}
-            </RcSelect>
-        </div>
+                {PRIVILEGES.map((item) => <MenuItem key={item} value={item}>{item}</MenuItem>)}
+            </Select>
+            <FormHelperText>Host or moderator can do!</FormHelperText>
+        </FormControl>
     );
 };
 

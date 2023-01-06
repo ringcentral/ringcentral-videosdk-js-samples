@@ -5,13 +5,13 @@
     "dev": "webpack serve --config ./webpack.config.babel.js"
   },
   "dependencies": {
-    "@ringcentral/juno": "^2.20.0",
-    "@ringcentral/juno-icon": "^1.14.0",
-    "moment": "^2.29.4",
+    "@mui/icons-material": "^5.11.0",
+    "@mui/material": "^5.11.3",
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.3.0",
-    "styled-components": "^5.3.5"
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

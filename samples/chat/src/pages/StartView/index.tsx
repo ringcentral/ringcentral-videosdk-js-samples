@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useState, useRef } from 'react'
-import { RcButton, RcTextField } from '@ringcentral/juno';
+import { Button, TextField } from '@mui/material';
+import { VideoCameraFrontRounded, QueuePlayNextRounded } from '@mui/icons-material';
 import { RcvEngine } from '@sdk';
 interface IProps {
     rcvEngine: RcvEngine
@@ -41,28 +42,29 @@ const StartView: FC<IProps> = (props) => {
 
     return (
         <div className='start-view'>
-            <RcTextField
+            <TextField
+                variant="standard"
                 label="Meeting Id"
                 id="control"
                 inputRef={inputMeetingIdRef}
             />
-            <RcButton
+            <Button
                 className='start-btn'
-                loadingMode="prefix"
-                loading={isJoinLoading}
-                disabled={isJoinLoading || isStartLoading}
-                onClick={!isJoinLoading ? joinMeetingHandler : null}>
-                Join meeting
-            </RcButton>
-            <RcButton
-                className='start-btn'
-                loadingMode="prefix"
-                color="success.b03"
-                loading={isStartLoading}
+                variant="contained"
+                color="success"
+                startIcon={<QueuePlayNextRounded />}
                 disabled={isJoinLoading || isStartLoading}
                 onClick={!isStartLoading ? startMeetingHandler : null}>
-                Start meeting
-            </RcButton>
+                Start meeting{isStartLoading ? '...' : ''}
+            </Button>
+            <Button
+                className='start-btn'
+                variant="contained"
+                startIcon={<VideoCameraFrontRounded />}
+                onClick={!isJoinLoading ? joinMeetingHandler : null}>
+                Join meeting{isJoinLoading ? '...' : ''}
+            </Button>
+
         </div>
     )
 }
