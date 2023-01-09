@@ -1195,7 +1195,7 @@ export declare enum LeaveReason {
     REMOVE_BY_HOST = 5
 }
 
-declare class LiveTranscriptionController extends EventEmitter<LiveTranscriptionEvent> {
+export declare class LiveTranscriptionController extends EventEmitter<LiveTranscriptionEvent> {
     private _librctHelper;
     private _libsfuHelper;
     private _meetingProvider;
@@ -1261,52 +1261,41 @@ declare class LiveTranscriptionController extends EventEmitter<LiveTranscription
     /**
      * Connect to the LiveTranscription server if needed
      */
-    connectIfNeeded(): Promise<ErrorCodeType | undefined>;
+    private _connectIfNeeded;
 
     /**
      * Starts the live transcriptions in an active meeting
-     * Triggers the {@link} LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED event callback
+     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED} event callback
+     * @returns 0 means the API call is valid or fails otherwise
      */
     startLiveTranscription(): Promise<ErrorCodeType>;
     /**
      * Send request to get history recordings of live transcriptions
-     * Triggers the onLiveTranscriptionHistoryChanged event callback
+     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_HISTORY_CHANGED} event callback
+     * @returns 0 means the API call is valid or fails otherwise
      */
-    getLiveTranscriptionHistory: () => ErrorCodeType;
+    getLiveTranscriptionHistory(): ErrorCodeType;
     /**
      * Send a request to get supported languages of live transcriptions
-     * Triggers the onLiveTranscriptionSupportedLanguages event callback
+     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SUPPORTED_LANGUAGES} event callback
+     * @returns 0 means the API call is valid or fails otherwise
      */
-    getSupportLanguages: () => ErrorCodeType;
+    getSupportLanguages(): ErrorCodeType;
     /**
      * Send a request to switch the active language
-     * Triggers the onLiveTranscriptionLanguageChanged event callback
+     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_LANGUAGE_CHANGED} event callback
+     * @returns 0 means the API call is valid or fails otherwise
      */
     switchLanguage(language: string): ErrorCodeType;
     /**
      * Return the settings of live transcriptions
+     * @returns settings or null
      */
-    getLiveTranscriptionSettings(): {
-        transcriptServerConnected: boolean;
-        autostartTranscription: boolean;
-        meetingLanguage: string;
-        transcriptActivated: boolean;
-        transcriptDownloadAndCopy: string;
-        transcriptDownloadAndCopySetting: {
-            value: string;
-            locked: boolean;
-        };
-        transcriptVisibility: string;
-        transcriptVisibilitySetting: {
-            value: string;
-            locked: boolean;
-        };
-        transcriptionActive: boolean;
-        transcriptionAllowed: boolean;
-    } | null;
+    getLiveTranscriptionSettings(): ILiveTranscriptionSettings | null;
     /**
      * Pauses the live transcriptions in an active meeting
-     * Triggers the onLiveTranscriptionSettingChanged event callback
+     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED} event callback
+     * @returns 0 means the API call is valid or fails otherwise
      */
     pauseLiveTranscription(): ErrorCodeType;
 }
@@ -1429,7 +1418,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private _e2eeState;
     private _streamManager;
     private _meetingProvider;
-    get isWaitingRoomEnabled(): boolean;
+
 
 
     private _setEstablished;
@@ -1443,6 +1432,8 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private _initMlsSdkClient;
     private _destroyMlsSdkClient;
     private _toggleLockMeeting;
+    private _enableSFUEndToEndEncryption;
+    private _disableSFUEndToEndEncryption;
     /**
      * Gets the AudioController instance.
      * @description AudioController instance listens for some events if initialized successfully, related events:
@@ -1513,12 +1504,21 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     getChatController(): ChatController;
     /**
      * Gets the ClosedCaptionsController instance.
+     * @description ClosedCaptionsController instance listens for some events if initialized successfully, related to events:
+     * - {@link ClosedCaptionsEvent.CLOSED_CAPTIONS_STATE_CHANGED}
+     * - {@link ClosedCaptionsEvent.CLOSED_CAPTIONS_DATA}
      * @returns The ClosedCaptionsController instance
      */
     getClosedCaptionsController(): ClosedCaptionsController;
     /**
      * Gets the LiveTranscription instance.
-     * @reuturns The LiveTranscription instance
+     * @description LiveTranscription instance listens for some events if initialized successfully, related to events:
+     * - {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_DATA_CHANGED}
+     * - {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED}
+     * - {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_HISTORY_CHANGED}
+     * - {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SUPPORTED_LANGUAGES}
+     * - {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_LANGUAGE_CHANGED}
+     * @returns The LiveTranscription instance
      */
     getLiveTranscriptionController(): LiveTranscriptionController;
     /**
@@ -1528,7 +1528,7 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     getMeetingInfo(): Promise<IMeetingInfo>;
     /**
      * Ends the current meeting.
-     * @description A successful call of endMeeting triggers the {@link RcvEngine.on(EngineEvent.MEETING_LEFT)} event callback for all meeting users.
+     * @description A successful call of endMeeting triggers the {@link EngineEvent.MEETING_LEFT} event callback for all meeting users.
      * @description Only the meeting host or moderator has permission to invoke this method.
      * @return 0 means the action succeeds or fails otherwise
      */
@@ -1563,20 +1563,18 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
      * @return 0 means the action succeeds or fails otherwise
      */
     leaveMeeting(): Promise<ErrorCodeType>;
-    private _enableSFUEndToEndEncryption;
-    private _disableSFUEndToEndEncryption;
     /**
      * Enables the end-to-end encryption in the meeting dynamically.
      * @description A successful call of enableEndToEndEncryption triggers the {@link MeetingEvent.MEETING_ENCRYPTION_STATE_CHANGED} event callback for all meeting users.
      * @return 0 means the action succeeds or fails otherwise
      */
-    enableEndToEndEncryption(): ErrorCodeType.ERR_OK | ErrorCodeType.ERR_MEETING_E2EE_IS_ENABLED | ErrorCodeType.ERR_MEETING_E2EE_IS_ENABLING | ErrorCodeType.ERR_MEETING_E2EE_IS_DISABLING;
+    enableEndToEndEncryption(): Promise<ErrorCodeType>;
     /**
      * Disables the end-to-end encryption in the meeting.
      * @description A successful call of disableEndToEndEncryption triggers the {@link MeetingEvent.MEETING_ENCRYPTION_STATE_CHANGED} event callback for all meeting users.
      * @returns 0 means the action succeeds or fails otherwise
      */
-    disableEndToEndEncryption(): ErrorCodeType.ERR_OK | ErrorCodeType.ERR_MEETING_E2EE_IS_ENABLING | ErrorCodeType.ERR_MEETING_E2EE_IS_DISABLED | ErrorCodeType.ERR_MEETING_E2EE_IS_DISABLING;
+    disableEndToEndEncryption(): ErrorCodeType;
     /**
      * Get the current EndToEnd Encryption state.
      * @returns E2EEState
