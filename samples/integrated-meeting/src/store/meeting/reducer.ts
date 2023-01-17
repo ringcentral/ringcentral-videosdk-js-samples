@@ -7,6 +7,27 @@ export function meetingReducer(state: IMeetingState, { type, payload }: IMeeting
                 ...state,
                 localParticipant: payload.localParticipant,
                 participantList: payload.participantList,
+                participantMap: payload.participantMap
+            };
+        case MeetingReduceType.STREAM_LIST:
+            return {
+                ...state,
+                localStreams: payload.localStreams,
+                remoteStreams: payload.remoteStreams,
+            };
+        case MeetingReduceType.LOCAL_NQI:
+            return {
+                ...state,
+                localNqiState: payload.localNqiState,
+            };
+        case MeetingReduceType.REMOTE_NQI:
+            console.log('REMOTE_NQI', payload);
+            return {
+                ...state,
+                remoteNqiStateMap: {
+                    ...state.remoteNqiStateMap || {},
+                    ...payload.remoteNqiStateMap
+                },
             };
         case MeetingReduceType.AUDIO_MUTE_UPDATED:
             return {

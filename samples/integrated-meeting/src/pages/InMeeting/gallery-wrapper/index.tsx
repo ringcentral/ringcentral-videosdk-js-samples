@@ -20,6 +20,7 @@ const GalleryWrapper: FC = () => {
     const { rect: galleryWrapRect, ref: setGalleryWrapRef, cleanObserver } = useNodeBoundingRect();
     const [gridRule, setGridRule] = useState<FinalGridRule | null>(null);
 
+    console.log(23, meetingState);
     const videoRef = useRef({} as HTMLDivElement);
 
     const className = ['gallery-wrapper', gridRule && !gridRule.isWidthLimited && 'heightLimited']
@@ -73,9 +74,25 @@ const GalleryWrapper: FC = () => {
         [gridRule]
     );
 
+    const localStreams = meetingState.localStreams || [];
+    const localParticipant = meetingState.localParticipant;
+    const remoteStreams = meetingState.remoteStreams || {};
+    const localNqiState = meetingState.localNqiState;
+    const remoteNqiStateMap = meetingState.remoteNqiStateMap || {};
+    const localAvailableStreamList = localStreams.filter((s) => {
+        return s.isSessionInactive === false && s.type === 'video/main';
+    });
+    const remoteAvailableStreamList = Object.values(remoteStreams).filter((s) => {
+        if(localParticipant && localParticipant.uid === s.participantId){
+            return false;
+        }
+        return s.isSessionInactive === false && s.type === 'video/main';
+    });
+    const participantMap = meetingState.participantMap;
+    const isOnlyMeJoinedMeeting = (localAvailableStreamList.length == 1) && (remoteAvailableStreamList.length == 0);
     return (
         <>
-            {meetingState.participantList.length === 1 ? (
+            {isOnlyMeJoinedMeeting ? (
                 <GalleryOnlySelf
                     participant={meetingState.participantList[0]}
                     setVideoRef={video =>
@@ -86,15 +103,40 @@ const GalleryWrapper: FC = () => {
                     className={className}
                     ref={node => setGalleryWrapRef(node)}
                     style={galleryWrapperStyle}>
-                    {meetingState.participantList.map(participant => {
-                        return (
-                            <GalleryItem
-                                key={participant.uid}
+                    {localAvailableStreamList.map((stream) => {
+                        const participant = participantMap[stream.participantId];
+                        if(participant){
+                            return (
+                              <GalleryItem
+                                isMe={true}
+                                nqi={localNqiState}
+                                key={stream.id}
+                                stream={stream}
                                 participant={participant}
                                 setVideoRef={video =>
-                                    (videoRef.current[participant.uid] = video)
-                                }></GalleryItem>
-                        );
+                                  (videoRef.current[participant.uid] = video)
+                                }
+                              />
+                            );
+                        }
+                    })}
+                    {remoteAvailableStreamList.map(stream => {
+                        const participant = participantMap[stream.participantId];
+                        const nqi = remoteNqiStateMap[stream.id];
+                        if(participant){
+                            return (
+                              <GalleryItem
+                                isMe={false}
+                                key={stream.id}
+                                nqi={nqi}
+                                stream={stream}
+                                participant={participant}
+                                setVideoRef={video =>
+                                  (videoRef.current[participant.uid] = video)
+                                }
+                              />
+                            );
+                        }
                     })}
                 </div>
             )}
