@@ -11,7 +11,7 @@ interface IGalleryItem {
     participant: IParticipant;
     setVideoRef: (ref: HTMLDivElement) => void;
 }
-const GalleryItem: FC<IGalleryItem> = ({ nqi, isMe, participant, setVideoRef }) => {
+const GalleryItem: FC<IGalleryItem> = ({ stream, nqi, isMe, participant, setVideoRef }) => {
     return (
         <div className='gallery-item'>
             <div className='gallery-item-inner'>
@@ -23,7 +23,7 @@ const GalleryItem: FC<IGalleryItem> = ({ nqi, isMe, participant, setVideoRef }) 
                     <Avatar displaySize='100%' imgSize={300} participant={participant}></Avatar>
                 </div>
                 <div className='video-info-wrapper'>
-                    <VideoInfo nqi={nqi} participant={participant} isMe={isMe} />
+                    <VideoInfo stream={stream} nqi={nqi} participant={participant} isMe={isMe} />
                 </div>
                 <div
                     className='video-container'

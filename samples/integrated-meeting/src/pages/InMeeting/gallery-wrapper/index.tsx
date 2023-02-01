@@ -15,7 +15,7 @@ const getGridRule = calculateFinalGridRule(MAX_GALLERY_ITEM_COUNT_PER_PAGE);
 const GalleryWrapper: FC = () => {
     const { rcvEngine, isMeetingJoined } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
-
+    const userController = meetingController?.getUserController();
     const { state: meetingState } = useMeetingContext();
     const { rect: galleryWrapRect, ref: setGalleryWrapRef, cleanObserver } = useNodeBoundingRect();
     const [gridRule, setGridRule] = useState<FinalGridRule | null>(null);
@@ -88,7 +88,6 @@ const GalleryWrapper: FC = () => {
         }
         return s.isSessionInactive === false && s.type === 'video/main';
     });
-    const participantMap = meetingState.participantMap;
     const isOnlyMeJoinedMeeting = (localAvailableStreamList.length == 1) && (remoteAvailableStreamList.length == 0);
     return (
         <>
@@ -104,7 +103,7 @@ const GalleryWrapper: FC = () => {
                     ref={node => setGalleryWrapRef(node)}
                     style={galleryWrapperStyle}>
                     {localAvailableStreamList.map((stream) => {
-                        const participant = participantMap[stream.participantId];
+                        const participant = userController.getMeetingUserById(stream.participantId);
                         if(participant){
                             return (
                               <GalleryItem
@@ -121,7 +120,7 @@ const GalleryWrapper: FC = () => {
                         }
                     })}
                     {remoteAvailableStreamList.map(stream => {
-                        const participant = participantMap[stream.participantId];
+                        const participant = userController.getMeetingUserById(stream.participantId);
                         const nqi = remoteNqiStateMap[stream.id];
                         if(participant){
                             return (
