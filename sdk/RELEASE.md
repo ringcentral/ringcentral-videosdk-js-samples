@@ -1,4 +1,13 @@
 ## release notes
+
+#### 0.7.2
+
+- Enhancements Live Transcriptions
+  - Add 2 interfaces: enableLiveTranscription() and disableLiveTranscription()
+- Optimize Web SDK packaging
+#### 0.7.1
+
+- Fix some E2EE bugs
 #### 0.7.0
 - New Features
   - Closed Captions
