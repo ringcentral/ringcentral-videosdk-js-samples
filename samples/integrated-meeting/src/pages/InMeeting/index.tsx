@@ -7,6 +7,8 @@ import {
     StreamEvent,
     MeetingEvent,
     ChatEvent,
+    IStream,
+    NQIState,
 } from '@sdk';
 import { useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
@@ -25,6 +27,7 @@ const InMeeting: FC = () => {
     const { enqueueSnackbar } = useSnackbar();
     const { rcvEngine, isMeetingJoined } = useGlobalContext();
     const meetingController = rcvEngine?.getMeetingController();
+    const streamManager = meetingController?.getStreamManager();
 
     const { meetingId } = useParams();
     const { dispatch } = useMeetingContext();
@@ -66,6 +69,7 @@ const InMeeting: FC = () => {
             }
         }
         getParticipants();
+        getStreams();
     };
 
     const initListener = () => {
@@ -79,9 +83,11 @@ const InMeeting: FC = () => {
                 payload: { isAudioMuted: mute },
             });
             getParticipants();
+            getStreams();
         });
         audioController?.on(AudioEvent.REMOTE_AUDIO_MUTE_CHANGED, () => {
             getParticipants();
+            getStreams();
         });
         // listen for video unmute/mute events
         videoController?.on(VideoEvent.LOCAL_VIDEO_MUTE_CHANGED, mute => {
@@ -90,22 +96,28 @@ const InMeeting: FC = () => {
                 payload: { isVideoMuted: mute },
             });
             getParticipants();
+            getStreams();
         });
         videoController?.on(VideoEvent.REMOTE_VIDEO_MUTE_CHANGED, () => {
             getParticipants();
+            getStreams();
         });
         const userController = meetingController?.getUserController();
         userController.on(UserEvent.USER_JOINED, () => {
             getParticipants();
+            getStreams();
         });
         userController.on(UserEvent.USER_LEFT, () => {
             getParticipants();
+            getStreams();
         });
         userController.on(UserEvent.USER_UPDATED, () => {
             getParticipants();
+            getStreams();
         });
         userController.on(UserEvent.ACTIVE_SPEAKER_USER_CHANGED, (participant: IParticipant) => {
             getParticipants();
+            getStreams();
         });
 
         // audio
@@ -116,7 +128,24 @@ const InMeeting: FC = () => {
         streamManager?.on(StreamEvent.REMOTE_AUDIO_TRACK_ADDED, stream => {
             sinkStreamElement(stream, TrackType.AUDIO, audioRef.current);
         });
-
+        streamManager?.on(StreamEvent.LOCAL_NETWORK_QUALITY, nqi => {
+            dispatch({
+                type: MeetingReduceType.LOCAL_NQI,
+                payload: {
+                    localNqiState: nqi
+                },
+            });
+        });
+        streamManager?.on(StreamEvent.REMOTE_NETWORK_QUALITY, (stream: IStream, nqi: NQIState) => {
+            dispatch({
+                type: MeetingReduceType.REMOTE_NQI,
+                payload: {
+                    remoteNqiStateMap: {
+                        [stream.id]: nqi
+                    }
+                },
+            });
+        });
         meetingController.on(MeetingEvent.MEETING_LOCK_STATE_CHANGED, state => {
             dispatch({
                 type: MeetingReduceType.MEETING_LOCK_STATE,
@@ -136,6 +165,21 @@ const InMeeting: FC = () => {
             payload: {
                 localParticipant: localParticipant,
                 participantList: [localParticipant, ...activeRemoteParticipants],
+                participantMap: users,
+            },
+        });
+    };
+
+    const getStreams = () => {
+        const localStreams: Omit<IStream, 'stream'>[] = streamManager._localStreams;
+        const remoteStreams: {
+            [key: string]: Omit<IStream, 'stream'> | null; // key tapId map stream
+        } = streamManager._remoteStreams;
+        dispatch({
+            type: MeetingReduceType.STREAM_LIST,
+            payload: {
+                localStreams: localStreams,
+                remoteStreams: remoteStreams,
             },
         });
     };

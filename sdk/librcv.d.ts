@@ -430,6 +430,9 @@ declare enum ConferenceWaitingRoomMode {
     OTHER = "OtherAccount"
 }
 
+declare const _default: {};
+export default _default;
+
 declare class DeviceManager<T extends string> extends EventEmitter<T> {
     protected _currentDeviceId: string | undefined;
     protected _forTestStream: MediaStream | null;
@@ -608,7 +611,7 @@ export declare enum ErrorCodeType {
     ERR_MEETING_PASSWORD_REQUIRED = 10006,
     /** The input password does not match the meeting password. The user needs to check it and try joining again. */
     ERR_INVALID_MEETING_PASSWORD = 10007,
-    /** The application can not join a meeting as a guest due to the "Guest Type" is not granted. */
+    /** Users can not do this action as a guest due to the "Guest Type" is not granted. */
     ERR_GUEST_TYPE_NOT_GRANTED = 10008,
     /** The user has been denied to join the meeting. */
     ERR_JOIN_MEETING_DENIED = 10009,
@@ -663,6 +666,8 @@ export declare enum ErrorCodeType {
     ERR_LIVE_TRANSCRIPTION_SERVICE_NOT_AVAILABLE = 14006,
     /** Can't enable Live Transcription on e2ee mode */
     ERR_LIVE_TRANSCRIPTION_NO_SUPPORTED_IN_E2EE = 14007,
+    /** Get Grouped History API not supported */
+    ERR_LIVE_TRANSCRIPTION_GET_GROUPED_HISTORY_NOT_SUPPORTED = 14008,
     /** A base error code for the meeting closed captions category. */
     ERR_CLOSED_CAPTIONS_BASE = 15000,
     /** Server does not allow closed captions */
@@ -1202,7 +1207,6 @@ export declare class LiveTranscriptionController extends EventEmitter<LiveTransc
     private _meetingController;
     private _userController;
     private _streamManager;
-    private _transcriptionUrl;
     /**
      * last transcript of live transcription
      */
@@ -1227,15 +1231,18 @@ export declare class LiveTranscriptionController extends EventEmitter<LiveTransc
      * Check is live transcription connecting web server
      */
     private _isConnecting;
+    private _logger;
     private get _librct();
     private get _sfu();
     private get _meeting();
     private get _meetingId();
     private get _isConnectionOpen();
-    private _handleRemoteParticipantsChanged;
-    private _handleLocalParticipantChanged;
-    private _isAnyoneEnableAudio;
+    private _reset;
+    private _closeConnection;
+    private _handleOpenConnectionOnOnline;
     private _handleCloseConnectionOnOffline;
+    private _addNetworkListeners;
+    private _removeNetworkListeners;
     private _addHeartbeatListeners;
     private _startHeartbeat;
     private _stopHeartbeat;
@@ -1245,11 +1252,17 @@ export declare class LiveTranscriptionController extends EventEmitter<LiveTransc
     private _handleSupportedLanguagesMessage;
     private _handleSwitchLanguageMessage;
     private _handleConnectionClosedMessage;
-    private _addConnectionListeners;
+    private _handleConnectionErrorMessage;
+    private _addMessageListeners;
     private _handleMessage;
-    private _handleTranscriptHistoryMessage;
-    private _handleTranscriptReadyMessage;
+    private _getParticipantBySessionId;
     private _formatRawTranscript;
+    private _formatGroupedRawTranscript;
+    private _handleTranscriptHistoryMessage;
+    private _handleGroupedTranscriptHistoryMessage;
+    private _getRawTranscriptFromData;
+    private _handleTranscriptReadyMessage;
+    private _handleGroupedTranscriptReadyMessage;
     private _validateConnection;
     private _getLiveTranscriptUrl;
     private _connectWebsocketServer;
@@ -1262,28 +1275,46 @@ export declare class LiveTranscriptionController extends EventEmitter<LiveTransc
      * Connect to the LiveTranscription server if needed
      */
     private _connectIfNeeded;
-
+    /**
+     * Enable the live transcription features in an active meeting
+     * @description This method will enable the live transcription feature and init server connection.
+     * @returns 0 means the API call is valid or fails otherwise
+     */
+    enableLiveTranscription(): Promise<ErrorCodeType>;
+    /**
+     * Disable the live transcription features in an active meeting
+     * @description disable the live transcription feature
+     * @returns 0 means the API call is valid or fails otherwise
+     */
+    disableLiveTranscription(): Promise<ErrorCodeType>;
     /**
      * Starts the live transcriptions in an active meeting
-     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED} event callback
+     * @description Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED} event callback
      * @returns 0 means the API call is valid or fails otherwise
      */
     startLiveTranscription(): Promise<ErrorCodeType>;
     /**
      * Send request to get history recordings of live transcriptions
-     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_HISTORY_CHANGED} event callback
+     * @description Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_HISTORY_CHANGED} event callback
      * @returns 0 means the API call is valid or fails otherwise
      */
     getLiveTranscriptionHistory(): ErrorCodeType;
     /**
+     * Send request to get grouped history recordings of live transcriptions
+     * @description Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_GROUPED_HISTORY_CHANGED} event callback
+     * Attention: This "getGroupedLiveTranscriptionHistory" method is in beta version, server may not support it in some environment. In this case, this method will reject a ERR_LIVE_TRANSCRIPTION_GET_GROUPED_HISTORY_NOT_SUPPORTED error.
+     * @returns 0 means the API call is valid or fails otherwise
+     */
+    getGroupedLiveTranscriptionHistory(): Promise<ErrorCodeType>;
+    /**
      * Send a request to get supported languages of live transcriptions
-     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SUPPORTED_LANGUAGES} event callback
+     * @description Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SUPPORTED_LANGUAGES} event callback
      * @returns 0 means the API call is valid or fails otherwise
      */
     getSupportLanguages(): ErrorCodeType;
     /**
      * Send a request to switch the active language
-     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_LANGUAGE_CHANGED} event callback
+     * @description Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_LANGUAGE_CHANGED} event callback
      * @returns 0 means the API call is valid or fails otherwise
      */
     switchLanguage(language: string): ErrorCodeType;
@@ -1294,7 +1325,7 @@ export declare class LiveTranscriptionController extends EventEmitter<LiveTransc
     getLiveTranscriptionSettings(): ILiveTranscriptionSettings | null;
     /**
      * Pauses the live transcriptions in an active meeting
-     * @decription Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED} event callback
+     * @description Triggers the {@link LiveTranscriptionEvent.LIVE_TRANSCRIPTION_SETTING_CHANGED} event callback
      * @returns 0 means the API call is valid or fails otherwise
      */
     pauseLiveTranscription(): ErrorCodeType;
@@ -1323,6 +1354,10 @@ export declare enum LiveTranscriptionEvent {
      */
     LIVE_TRANSCRIPTION_DATA_CHANGED = "live-transcription-data-changed",
     /**
+     * Occurs when live transcriptions grouped data changes
+     */
+    LIVE_TRANSCRIPTION_GROUPED_DATA_CHANGED = "live-transcription-grouped-data-changed",
+    /**
      * Occurs when live transcriptions settings changes
      */
     LIVE_TRANSCRIPTION_SETTING_CHANGED = "live-transcription-setting-changed",
@@ -1330,6 +1365,10 @@ export declare enum LiveTranscriptionEvent {
      * Occurs when live transcriptions history changes
      */
     LIVE_TRANSCRIPTION_HISTORY_CHANGED = "live-transcription-history-changed",
+    /**
+     * Occurs when live transcriptions grouped history changes
+     */
+    LIVE_TRANSCRIPTION_GROUPED_HISTORY_CHANGED = "live-transcription-grouped-history-changed",
     /**
      * Occurs when get live transcriptions supported languages
      */
@@ -1357,6 +1396,7 @@ export declare type MaxRemoteVideo = RemoteSlot[] | number;
  */
 export declare class MeetingContextController {
     private _librctHelper;
+    private _runtimeConfig;
     private _existPersonalMeetingNames;
     private _freePhoneNumbers;
     private get _librct();
@@ -1365,6 +1405,10 @@ export declare class MeetingContextController {
     private _getMeetingInfo;
     private _getPersonalMeetingNames;
     private _getFreePhoneNumbers;
+    /**
+     * If is guest mode, it throws error.
+     */
+    private _checkGuestMode;
     /**
      * Schedules a meeting with customized meeting settings.
      * A successful call of scheduleMeeting triggers the onMeetingSchedule callback.
@@ -1413,11 +1457,11 @@ export declare class MeetingController extends EventEmitter<MeetingEvent> {
     private _liveTranscriptionController;
     private _runtimeConfig;
     private _closedCaptionsController;
-    private _sfu?;
     private _established;
     private _e2eeState;
     private _streamManager;
     private _meetingProvider;
+    private get _sfu();
 
 
 
@@ -1694,6 +1738,18 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
     private _meetingProvider;
     private _processor;
     private _runtimeConfig;
+    private _mlsSdkClientHelper;
+    private constructor();
+    private _createMeetingController;
+    /**
+     * Common join action function ,used in joinMeeting or startInstantMeeting
+     */
+    private _joinAction;
+    /**
+     * When leaves a meeting all meeting data need be reset.
+     */
+    private _resetMeetingData;
+    private _clearManagers;
     /**
      * Creates an RcvEngine object and returns the instance.
      * @param config
@@ -1705,7 +1761,6 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      * @returns The engine instance if success or undefined otherwise
      */
     static instance(): RcvEngine | undefined;
-    private constructor();
     /**
      * Destroys the RcvEngine instance and releases all resources used by the client SDK.
      * @description Once you called destory method, you cannot use any method or callback in the client SDK anymore. If you want to do the real-time communication again, you must call create method to create a new RcvEngine instance.
@@ -1726,15 +1781,6 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      * @returns The MeetingController instance
      */
     joinMeeting(meetingId: string, options?: MeetingOptions): Promise<MeetingController>;
-    private _createMeetingController;
-    /**
-     * When leaves a meeting all meeting data need be reset.
-     */
-    private _resetMeetingData;
-    /**
-     * Common join action function ,used in joinMeeting or startInstantMeeting
-     */
-    private _joinAction;
     /**
      * Get the audio device manager
      * @description AudioDeviceManager instance listens for some events if initialized successfully, related to events:
@@ -1766,7 +1812,6 @@ export declare class RcvEngine extends EventEmitter<EngineEvent> {
      * @return The PreferenceController instance.
      */
     getPreferenceController(): PreferenceController;
-    private _clearManagers;
     /**
      * download logs from rcvEngine
      * @param levels download log levels
@@ -1959,6 +2004,7 @@ export declare class SharingController extends EventEmitter<SharingEvent> {
     private _meetingProvider;
     private readonly _streamManager;
     private readonly _userController;
+    private _runtimeConfig;
     private _currentSharingStream;
     private _curSharingStats;
 
@@ -2185,7 +2231,16 @@ export declare class StreamManager extends EventEmitter<StreamEvent> {
 
 
 
-
+    /**
+     * get all local streams
+     * @returns all local stream list
+     */
+    getLocalStreams(): Partial<IStream>[];
+    /**
+     * get all remote streams
+     * @returns all remote stream list
+     */
+    getRemoteStreams(): Partial<IStream>[];
 
 
 

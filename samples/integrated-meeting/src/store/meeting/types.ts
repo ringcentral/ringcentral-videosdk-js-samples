@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { IMeetingInfo, IParticipant, Message, RcvEngine } from '@sdk';
+import {IMeetingInfo, IParticipant, IStream, Message, NQIState} from '@sdk';
 
 export enum ActiveFeatureModal {
     Participant,
@@ -15,6 +15,9 @@ export enum MeetingReduceType {
     ACTIVE_FEATURE_MODAL = 'ACTIVE_FEATURE_MODAL',
     MEETING_LOCK_STATE = 'MEETING_LOCK_STATE',
     CHAT_MESSAGES = 'CHAT_MESSAGES',
+    STREAM_LIST = 'STREAM_LIST',
+    LOCAL_NQI = 'LOCAL_NQI',
+    REMOTE_NQI = 'REMOTE_NQI'
 }
 
 export interface IMeetingState {
@@ -27,6 +30,13 @@ export interface IMeetingState {
     isModalPinned: boolean;
     activeFeatureModal: ActiveFeatureModal | null;
     chatMessages: Message[];
+    localStreams: Omit<IStream, 'stream'>[],
+    remoteStreams: {
+        [key: string]: Omit<IStream, 'stream'> | null; // key tapId map stream
+    },
+    participantMap: Record<string, IParticipant>;
+    localNqiState: NQIState | null;
+    remoteNqiStateMap: Record<string, NQIState>;
 }
 
 export interface IMeetingAction {
