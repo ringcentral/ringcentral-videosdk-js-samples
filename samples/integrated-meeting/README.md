@@ -8,6 +8,7 @@
 - Switch audio/video devices
 - Participants management
 - Chat
+- Record
 - Closed Captions
 - Leave/End the meeting
 
