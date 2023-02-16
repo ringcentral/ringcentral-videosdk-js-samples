@@ -10,6 +10,7 @@
 - Chat
 - Record
 - Closed Captions
+- Live transcription
 - Leave/End the meeting
 
 ### How to Run?

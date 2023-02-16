@@ -7,6 +7,7 @@ import MeetingInfoAction from './meeting-info-action';
 import ClosedCaption from './closed-caption';
 import Chat from './chat';
 import RecordAction from './record-action';
+import LiveTranscription from './live-transcription';
 import './index.less';
 
 const ActionBar: FC = () => {
@@ -22,6 +23,7 @@ const ActionBar: FC = () => {
                 <Chat />
                 <RecordAction />
                 <ClosedCaption />
+                <LiveTranscription />
                 <LeaveAction />
             </div>
         </div>

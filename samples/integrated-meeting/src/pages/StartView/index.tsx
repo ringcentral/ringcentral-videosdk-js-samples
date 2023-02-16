@@ -64,8 +64,7 @@ const StartView: FC<IProps> = props => {
 
     return (
         <div className='start-view'>
-            {isStartLoading && <p>Starting a Meeting<span className="dotting"></span></p>}
-            {isJoinLoading && <p>Joining a Meeting<span className="dotting"></span></p>}
+            {isStartLoading && <p>Starting a Meeting<span className="dotting" /></p>}
             <br />
             <div className='meeting-button-group'>
                 <div className='meeting-button-wrapper'>
@@ -86,7 +85,7 @@ const StartView: FC<IProps> = props => {
                 </div>
             </div>
             <Dialog open={isShowModal} onClose={() => setIsShowModal(false)} maxWidth='xs'>
-                <DialogTitle>Join a meeting</DialogTitle>
+                <DialogTitle>Join a meeting{isJoinLoading ? <span className="dotting" /> : ''}</DialogTitle>
                 <DialogContent>
                     <TextField
                         required
