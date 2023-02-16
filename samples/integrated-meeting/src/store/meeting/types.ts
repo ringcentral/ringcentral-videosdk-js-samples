@@ -4,6 +4,7 @@ import {IMeetingInfo, IParticipant, IStream, Message, NQIState} from '@sdk';
 export enum ActiveFeatureModal {
     Participant,
     Chat,
+    LiveTranscprition
 }
 
 export enum MeetingReduceType {

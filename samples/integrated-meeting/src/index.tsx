@@ -22,7 +22,7 @@ export default function App({ config }) {
 
     useEffect(() => {
         const initSDK = async () => {
-            const { clientId, clientSecret, jwt, userName, password } = config;
+            const { clientId, clientSecret, jwt, userName, password, token } = config;
 
             const engine = RcvEngine.create({
                 clientId,
@@ -30,12 +30,17 @@ export default function App({ config }) {
                 enableDiscovery: false,
             });
 
-            await engine.authorize({
-                grantType: jwt ? GrantType.JWT : GrantType.PASSWORD,
-                jwt,
-                username: userName,
-                password,
-            });
+            if (token) {
+                engine.setAuthToken(JSON.stringify(token));
+            }
+            else {
+                await engine.authorize({
+                    grantType: jwt ? GrantType.JWT : GrantType.PASSWORD,
+                    jwt,
+                    username: userName,
+                    password,
+                });
+            }
 
             engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
                 if (errorCode === ErrorCodeType.ERR_OK) {
