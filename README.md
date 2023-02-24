@@ -1,4 +1,4 @@
-# RingCentral Video Client SDK for Web Browser
+# RingCentral Video Client SDK Samples for Web Browser
 
 ## Overview
 
