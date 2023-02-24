@@ -1,5 +1,5 @@
 import React, { FC, useMemo, useRef, useState } from 'react'
-import { RcvEngine } from '@sdk'
+import { RcvEngine } from '@ringcentral/video-sdk'
 import { Button } from '@mui/material';
 interface IProps {
     rcvEngine: RcvEngine

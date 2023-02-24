@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { ChatType } from '@sdk';
+import { ChatType } from '@ringcentral/video-sdk';
 import { Button, ButtonGroup } from '@mui/material';
 import { Chat as ChatIcon } from '@mui/icons-material';
 

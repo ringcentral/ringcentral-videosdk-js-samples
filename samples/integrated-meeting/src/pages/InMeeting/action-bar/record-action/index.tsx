@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { SmartDisplay, Pause } from '@mui/icons-material';
-import { RecordingEvent, RecordingStatus } from '@sdk';
+import { RecordingEvent, RecordingStatus } from '@ringcentral/video-sdk';
 import { useGlobalContext } from '@src/store/global';
 
 import './index.less';

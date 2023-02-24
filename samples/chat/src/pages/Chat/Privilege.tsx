@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { ChatPrivilege } from '@sdk';
+import { ChatPrivilege } from '@ringcentral/video-sdk';
 import { Select, MenuItem, FormControl, InputLabel, FormHelperText } from '@mui/material';
 import ChatContext from './context';
 

@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState, useEffect, useMemo } from 'react'
 import { Button } from '@mui/material';
-import { RcvEngine, EngineEvent } from '@sdk';
+import { RcvEngine, EngineEvent } from '@ringcentral/video-sdk';
 import InMeeting from './InMeeting'
 import { useGlobalContext } from '../context';
 interface IProps {

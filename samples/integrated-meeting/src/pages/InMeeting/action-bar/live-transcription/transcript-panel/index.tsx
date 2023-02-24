@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { MenuItem, Select, SelectChangeEvent, IconButton } from '@mui/material';
 import { PlayArrow, Pause } from '@mui/icons-material';
-import { ILiveTranscriptionSettings, LiveTranscriptionEvent } from '@sdk';
+import { ILiveTranscriptionSettings, LiveTranscriptionEvent } from '@ringcentral/video-sdk';
 import { useSnackbar } from 'notistack';
 import { useGlobalContext } from '@src/store/global';
 import TranscriptionList from '../transcript-list'

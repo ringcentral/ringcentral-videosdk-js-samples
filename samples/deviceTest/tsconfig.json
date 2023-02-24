@@ -6,8 +6,5 @@
         "allowSyntheticDefaultImports": true,
         "baseUrl": ".",
         "moduleResolution": "node",
-        "paths": {
-            "@sdk": ["../../sdk/librcv"],
-        }
     }
 }

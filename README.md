@@ -30,7 +30,7 @@ With the video client SDK you can:
 
 ## Prerequisites
 
-- Npm, Node, and Yarn need to be installed.
+- npm, yarn or pnpm need to be installed.
 - RingCentral Video Account (free - https://app.ringcentral.com/signup)
 - Access to RingCentral Video Documentation (https://ringcentral-ringcentral-video-api-docs.readthedocs-hosted.com/en/latest/ using password "workasone")
 

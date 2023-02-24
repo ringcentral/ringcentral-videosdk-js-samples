@@ -5,7 +5,7 @@ import {
     ClosedCaptionDisabled as ClosedCaptionDisabledIcon,
 } from '@mui/icons-material';
 import { useGlobalContext } from '@src/store/global';
-import { ClosedCaptionsData, ClosedCaptionsEvent, ClosedCaptionsState } from '@sdk';
+import { ClosedCaptionsData, ClosedCaptionsEvent, ClosedCaptionsState } from '@ringcentral/video-sdk';
 import { useSnackbar } from 'notistack';
 import ClosedCaptionsContent from './closed-captions-content';
 

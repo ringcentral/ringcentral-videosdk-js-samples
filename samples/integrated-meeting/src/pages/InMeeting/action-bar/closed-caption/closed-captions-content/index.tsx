@@ -1,5 +1,5 @@
 import Avatar from '@src/pages/InMeeting/avatar';
-import type { ClosedCaptionsData } from '@sdk';
+import type { ClosedCaptionsData } from '@ringcentral/video-sdk';
 import React, { useEffect, useRef, useState } from 'react';
 import { Portal } from '@mui/material';
 

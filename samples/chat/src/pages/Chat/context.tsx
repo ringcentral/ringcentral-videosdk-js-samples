@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { IParticipant, Message, ChatController } from '@sdk';
+import { IParticipant, Message, ChatController } from '@ringcentral/video-sdk';
 
 interface IChatContext {
     chatController: ChatController | undefined;

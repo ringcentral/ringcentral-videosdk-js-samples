@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { IParticipant, StreamEvent, UserEvent } from '@sdk';
+import { IParticipant, StreamEvent, UserEvent } from '@ringcentral/video-sdk';
 import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material';
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '../../utils/dom'
 import { useGlobalContext } from '../../context';

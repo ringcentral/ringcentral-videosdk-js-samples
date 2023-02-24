@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { IParticipant } from '@sdk';
+import { IParticipant } from '@ringcentral/video-sdk';
 import Avatar from '@src/pages/InMeeting/avatar';
 
 import { useSnackbar } from 'notistack';

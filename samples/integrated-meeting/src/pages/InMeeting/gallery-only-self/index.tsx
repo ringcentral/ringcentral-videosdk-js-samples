@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { IParticipant } from '@sdk';
+import { IParticipant } from '@ringcentral/video-sdk';
 import Avatar from '../avatar';
 import './index.less';
 
