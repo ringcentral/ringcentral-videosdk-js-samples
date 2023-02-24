@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { IParticipant, IStream, NQIState } from '@sdk';
+import { IParticipant, IStream, NQIState } from '@ringcentral/video-sdk';
 import Avatar from '../avatar';
 import VideoInfo from './gallery-video-info';
 import './index.less';

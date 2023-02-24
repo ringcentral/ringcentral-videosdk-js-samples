@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ChatType } from '@sdk';
+import { ChatType } from '@ringcentral/video-sdk';
 import { Button, TextField } from '@mui/material';
 
 interface ISendMessageOptions {

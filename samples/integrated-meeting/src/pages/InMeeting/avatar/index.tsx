@@ -1,4 +1,4 @@
-import type { IParticipant } from '@sdk';
+import type { IParticipant } from '@ringcentral/video-sdk';
 import type { FC } from 'react';
 import React, { useEffect, useState } from 'react';
 import { useAvatarContext } from '@src/store/avatar';

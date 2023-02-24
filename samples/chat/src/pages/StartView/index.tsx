@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useState, useRef } from 'react'
 import { Button, TextField } from '@mui/material';
 import { VideoCameraFrontRounded, QueuePlayNextRounded } from '@mui/icons-material';
-import { RcvEngine } from '@sdk';
+import { RcvEngine } from '@ringcentral/video-sdk';
 interface IProps {
     rcvEngine: RcvEngine
 }

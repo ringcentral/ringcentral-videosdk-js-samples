@@ -1,5 +1,5 @@
 import React from 'react';
-import { RcvEngine } from '@sdk';
+import { RcvEngine } from '@ringcentral/video-sdk';
 import { Button } from '@mui/material';
 
 const BtnAccessToken = ({ setRcvEngine, config }) => {

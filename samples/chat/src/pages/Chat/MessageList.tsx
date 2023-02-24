@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message, IParticipant } from '@sdk';
+import { Message, IParticipant } from '@ringcentral/video-sdk';
 import './index.less';
 
 export function MessageComp({ data, participant }: { data: Message; participant: IParticipant }) {

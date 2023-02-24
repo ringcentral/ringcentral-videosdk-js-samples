@@ -88,9 +88,6 @@ export default {
     target: 'web',
     devtool: 'source-map',
     resolve: {
-        alias: {
-            '@sdk': path.join(__dirname, '../../sdk/librcv'),
-        },
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.css'],
         modules: [path.join(__dirname, '.src'), 'node_modules'],
     },

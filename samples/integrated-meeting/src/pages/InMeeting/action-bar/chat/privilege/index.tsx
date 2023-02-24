@@ -1,5 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import { ChatPrivilege } from '@sdk';
+import { ChatPrivilege } from '@ringcentral/video-sdk';
 import { useGlobalContext } from '@src/store/global';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
