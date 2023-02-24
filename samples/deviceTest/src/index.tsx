@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppBar, Tab, Tabs, Box } from '@mui/material';
-import { RcvEngine } from '@sdk'
+import { RcvEngine } from '@ringcentral/video-sdk'
 import TabAudioTest from './TabAudioTest'
 import TabVideoTest from './TabVideoTest'
 import './index.less'

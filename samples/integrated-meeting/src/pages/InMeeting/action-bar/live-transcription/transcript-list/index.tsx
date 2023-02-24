@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useGlobalContext } from '@src/store/global';
-import { ILiveTranscription, LiveTranscriptionEvent } from '@sdk';
+import { ILiveTranscription, LiveTranscriptionEvent } from '@ringcentral/video-sdk';
 import { GroupedTranscript } from './grouped-transcript';
 import { BackgroundGrouping } from './data/background-grouping';
 

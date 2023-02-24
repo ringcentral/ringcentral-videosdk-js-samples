@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import { RcvEngine, UserEvent, IParticipant } from '@sdk';
+import { RcvEngine, UserEvent, IParticipant } from '@ringcentral/video-sdk';
 import { useParams } from 'react-router-dom';
 import { ButtonGroup, Button, Dialog, DialogTitle, Alert, DialogContent } from '@mui/material';
 import { useGlobalContext } from '../../context';

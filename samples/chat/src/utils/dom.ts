@@ -1,4 +1,4 @@
-import { IStream } from '@sdk';
+import { IStream } from '@ringcentral/video-sdk';
 
 export enum TrackType {
     VIDEO = 'video',

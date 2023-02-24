@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { SnackbarProvider } from 'notistack';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@sdk';
+import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@ringcentral/video-sdk';
 import StartView from './pages/StartView';
 import InMeeting from './pages/InMeeting';
 import GlobalContext from './store/global/context';

@@ -1,5 +1,5 @@
 import React, { FC, useMemo, useState, useEffect } from 'react'
-import { ChatController, IParticipant, Message, ChatPrivilege, ChatType, ChatEvent } from '@sdk';
+import { ChatController, IParticipant, Message, ChatPrivilege, ChatType, ChatEvent } from '@ringcentral/video-sdk';
 import { Tabs, Tab, Box } from '@mui/material';
 import ChatContext from './context';
 import SetPrivilege from './Privilege';

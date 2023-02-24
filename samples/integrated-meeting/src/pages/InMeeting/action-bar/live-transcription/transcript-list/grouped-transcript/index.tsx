@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ILiveTranscription } from '@sdk';
+import type { ILiveTranscription } from '@ringcentral/video-sdk';
 import Avatar from '@src/pages/InMeeting/avatar';
 import './index.less';
 

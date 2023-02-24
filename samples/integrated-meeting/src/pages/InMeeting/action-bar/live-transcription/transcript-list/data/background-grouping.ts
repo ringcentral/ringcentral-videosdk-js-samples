@@ -1,4 +1,4 @@
-import type { ILiveTranscription } from '@sdk';
+import type { ILiveTranscription } from '@ringcentral/video-sdk';
 
 import { Grouping } from './grouping';
 import {

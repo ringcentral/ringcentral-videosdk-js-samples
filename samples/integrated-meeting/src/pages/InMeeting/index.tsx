@@ -9,7 +9,7 @@ import {
     ChatEvent,
     IStream,
     NQIState,
-} from '@sdk';
+} from '@ringcentral/video-sdk';
 import { useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 

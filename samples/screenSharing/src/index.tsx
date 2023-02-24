@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RcvEngine, GrantType } from '@sdk';
+import { RcvEngine, GrantType } from '@ringcentral/video-sdk';
 import Sharing from './Sharing';
 import GlobalContext from './context';
 import { AppBar } from '@mui/material';

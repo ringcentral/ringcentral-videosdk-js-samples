@@ -3,7 +3,7 @@ import { Button, Popover } from '@mui/material';
 import { MicOff, Mic, KeyboardArrowUp, Check } from '@mui/icons-material';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
-import { AudioEvent } from '@sdk';
+import { AudioEvent } from '@ringcentral/video-sdk';
 import { useSnackbar } from 'notistack';
 
 const AudioAction: FC = () => {
@@ -62,6 +62,7 @@ const AudioAction: FC = () => {
             return;
         }
         try {
+            await rcvEngine.getAudioDeviceManager().setRecordingDevice(deviceId);
             await meetingController.getAudioController().enableAudio({ deviceId });
             setAudioActiveDevice(deviceId);
         } catch (e) {

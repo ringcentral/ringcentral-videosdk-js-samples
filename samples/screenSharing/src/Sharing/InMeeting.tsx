@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { ButtonGroup, Button } from '@mui/material';
-import { SharingEvent, SharingState, StreamEvent, StreamType } from '@sdk';
+import { SharingEvent, SharingState, StreamEvent, StreamType } from '@ringcentral/video-sdk';
 import { useGlobalContext } from '../context';
 
 const InMeeting = ({ meetingController }) => {

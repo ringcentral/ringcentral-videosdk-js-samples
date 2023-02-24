@@ -4,7 +4,7 @@ import { Button, Popover } from '@mui/material';
 import { Videocam, VideocamOff, KeyboardArrowUp, Check } from '@mui/icons-material';
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';
-import { VideoEvent } from '@sdk';
+import { VideoEvent } from '@ringcentral/video-sdk';
 import { useSnackbar } from 'notistack';
 
 const VideoAction: FC = () => {
@@ -58,9 +58,12 @@ const VideoAction: FC = () => {
             return;
         }
         try {
-            await meetingController
-                .getVideoController()
-                .unmuteLocalVideoStream({ advanced: [{ deviceId }] });
+            await rcvEngine?.getVideoDeviceManager().setVideoDevice(deviceId);
+            if (!meetingState.isVideoMuted) {
+                await meetingController
+                    .getVideoController()
+                    .unmuteLocalVideoStream({ advanced: [{ deviceId }] });
+            }
             setVideoActiveDevice(deviceId);
         } catch (e) {
             enqueueSnackbar('Change video device failed', {
@@ -72,7 +75,10 @@ const VideoAction: FC = () => {
     const toggleMuteVideo = async () => {
         try {
             if (meetingState.isVideoMuted) {
-                await meetingController?.getVideoController()?.unmuteLocalVideoStream();
+                const constraints = videoActiveDevice ? {
+                    deviceId: videoActiveDevice
+                } : undefined;
+                await meetingController?.getVideoController()?.unmuteLocalVideoStream(constraints);
             } else {
                 await meetingController?.getVideoController()?.muteLocalVideoStream();
             }

@@ -8,7 +8,7 @@ import {
     TextField,
 } from '@mui/material';
 import { VideoCameraFrontRounded, QueuePlayNextRounded } from '@mui/icons-material';
-import { RcvEngine } from '@sdk';
+import { RcvEngine } from '@ringcentral/video-sdk';
 import { useSnackbar } from 'notistack';
 import './index.less';
 interface IProps {

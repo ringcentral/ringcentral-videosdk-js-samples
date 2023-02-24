@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import {IMeetingInfo, IParticipant, IStream, Message, NQIState} from '@sdk';
+import { IMeetingInfo, IParticipant, IStream, Message, NQIState } from '@ringcentral/video-sdk';
 
 export enum ActiveFeatureModal {
     Participant,
