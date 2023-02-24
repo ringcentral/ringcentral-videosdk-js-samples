@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
-import { AttendeeStatus } from '@sdk';
+import { AttendeeStatus } from '@ringcentral/video-sdk';
 
 const ATTENDEE_STATUS_DESC = {
     [AttendeeStatus.IDLE]: 'Not started',

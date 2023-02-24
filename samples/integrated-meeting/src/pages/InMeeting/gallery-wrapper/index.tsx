@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef, useMemo } from 'react';
-import { StreamEvent } from '@sdk';
+import { StreamEvent } from '@ringcentral/video-sdk';
 
 import { sinkStreamElement, unSinkStreamElement, TrackType } from '@src/utils/dom';
 import { useMeetingContext } from '@src/store/meeting';

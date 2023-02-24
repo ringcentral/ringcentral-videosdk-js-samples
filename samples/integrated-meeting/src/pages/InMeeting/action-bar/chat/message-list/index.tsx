@@ -1,4 +1,4 @@
-import type { IParticipant, Message } from '@sdk';
+import type { IParticipant, Message } from '@ringcentral/video-sdk';
 import React, { FC } from 'react';
 import { useMeetingContext } from '@src/store/meeting';
 import Avatar from '@src/pages/InMeeting/avatar';

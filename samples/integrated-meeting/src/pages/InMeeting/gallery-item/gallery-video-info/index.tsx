@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import {IParticipant, IStream, NQIState} from '@sdk';
+import {IParticipant, IStream, NQIState} from '@ringcentral/video-sdk';
 
 import { MicOff, Mic, SpeakerNotesOff } from '@mui/icons-material';
 import GoodConnection from '@src/components/icon/good-connection';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { IParticipant } from '@sdk';
+import { IParticipant } from '@ringcentral/video-sdk';
 import { Select, MenuItem } from '@mui/material';
 
 interface IParticipantsProps {

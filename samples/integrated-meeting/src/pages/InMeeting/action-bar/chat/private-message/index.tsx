@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackbar } from 'notistack';
-import { ChatPrivilege, ChatType } from '@sdk';
+import { ChatPrivilege, ChatType } from '@ringcentral/video-sdk';
 
 import { KeyboardArrowLeft } from '@mui/icons-material';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';

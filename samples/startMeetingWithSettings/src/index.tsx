@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@sdk';
+import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@ringcentral/video-sdk';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { AppBar } from '@mui/material';
 import StartView from './pages/StartView'

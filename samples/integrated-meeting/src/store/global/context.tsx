@@ -1,4 +1,4 @@
-import { RcvEngine } from '@sdk';
+import { RcvEngine } from '@ringcentral/video-sdk';
 import React, { useContext } from 'react';
 interface IGlobalContext {
     rcvEngine: RcvEngine | null;

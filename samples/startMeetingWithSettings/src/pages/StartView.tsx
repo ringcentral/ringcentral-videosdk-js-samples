@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Button, FormGroup, TextField, Checkbox, Select, MenuItem, FormControlLabel, FormControl, FormLabel } from '@mui/material';
-import { RcvEngine, WaitingRoomMode, OnlyAuthUserJoinMode } from '@sdk';
+import { RcvEngine, WaitingRoomMode, OnlyAuthUserJoinMode } from '@ringcentral/video-sdk';
 
 const WaitingRoomOptions = [
     {

@@ -1,4 +1,4 @@
-import type { ILiveTranscription } from '@sdk';
+import type { ILiveTranscription } from '@ringcentral/video-sdk';
 
 export const FINALIZE_PHRASES_TIMEOUT = 5000;
 export const SAME_PARTICIPANT_NEW_GROUP_INTERVAL = 5000;

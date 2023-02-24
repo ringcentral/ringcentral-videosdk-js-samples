@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef } from 'react'
-import { RcvEngine, AudioEvent, VideoEvent, IParticipant, UserEvent, StreamEvent } from '@sdk';
+import { RcvEngine, AudioEvent, VideoEvent, IParticipant, UserEvent, StreamEvent } from '@ringcentral/video-sdk';
 import { useParams } from 'react-router-dom';
 import { ButtonGroup, Button, Alert, Select, MenuItem, Grid } from '@mui/material';
 import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material';
@@ -160,7 +160,10 @@ const InMeeting: FC<IProps> = (props) => {
 
     const toggleMuteVideo = () => {
         if (videoMute) {
-            meetingController?.getVideoController()?.unmuteLocalVideoStream()
+            const constraints = videoActiveDevice ? {
+                deviceId: videoActiveDevice
+            } : undefined;
+            meetingController?.getVideoController()?.unmuteLocalVideoStream(constraints)
                 .catch((e) => {
                     alert(`Error occurs due to :${e.message}`)
                 });
@@ -185,16 +188,18 @@ const InMeeting: FC<IProps> = (props) => {
         });
     }
 
-    const handleChangeAudioRecordingDevice = e => {
+    const handleChangeAudioRecordingDevice = async (e) => {
         const deviceId = e.target.value;
         setVideoActiveDevice(deviceId);
         console.log('change audio device:', deviceId)
-        meetingController.getAudioController().enableAudio({ deviceId });
+        await rcvEngine.getAudioDeviceManager().setRecordingDevice(deviceId);
+        await meetingController.getAudioController().enableAudio({ deviceId });
     };
 
-    const handleChangVideoMedia = e => {
+    const handleChangVideoMedia = async (e) => {
         const deviceId = e.target.value;
         setVideoActiveDevice(deviceId);
+        await rcvEngine?.getVideoDeviceManager().setVideoDevice(deviceId);
         !videoMute && meetingController
             .getVideoController()
             .unmuteLocalVideoStream({ advanced: [{ deviceId }] });

@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
-import { ChatPrivilege, ChatType } from '@sdk';
+import { ChatPrivilege, ChatType } from '@ringcentral/video-sdk';
 
 import { useMeetingContext } from '@src/store/meeting';
 import { useGlobalContext } from '@src/store/global';

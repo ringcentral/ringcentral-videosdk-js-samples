@@ -5,10 +5,11 @@
     "dev": "webpack serve --config ./webpack.config.babel.js"
   },
   "dependencies": {
-    "@mui/icons-material": "^5.11.0",
-    "@mui/material": "^5.11.3",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.11.0",
+    "@mui/material": "^5.11.3",
+    "@ringcentral/video-sdk": "0.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

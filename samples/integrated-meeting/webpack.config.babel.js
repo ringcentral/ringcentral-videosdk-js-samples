@@ -78,7 +78,6 @@ export default {
     devtool: 'source-map',
     resolve: {
         alias: {
-            '@sdk': path.join(__dirname, '../../sdk/librcv'),
             '@src': path.join(__dirname, './src'),
         },
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.css'],
