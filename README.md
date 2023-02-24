@@ -27,12 +27,15 @@ With the video client SDK you can:
     - Stops remote users' sharing.
     - Locks and unlocks the meeting sharing function.
     - Removes the meeting user from the active meeting.
+- Starts and pauses recording.
+- Starts and pauses close captions.
+- Starts and pauses live transcription.
 
 ## Prerequisites
 
 - npm, yarn or pnpm need to be installed.
 - RingCentral Video Account (free - https://app.ringcentral.com/signup)
-- Access to RingCentral Video Documentation (https://ringcentral-ringcentral-video-api-docs.readthedocs-hosted.com/en/latest/ using password "workasone")
+- Access to [RingCentral Video Documentation](https://ringcentral.github.io/ringcentral-videosdk-js/)
 
 ## How to run the sample project
 
@@ -46,11 +49,6 @@ With the video client SDK you can:
 
 4. A new browser window or tab with the link **https://localhost:9000/** will be opened successfully. On the page, click the **Advanced** button and then click the **Proceed to localhost (unsafe)** link to load the sample application.
 
-## Known Issues
-
-- You may encounter some problems while running the sample app, such as UI abnormal display or crash, etc
-
 ## Contact Us
 
-- Sign Up: Currently we have very early versions of our Android, iOS, and web SDK available for limited partners. If you would like to request access to the same, please email rcv-partners@ringcentral.com
-- Dev Support & Feedback: For feedback, questions, or suggestions around SDK please email videosdkfeedback@ringcentral.com
+- Dev Support & Feedback: For feedback, questions, or suggestions around SDK please email videosdkfeedback@ringcentral.com or rcv-partners@ringcentral.com.
