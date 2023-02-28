@@ -72,7 +72,7 @@ const StartView: FC<IProps> = (props) => {
                     variant="contained"
                     startIcon={<QueuePlayNextRounded />}
                     disabled={isJoinLoading || isStartLoading}
-                    onClick={!isStartLoading ? startMeetingHandler : null}>
+                    onClick={startMeetingHandler}>
                     Start meeting
                 </Button>
                 <Button
@@ -81,7 +81,7 @@ const StartView: FC<IProps> = (props) => {
                     color="success"
                     startIcon={<VideoCameraFrontRounded />}
                     disabled={isJoinLoading || isStartLoading}
-                    onClick={!isJoinLoading ? joinMeetingHandler : null}>
+                    onClick={joinMeetingHandler}>
                     Join meeting
                 </Button>
             </div>
