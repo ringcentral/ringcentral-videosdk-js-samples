@@ -37,13 +37,25 @@ With the video client SDK you can:
 - RingCentral Video Account (free - https://app.ringcentral.com/signup)
 - Access to [RingCentral Video Documentation](https://ringcentral.github.io/ringcentral-videosdk-js/)
 
+
+## Samples Structure
+
+- `/basicMeeting`: Demonstrates primary meeting features including mute/unmute audio/video
+- `/screenSharing`: Demonstrates the screen-sharing feature
+- `/initSdk`: Demonstrates two ways of SDK initialization
+- `/deviceTest`: Demonstrates the audio/video device test
+- `/startMeetingWithSettings`: Demonstrates starting a meeting with customized settings
+- `/chat`: Demonstrates the meeting chat feature
+- `/integrated-meeting`: Demonstrates primary meeting features with UI components.
+- `/guestJoinMeeting`: Demonstrates a guest joins a meeting.
+  
 ## How to run the sample project
 
-1. Open the unzipped folder, open a sample project under **samples** folder in an IDE (e.g. Visual Studio Code), or open a **terminal** and enter into the path of the sample project.
+1. Open the unzipped folder, open a sample project under the **samples** folder in an IDE (e.g. Visual Studio Code), or open a **terminal** and enter the path of the sample project.
 
 2. Open and modify the **app.config.js** file and place your client id, client secret, RingCentral extension user name, and password.
 
-3. Run following scripts in the command line:
+3. Run the following scripts in the command line:
     - yarn install or npm install
     - yarn run dev or npm run dev
 
