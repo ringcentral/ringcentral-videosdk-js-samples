@@ -1261,10 +1261,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
   integrity sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==
 
-"@ringcentral/video-sdk-react@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@ringcentral/video-sdk-react/-/video-sdk-react-0.0.4.tgz#e11f58a59ab38f9ade61fc783172c59eaeeecfd5"
-  integrity sha512-cmjJbDOyn61bhJY8OsTvRRdyVzJjg8A9Cd1sCqq361Eb6yykdpiwdcnLh0p1ZCzLZ4jsIHm/w3Opqa1sHjIDAQ==
+"@ringcentral/video-sdk-react@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@ringcentral/video-sdk-react/-/video-sdk-react-0.0.5.tgz#dbea88c86c103d72f339a7526b1202bd434cd37f"
+  integrity sha512-8vtAW+FYf0X3DdyZbkrnIGOMCZu5oU5shFgcxeSKoM42xwF3aAH7wB2M5b4eKOxXAVrUJO0TFhuIeaCPp7sFcg==
   dependencies:
     "@emotion/react" "^11.10.5"
     "@emotion/styled" "^11.10.5"
