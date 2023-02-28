@@ -17,7 +17,7 @@ import {
     GalleryLayoutType
 } from '@ringcentral/video-sdk-react';
 
-import '@ringcentral/video-sdk-react/dist/lib/index.css';
+import '@ringcentral/video-sdk-react/dist/index.css';
 
 import './index.less'
 declare global {
