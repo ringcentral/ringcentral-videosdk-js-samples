@@ -72,9 +72,8 @@ export default function App({ config }) {
     return (
         <>
             <AppBar className='header' position='static'>Demo: integrated-meeting-uikit</AppBar>
-            <br />
             {!isMeetingJoined &&
-                <div>
+                <div className={'start-container'}>
                     <Button
                         variant="contained"
                         className='start-btn'
@@ -83,27 +82,30 @@ export default function App({ config }) {
                         Start meeting{isStartLoading ? '...' : ''}
                     </Button>
                 </div>}
-            <RcvEngineProvider rcvEngine={rcvEngine}>
-                <GalleryLayout
-                    layout={GalleryLayoutType.gallery}
-                    style={{
-                        flex: 1,
-                    }}
-                />
-                <ActionBar
-                    leftActions={[<MeetingInfoAction key={'meeting-info-action'} />]}
-                    centerActions={[
-                        <AudioAction key={'audio-action'} />,
-                        <VideoAction key={'video-action'} />,
-                        <ParticipantAction key={'participant-action'} />,
-                        <ChatAction key={'chat-action'} />,
-                        <RecordAction key={'record-action'} />,
-                        <LeaveAction key={'leave-action'} />,
-                    ]}
-                    rightActions={[<LogoIcon key={'logo-icon'} />]}
-                />
+            <div className={'meeting-container'}>
+                <RcvEngineProvider rcvEngine={rcvEngine}>
+                    <GalleryLayout
+                      layout={GalleryLayoutType.gallery}
+                      style={{
+                          flex: 1,
+                      }}
+                    />
+                    <ActionBar
+                      leftActions={[<MeetingInfoAction key={'meeting-info-action'} />]}
+                      centerActions={[
+                          <AudioAction key={'audio-action'} />,
+                          <VideoAction key={'video-action'} />,
+                          <ParticipantAction key={'participant-action'} />,
+                          <ChatAction key={'chat-action'} />,
+                          <RecordAction key={'record-action'} />,
+                          <LeaveAction key={'leave-action'} />,
+                      ]}
+                      rightActions={[<LogoIcon key={'logo-icon'} />]}
+                    />
 
-            </RcvEngineProvider>
+                </RcvEngineProvider>
+            </div>
+
         </>
 
     )

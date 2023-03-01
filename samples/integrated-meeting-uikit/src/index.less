@@ -1,26 +1,22 @@
-.header {
+#root {
+  .header {
+    height: 56px;
     line-height: 56px;
     padding: 0 20px;
-}
+  }
 
-.start-view {
-    width:  880px;
-    height: 40px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    text-align: center;
+  .start-container {
+    padding: 16px;
+  }
 
-    button {
-        margin-right: 20px;
+  .meeting-container {
+    position: relative;
+    height: ~'calc(100% - 56px)';
+
+    .RCV-ui-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
-}
-
-.meeting-wrapper {
-    padding: 40px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  }
 }
