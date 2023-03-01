@@ -1,10 +1,41 @@
-# RingCentral Video Client SDK Samples for Web Browser
+# RingCentral Video Client SDK sample Javascript applications
 
 ## Overview
 
-This repository contains sample projects using the RingCentral video SDK for web browser. This tutorial guides you to get started in your development efforts to create a web application with real-time audio/video communications.
+This repository contains sample Javascript projects using the RingCentral Video Client SDK. The collection of samples here can help you get started building a custom client by giving you a good jumping off point for implementing similar features on your own. 
 
-With the video client SDK you can:
+In this project you will find the following sample applications:
+
+- `initSdk`: Demonstrates two ways of SDK initialization
+- `basicMeeting`: Demonstrates primary meeting features including mute/unmute audio/video
+- `screenSharing`: Demonstrates the screen-sharing feature
+- `chat`: Demonstrates the meeting chat feature
+- `deviceTest`: Demonstrates the audio/video device test
+- `startMeetingWithSettings`: Demonstrates starting a meeting with customized settings
+- `guestJoinMeeting`: Demonstrates a guest joins a meeting.
+- `integrated-meeting`: Demonstrates primary meeting features with UI components.
+
+## Prerequisites
+
+- npm, yarn or pnpm need to be installed.
+- RingCentral Video Account (free - https://app.ringcentral.com/signup)
+- Access to [RingCentral Video Documentation](https://ringcentral.github.io/ringcentral-videosdk-js/)
+
+## How to run the sample project
+
+1. Open the unzipped folder, open a sample project under the **samples** folder in an IDE (e.g. Visual Studio Code), or open a **terminal** and enter the path of the sample project.
+
+2. Open and modify the **app.config.js** file and place your client id, client secret, RingCentral extension user name, and password.
+
+3. Run the following scripts in the command line:
+    - yarn install or npm install
+    - yarn run dev or npm run dev
+
+4. A new browser window or tab with the link **https://localhost:9000/** will be opened successfully. On the page, click the **Advanced** button and then click the **Proceed to localhost (unsafe)** link to load the sample application.
+
+## About the RingCentral Video Client SDK
+
+The Video Client SDK is designed to help developers build their own custom, fully-embedded, video experiences or applications. It is designed to aid in the creation of user interfaces. It is not an SDK for interfacing primarily with the Video REST API. With the Video Client SDK, one can:
 
 - Joins or starts a meeting with a valid access token.
 - Joins the meeting as a guest. (The app needs to get the authorization of the guest type first)
@@ -31,35 +62,6 @@ With the video client SDK you can:
 - Starts and pauses close captions.
 - Starts and pauses live transcription.
 
-## Prerequisites
-
-- npm, yarn or pnpm need to be installed.
-- RingCentral Video Account (free - https://app.ringcentral.com/signup)
-- Access to [RingCentral Video Documentation](https://ringcentral.github.io/ringcentral-videosdk-js/)
-
-
-## Samples Structure
-
-- `/basicMeeting`: Demonstrates primary meeting features including mute/unmute audio/video
-- `/screenSharing`: Demonstrates the screen-sharing feature
-- `/initSdk`: Demonstrates two ways of SDK initialization
-- `/deviceTest`: Demonstrates the audio/video device test
-- `/startMeetingWithSettings`: Demonstrates starting a meeting with customized settings
-- `/chat`: Demonstrates the meeting chat feature
-- `/integrated-meeting`: Demonstrates primary meeting features with UI components.
-- `/guestJoinMeeting`: Demonstrates a guest joins a meeting.
-  
-## How to run the sample project
-
-1. Open the unzipped folder, open a sample project under the **samples** folder in an IDE (e.g. Visual Studio Code), or open a **terminal** and enter the path of the sample project.
-
-2. Open and modify the **app.config.js** file and place your client id, client secret, RingCentral extension user name, and password.
-
-3. Run the following scripts in the command line:
-    - yarn install or npm install
-    - yarn run dev or npm run dev
-
-4. A new browser window or tab with the link **https://localhost:9000/** will be opened successfully. On the page, click the **Advanced** button and then click the **Proceed to localhost (unsafe)** link to load the sample application.
 
 ## Contact Us
 
