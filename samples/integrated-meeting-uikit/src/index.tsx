@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AppBar, Button } from '@mui/material';
+import { SnackbarProvider } from 'notistack';
+import { AppBar } from '@mui/material';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@ringcentral/video-sdk';
 import {
     RcvEngineProvider,
@@ -16,10 +18,11 @@ import {
     GalleryLayout,
     GalleryLayoutType
 } from '@ringcentral/video-sdk-react';
+import StartView from "./pages/StartView";
 
 import '@ringcentral/video-sdk-react/dist/index.css';
-
 import './index.less'
+
 declare global {
     interface Window {
         initConfig: Record<string, string>
@@ -28,8 +31,7 @@ declare global {
 
 export default function App({ config }) {
     const [rcvEngine, setRcvEngine] = useState(null)
-    const [isMeetingJoined, setMeetingJoined] = useState(false)
-    const [isStartLoading, setStartLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -47,72 +49,65 @@ export default function App({ config }) {
             });
             engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
                 if (errorCode === ErrorCodeType.ERR_OK) {
-                    setMeetingJoined(true);
+                    if (!window.location.pathname.includes('/meeting/')) {
+                        navigate(`/meeting/${meetingId}`);
+                    }
                 }
             });
             engine.on(EngineEvent.MEETING_LEFT, () => {
-                setMeetingJoined(false);
+                navigate('/', { replace: true });
             });
             setRcvEngine(engine)
         }
 
-        initSDK()
-    }, [])
-
-    const startMeetingHandler = async () => {
-        setStartLoading(true)
-        rcvEngine
-            .startInstantMeeting()
-            .catch(e => {
-                alert(`Error occurs due to :${e.message}`)
-            })
-            .finally(() => setStartLoading(false));
-    }
+        initSDK().then();
+    }, []);
 
     return (
-        <>
+        <SnackbarProvider>
             <AppBar className='header' position='static'>Demo: integrated-meeting-uikit</AppBar>
-            {!isMeetingJoined &&
-                <div className={'start-container'}>
-                    <Button
-                        variant="contained"
-                        className='start-btn'
-                        disabled={isStartLoading}
-                        onClick={startMeetingHandler}>
-                        Start meeting{isStartLoading ? '...' : ''}
-                    </Button>
-                </div>}
-            <div className={'meeting-container'}>
-                <RcvEngineProvider rcvEngine={rcvEngine}>
-                    <GalleryLayout
-                      layout={GalleryLayoutType.gallery}
-                      style={{
-                          flex: 1,
-                      }}
-                    />
-                    <ActionBar
-                      leftActions={[<MeetingInfoAction key={'meeting-info-action'} />]}
-                      centerActions={[
-                          <AudioAction key={'audio-action'} />,
-                          <VideoAction key={'video-action'} />,
-                          <ParticipantAction key={'participant-action'} />,
-                          <ChatAction key={'chat-action'} />,
-                          <RecordAction key={'record-action'} />,
-                          <LeaveAction key={'leave-action'} />,
-                      ]}
-                      rightActions={[<LogoIcon key={'logo-icon'} />]}
-                    />
+            <Routes>
+                <Route path='meeting'>
+                    <Route
+                      path=':meetingId'
+                      element={
+                          <div className={'meeting-container'}>
+                              <RcvEngineProvider rcvEngine={rcvEngine}>
+                                  <GalleryLayout
+                                    layout={GalleryLayoutType.gallery}
+                                    style={{
+                                        flex: 1,
+                                    }}
+                                  />
+                                  <ActionBar
+                                    leftActions={[<MeetingInfoAction key={'meeting-info-action'} />]}
+                                    centerActions={[
+                                        <AudioAction key={'audio-action'} />,
+                                        <VideoAction key={'video-action'} />,
+                                        <ParticipantAction key={'participant-action'} />,
+                                        <ChatAction key={'chat-action'} />,
+                                        <RecordAction key={'record-action'} />,
+                                        <LeaveAction key={'leave-action'} />,
+                                    ]}
+                                    rightActions={[<LogoIcon key={'logo-icon'} />]}
+                                  />
 
-                </RcvEngineProvider>
-            </div>
-
-        </>
+                              </RcvEngineProvider>
+                          </div>
+                      }
+                    />
+                </Route>
+                <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
+            </Routes>
+        </SnackbarProvider>
 
     )
 }
 
 createRoot(document.getElementById("root")).render(
+  <BrowserRouter>
     <App config={{
         ...window.initConfig,
     }} />
+  </BrowserRouter>
 );
