@@ -10,6 +10,7 @@
         "@mui/icons-material": "^5.4.1",
         "@mui/material": "^5.4.1",
         "@ringcentral/video-sdk": "^0.8.2",
+        "@ringcentral/video-sdk-react": "^0.0.11",
         "notistack": "^2.0.8",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
