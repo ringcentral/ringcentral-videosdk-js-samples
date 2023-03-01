@@ -34,6 +34,8 @@ const BtnHttpClient = ({ setRcvEngine, config }) => {
                         httpClient: {
                             send: options => rcsdk.platform().send(options),
                         },
+                        clientId,
+                        clientSecret
                     }
                 );
                 setRcvEngine(engine)
