@@ -1,0 +1,71 @@
+#root {
+  .header {
+    height: 56px;
+    line-height: 56px;
+    padding: 0 20px;
+  }
+
+  .start-container {
+    padding: 16px;
+  }
+
+  .meeting-container {
+    position: relative;
+    height: ~'calc(100% - 56px)';
+
+    .RCV-ui-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .dotting {
+    display: inline-block;
+    width: 10px;
+    min-height: 2px;
+    padding-right: 2px;
+    border-left: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    background-color: currentColor;
+    background-clip: content-box;
+    box-sizing: border-box;
+    animation: dot 1s infinite step-start both;
+  }
+
+  .dotting:before {
+    content: '...';
+  }
+
+  /* IE8 */
+  .dotting::before {
+    content: '';
+  }
+
+  :root .dotting {
+    margin-left: 2px;
+    padding-left: 2px;
+  }
+
+  /* IE9+ */
+
+  @keyframes dot {
+    25% {
+      border-color: transparent;
+      background-color: transparent;
+    }
+
+    /* 0个点 */
+    50% {
+      border-right-color: transparent;
+      background-color: transparent;
+    }
+
+    /* 1个点 */
+    75% {
+      border-right-color: transparent;
+    }
+
+    /* 2个点 */
+  }
+}

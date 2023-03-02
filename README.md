@@ -23,7 +23,7 @@ In this project you will find the following sample applications:
 
 ## How to run the sample project
 
-1. Open the unzipped folder, open a sample project under the **samples** folder in an IDE (e.g. Visual Studio Code), or open a **terminal** and enter the path of the sample project.
+1. Open the unzipped folder, open a sample project in an IDE (e.g. Visual Studio Code), or open a **terminal** and enter the path of the sample project.
 
 2. Open and modify the **app.config.js** file and place your client id, client secret, RingCentral extension user name, and password.
 

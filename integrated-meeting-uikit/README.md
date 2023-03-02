@@ -1,4 +1,8 @@
-## Basic Meeting Sample app with UI components
+## Basic Meeting Sample app with uikit sdk
+
+The demo is based on `@ringcentral/video-sdk-react`.
+
+`@ringcentral/video-sdk-react` sdk makes it easy to do the collaborative audio calling, video calling, and screen sharing based on the RingCentral platform service.
 
 ### Feature List
 
