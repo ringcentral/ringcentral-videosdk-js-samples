@@ -13,7 +13,7 @@ In this project you will find the following sample applications:
 - `deviceTest`: Demonstrates the audio/video device test
 - `startMeetingWithSettings`: Demonstrates starting a meeting with customized settings
 - `guestJoinMeeting`: Demonstrates a guest joins a meeting.
-- `integrated-meeting`: Demonstrates primary meeting features with UI components.
+- `integrated-meeting`: Demonstrates primary meeting features with UI components `@ringcentral/video-sdk-react`.
 
 ## Prerequisites
 
@@ -25,7 +25,17 @@ In this project you will find the following sample applications:
 
 1. Open the unzipped folder, open a sample project in an IDE (e.g. Visual Studio Code), or open a **terminal** and enter the path of the sample project.
 
-2. Open and modify the **app.config.js** file and place your client id, client secret, RingCentral extension user name, and password.
+2. Create an **app.config.js** file and place your client id, client secret, RingCentral extension user name, and password.
+
+```
+window.initConfig = {
+    clientId: '', 
+    clientSecret: '', 
+    userName: '', // authorize by password & userName 
+    password: '',
+    jwt: '' // or authorize by jwt
+}
+```
 
 3. Run the following scripts in the command line:
     - yarn install or npm install
