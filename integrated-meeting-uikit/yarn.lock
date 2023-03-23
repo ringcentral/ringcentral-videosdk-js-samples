@@ -1266,10 +1266,10 @@
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.3.3.tgz#d6d531d69c0fa3a44fda7dc00b20d49b44549164"
   integrity sha512-YRHie1yQEj0kqqCTCJEfHqYSSNlZQ696QJG+MMiW4mxSl9I0ojz/eRhJS4fs88Z5i6D1SmoF9d3K99/QOhI8/w==
 
-"@ringcentral/video-sdk-react@^0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@ringcentral/video-sdk-react/-/video-sdk-react-0.0.11.tgz#759d62105a4f1d6780ef6b598eac8b51b57eaed8"
-  integrity sha512-kklPbwXsz0GOztbk2vqdpvwabtBINfMLvcdamLgcLw13JlPxqSFrt3mkX3iQQ/Lbu7Wlf12ido5aZFMLJ05CLA==
+"@ringcentral/video-sdk-react@^0.0.17":
+  version "0.0.17"
+  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@ringcentral/video-sdk-react/-/video-sdk-react-0.0.17.tgz#5c8288b67820c54e1c4d3dd720aab7cc930b7fea"
+  integrity sha512-C1fkQx1WvNk+mMTAWQ+pUZdQ1jDf1Lmr0+eN5n+wchSkMmK6EO+8/M4tMEuXNsvA74KP26AGnqIffJDN7upR9g==
   dependencies:
     "@emotion/react" "^11.10.5"
     "@emotion/styled" "^11.10.5"
@@ -1279,10 +1279,10 @@
     re-resizable "6.9.9"
     react-draggable "4.4.5"
 
-"@ringcentral/video-sdk@^0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@ringcentral/video-sdk/-/video-sdk-0.8.2.tgz#ee4a0b4f667364c863b510f6a67d429e81678661"
-  integrity sha512-usy6RmqvRt5nuZ5juE8auhPYXT4PSaSr2+YfnSKTMmEgS0OdKqdSI243R6nxfq9sWrOzpHxEs6mCMJmf5ihjxQ==
+"@ringcentral/video-sdk@^0.8.4":
+  version "0.8.4"
+  resolved "https://registry.yarnpkg.com/@ringcentral/video-sdk/-/video-sdk-0.8.4.tgz#08b87b38701ac105b4d1b5374536d415cf96c665"
+  integrity sha512-WJwmkpr6pdZRJ7LC4VshtB16J7ESeqqE1WbWq+F37NwbQydeJW+Fa7Oa7WiFtyQ6Ux/pqPYkswsfXuW2LOs8zA==
 
 "@types/body-parser@*":
   version "1.19.2"
