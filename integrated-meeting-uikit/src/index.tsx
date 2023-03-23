@@ -4,21 +4,8 @@ import { SnackbarProvider } from 'notistack';
 import { AppBar } from '@mui/material';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { RcvEngine, EngineEvent, ErrorCodeType, GrantType } from '@ringcentral/video-sdk';
-import {
-    RcvEngineProvider,
-    ActionBar,
-    AudioAction,
-    ChatAction,
-    LeaveAction,
-    LogoIcon,
-    MeetingInfoAction,
-    ParticipantAction,
-    RecordAction,
-    VideoAction,
-    GalleryLayout,
-    GalleryLayoutType
-} from '@ringcentral/video-sdk-react';
 import StartView from "./pages/StartView";
+import InMeeting from "./pages/InMeeting";
 
 import '@ringcentral/video-sdk-react/dist/index.css';
 import './index.less'
@@ -69,32 +56,8 @@ export default function App({ config }) {
             <Routes>
                 <Route path='meeting'>
                     <Route
-                      path=':meetingId'
-                      element={
-                          <div className={'meeting-container'}>
-                              <RcvEngineProvider rcvEngine={rcvEngine}>
-                                  <GalleryLayout
-                                    layout={GalleryLayoutType.gallery}
-                                    style={{
-                                        flex: 1,
-                                    }}
-                                  />
-                                  <ActionBar
-                                    leftActions={[<MeetingInfoAction key={'meeting-info-action'} />]}
-                                    centerActions={[
-                                        <AudioAction key={'audio-action'} />,
-                                        <VideoAction key={'video-action'} />,
-                                        <ParticipantAction key={'participant-action'} />,
-                                        <ChatAction key={'chat-action'} />,
-                                        <RecordAction key={'record-action'} />,
-                                        <LeaveAction key={'leave-action'} />,
-                                    ]}
-                                    rightActions={[<LogoIcon key={'logo-icon'} />]}
-                                  />
-
-                              </RcvEngineProvider>
-                          </div>
-                      }
+                        path=':meetingId'
+                        element={<InMeeting rcvEngine={rcvEngine} />}
                     />
                 </Route>
                 <Route path='/' element={<StartView rcvEngine={rcvEngine} />} />
@@ -105,9 +68,9 @@ export default function App({ config }) {
 }
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <App config={{
-        ...window.initConfig,
-    }} />
-  </BrowserRouter>
+    <BrowserRouter>
+        <App config={{
+            ...window.initConfig,
+        }} />
+    </BrowserRouter>
 );

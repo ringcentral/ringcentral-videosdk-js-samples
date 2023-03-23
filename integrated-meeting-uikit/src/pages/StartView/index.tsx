@@ -50,7 +50,7 @@ const StartView: FC<IProps> = props => {
             setJoinLoading(true);
 
             try {
-                rcvEngine.joinMeeting(inputMeetingIdRef.current.value, {
+                await rcvEngine.joinMeeting(inputMeetingIdRef.current.value, {
                     password: inputPwdRef.current.value,
                 });
             } catch (e) {
