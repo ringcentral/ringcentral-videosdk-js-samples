@@ -19,19 +19,12 @@ export default function App({ config }) {
 
     useEffect(() => {
         const initSDK = async () => {
-            const { clientId, clientSecret, jwt, userName, password } = config;
+            const { clientId, clientSecret } = config;
             // You could open 'enableDiscovery' and set 'discoveryServer' if neccessary
             const engine = RcvEngine.create({
-                clientId, clientSecret,
-                enableDiscovery: false,
-            });
-            // if config jwt, initialize SDK with jwt
-            // else initialize SDK with password
-            await engine.authorize({
-                grantType: jwt ? GrantType.JWT : GrantType.PASSWORD,
-                jwt,
-                username: userName,
-                password,
+                clientId, 
+                clientSecret,
+                enableDiscovery: false
             });
 
             engine.on(EngineEvent.MEETING_JOINED, (meetingId, errorCode) => {
