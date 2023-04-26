@@ -15,7 +15,9 @@ import {
     GalleryLayoutType,
     ScreenSharingAction,
     MoreAction,
-    InviteAction
+    InviteAction,
+    ClosedCaptionAction,
+    LiveTranscriptionAction
 } from '@ringcentral/video-sdk-react';
 
 const InMeeting = ({ rcvEngine }) => {
@@ -55,14 +57,16 @@ const InMeeting = ({ rcvEngine }) => {
                         <ScreenSharingAction isShowLabel={true} key={'screen-sharing-action'} />,
                         isWidthGt850 && myInviteAction,
                         <ParticipantAction isShowLabel={true} key={'participant-action'} />,
-                        isWidthGt850 && <ChatAction isShowLabel={true} key={'chat-action'} />,
+                        <ChatAction isShowLabel={true} key={'chat-action'} />,
+                        isWidthGt850 && <RecordAction isShowLabel={true} key={'record-action'} />,
                         <MoreAction
                             isShowLabel={true}
                             key={'more-action'}
                             moreActions={[
+                                <ClosedCaptionAction isShowLabel={true} key={'closed-captions-action'} />,
+                                <LiveTranscriptionAction isShowLabel={true} key={'live-transcription-action'} />,
                                 !isWidthGt850 && myInviteAction,
-                                !isWidthGt850 && <ChatAction isShowLabel={true} key={'chat-action'} />,
-                                <RecordAction isShowLabel={true} key={'record-action'} />,
+                                !isWidthGt850 && <RecordAction isShowLabel={true} key={'record-action'} />,
                             ]}
                         />,
                         <LeaveAction key={'leave-action'} />,

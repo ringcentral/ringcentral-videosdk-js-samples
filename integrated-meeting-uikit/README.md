@@ -10,7 +10,9 @@ The demo is based on `@ringcentral/video-sdk-react`.
 - Mute/unmute audio in the meeting
 - Mute/unmute video in the meeting
 - Switch audio/video devices
+- Screen sharing
 - Participants management
+- Invite
 - Chat
 - Record
 - Closed Captions
