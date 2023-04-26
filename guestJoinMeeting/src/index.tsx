@@ -15,7 +15,7 @@ export default function App({ config }) {
     const [isJoinLoading, setJoinLoading] = useState(false);
     const [meetingId, setMeetingId] = useState('')
     const inputMeetingIdRef = useRef(null)
-    const inputPwdRef = useRef(null)
+    const inputUsernameRef = useRef(null)
 
     useEffect(() => {
         const initSDK = async () => {
@@ -46,7 +46,7 @@ export default function App({ config }) {
         }
         setJoinLoading(true)
         rcvEngine
-            .joinMeeting(inputMeetingIdRef.current.value, { password: inputPwdRef.current.value })
+            .joinMeeting(inputMeetingIdRef.current.value, { userName: inputUsernameRef.current.value || 'TEST' })
             .catch(e => {
                 alert(`Error occurs due to :${e.message}`)
             })
@@ -69,9 +69,9 @@ export default function App({ config }) {
                     />
                     <TextField
                         className='item'
-                        label="Password"
+                        label="Username"
                         variant="standard"
-                        inputRef={inputPwdRef}
+                        inputRef={inputUsernameRef}
                     />
                     <Button
                         className='item'
