@@ -7,13 +7,14 @@ This repository contains sample Javascript projects using the RingCentral Video 
 In this project you will find the following sample applications:
 
 - `initSdk`: Demonstrates two ways of SDK initialization
-- `basicMeeting`: Demonstrates primary meeting features including mute/unmute audio/video
+- `quickStart`: Demonstrates primary meeting features including mute/unmute audio/video
 - `screenSharing`: Demonstrates the screen-sharing feature
 - `chat`: Demonstrates the meeting chat feature
 - `deviceTest`: Demonstrates the audio/video device test
 - `startMeetingWithSettings`: Demonstrates starting a meeting with customized settings
 - `guestJoinMeeting`: Demonstrates a guest joins a meeting.
-- `integrated-meeting`: Demonstrates primary meeting features with UI components `@ringcentral/video-sdk-react`.
+- `integrated-meeting`: Demonstrates primary meeting features with UI components.
+- `integrated-meeting-uikit`: Demonstrates primary meeting features with `@ringcentral/video-sdk-react` UI components.
 
 ## Prerequisites
 
