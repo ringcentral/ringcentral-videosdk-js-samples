@@ -1261,10 +1261,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
   integrity sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==
 
-"@ringcentral/video-sdk@^0.10.1":
-  version "0.10.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@ringcentral/video-sdk/-/video-sdk-0.10.1.tgz#52c1adf9ca2556a60949ff9193c736f30d2eb2e9"
-  integrity sha512-8wv/XeGGdDx98+xN+QRbUN8PCLB5K80ZpnDSG+H3JGl80zQIcryaE6iTWGzJuEBoAuKgtnB9jEIdFHiBedUoCA==
+"@ringcentral/video-sdk@^0.10.3":
+  version "0.10.3"
+  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@ringcentral/video-sdk/-/video-sdk-0.10.3.tgz#dea253ba33320cbf7d35f8716ed37a243f7407de"
+  integrity sha512-adFKN4NAt6yV2U6iUNBOVU+83wRUjJcTdLQLFQyRbhEoKVdx3SncuQ1C3fFqxRE1YpChrq0jUSQLaGgzjF+qHw==
 
 "@types/body-parser@*":
   version "1.19.2"

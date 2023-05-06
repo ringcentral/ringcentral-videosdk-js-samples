@@ -1260,10 +1260,10 @@
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.2.1.tgz#812edd4104a15a493dda1ccac0b352270d7a188c"
   integrity sha512-XiY0IsyHR+DXYS5vBxpoBe/8veTeoRpMHP+vDosLZxL5bnpetzI0igkxkLZS235ldLzyfkxF+2divEwWHP3vMQ==
 
-"@ringcentral/video-sdk@^0.10.1":
-  version "0.10.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@ringcentral/video-sdk/-/video-sdk-0.10.1.tgz#52c1adf9ca2556a60949ff9193c736f30d2eb2e9"
-  integrity sha512-8wv/XeGGdDx98+xN+QRbUN8PCLB5K80ZpnDSG+H3JGl80zQIcryaE6iTWGzJuEBoAuKgtnB9jEIdFHiBedUoCA==
+"@ringcentral/video-sdk@^0.10.3":
+  version "0.10.3"
+  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@ringcentral/video-sdk/-/video-sdk-0.10.3.tgz#dea253ba33320cbf7d35f8716ed37a243f7407de"
+  integrity sha512-adFKN4NAt6yV2U6iUNBOVU+83wRUjJcTdLQLFQyRbhEoKVdx3SncuQ1C3fFqxRE1YpChrq0jUSQLaGgzjF+qHw==
 
 "@types/body-parser@*":
   version "1.19.2"
