@@ -1,5 +1,5 @@
-import React from 'react';
-import { useMediaQuery } from '@mui/material';
+import React, { useState } from 'react';
+import { useMediaQuery, Alert } from '@mui/material';
 import {
     RcvEngineProvider,
     ActionBar,
@@ -11,8 +11,8 @@ import {
     ParticipantAction,
     RecordAction,
     VideoAction,
-    GalleryLayout,
-    GalleryLayoutType,
+    Layout,
+    LayoutType,
     ScreenSharingAction,
     MoreAction,
     InviteAction,
@@ -21,6 +21,7 @@ import {
 } from '@ringcentral/video-sdk-react';
 
 const InMeeting = ({ rcvEngine }) => {
+    const [errorMsg, setErrorMsg] = useState('');
     const isWidthGt850 = useMediaQuery('(min-width:850px)');
 
     const getMeetingLink = (meetingInfo) => {
@@ -38,9 +39,13 @@ const InMeeting = ({ rcvEngine }) => {
 
     return (
         <div className={'meeting-container'}>
-            <RcvEngineProvider rcvEngine={rcvEngine}>
-                <GalleryLayout
-                    layout={GalleryLayoutType.gallery}
+            {errorMsg && <Alert className='demo-alert' severity="error">{errorMsg}</Alert>}
+            <RcvEngineProvider rcvEngine={rcvEngine} onError={(e: Error) => {
+                setErrorMsg(e.message);
+                setTimeout(() => setErrorMsg(''), 5000);
+            }}>
+                <Layout
+                    defaultLayout={LayoutType.gallery}
                     style={{
                         flex: 1,
                     }}
