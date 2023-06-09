@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState, useRef } from 'react'
 import { RcvEngine, AudioEvent, VideoEvent, IParticipant, UserEvent, StreamEvent } from '@ringcentral/video-sdk';
 import { useParams } from 'react-router-dom';
 import { ButtonGroup, Button, Alert, Select, MenuItem, Grid } from '@mui/material';
-import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material';
+import { Mic, MicOff, Videocam, VideocamOff, BlurOn, BlurOff } from '@mui/icons-material';
 import AttendeeVideoList from './AttendeeVideoList';
 import ParticipantTable from './ParticipantTable';
 import { useGlobalContext } from '../../context';
@@ -23,6 +23,7 @@ const InMeeting: FC<IProps> = (props) => {
     const [videoActiveDevice, setVideoActiveDevice] = useState('');
     const [audioMuted, setAudioMuted] = useState(true);
     const [videoMute, setVideoMute] = useState(true);
+    const [videoVbg, setVideoVbg] = useState(false);
     const [participantList, setParticipantList] = useState<IParticipant[]>([]);
     const audioRef = useRef({} as HTMLDivElement);
 
@@ -176,6 +177,17 @@ const InMeeting: FC<IProps> = (props) => {
         }
     }
 
+    const toggleVbg = (enable) => {
+        if (enable) {
+            meetingController?.getVideoController()?.switchVirtualBackground('blur', 100);
+            setVideoVbg(true);
+        }
+        else {
+            meetingController?.getVideoController()?.disableVirtualBackground();
+            setVideoVbg(false);
+        }
+    }
+
     const handleLeaveMeeting = () =>
         meetingController?.leaveMeeting().catch((e) => {
             alert(`Error occurs due to :${e.message}`)
@@ -225,6 +237,12 @@ const InMeeting: FC<IProps> = (props) => {
                         startIcon={videoMute ? <VideocamOff /> : <Videocam />}>
                         Video
                     </Button>
+                    {!videoMute && <Button
+                        variant="outlined"
+                        onClick={() => toggleVbg(!videoVbg)}
+                        startIcon={videoVbg ? <BlurOn /> : <BlurOff />}>
+                        {videoVbg ? 'Disable VBG' : 'Enable VBG'}
+                    </Button>}
                     <Button
                         variant="outlined"
                         color="secondary"
