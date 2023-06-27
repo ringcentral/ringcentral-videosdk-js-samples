@@ -1,0 +1,23 @@
+.layout-custom-wrapper {
+    width: 100%;
+    padding: 4px;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    overflow: hidden;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.layout-custom-wrapper .avatar-wrapper {
+    width: 50%;
+    height: auto;
+    position: absolute;
+    aspect-ratio: 1;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}

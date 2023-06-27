@@ -18,6 +18,11 @@ The demo is based on `@ringcentral/video-sdk-react`.
 - Closed Captions
 - Live transcription
 - Leave/End the meeting
+- Layout
+  - Gallery
+  - Speaker
+  - Filmstrip
+  - Custom
 
 ### How to Run?
 
