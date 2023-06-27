@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useMediaQuery, Alert } from '@mui/material';
+import { Home } from '@mui/icons-material';
 import {
     RcvEngineProvider,
     ActionBar,
@@ -19,6 +20,7 @@ import {
     ClosedCaptionAction,
     LiveTranscriptionAction
 } from '@ringcentral/video-sdk-react';
+import CustomLayout from './CustomLayout';
 
 const InMeeting = ({ rcvEngine }) => {
     const [errorMsg, setErrorMsg] = useState('');
@@ -45,6 +47,11 @@ const InMeeting = ({ rcvEngine }) => {
                 setTimeout(() => setErrorMsg(''), 5000);
             }}>
                 <Layout
+                    customConfig={{
+                        menuLabel: 'MyLayout',
+                        menuIcon: <Home fontSize='small' />,
+                        content: <CustomLayout rcvEngine={rcvEngine} />
+                    }}
                     defaultLayout={LayoutType.gallery}
                     style={{
                         flex: 1,
