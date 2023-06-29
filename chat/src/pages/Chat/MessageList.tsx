@@ -1,8 +1,8 @@
 import React from 'react';
-import { Message, IParticipant } from '@ringcentral/video-sdk';
+import { ChatMessage, IParticipant } from '@ringcentral/video-sdk';
 import './index.less';
 
-export function MessageComp({ data, participant }: { data: Message; participant: IParticipant }) {
+export function MessageComp({ data, participant }: { data: ChatMessage; participant: IParticipant }) {
     const time = new Date(data.timestamp);
     const hour = time.getHours().toString().padStart(2, '0');
     const minute = time.getMinutes().toString().padStart(2, '0');
@@ -21,7 +21,7 @@ export function MessageComp({ data, participant }: { data: Message; participant:
 
 interface IProps {
     participants: IParticipant[];
-    messages: Message[];
+    messages: ChatMessage[];
 }
 
 function MessageList({ messages, participants }: IProps) {
@@ -36,7 +36,7 @@ function MessageList({ messages, participants }: IProps) {
     return (
         <div className="messageList">
             <div className="messageListWrap">
-                {messages.map((item: Message) => (
+                {messages.map((item: ChatMessage) => (
                     <MessageComp
                         key={item.timestamp}
                         data={item}
