@@ -966,7 +966,7 @@
 
 "@babel/runtime@^7.21.0", "@babel/runtime@^7.22.5":
   version "7.22.5"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@babel/runtime/-/runtime-7.22.5.tgz#8564dd588182ce0047d55d7a75e93921107b57ec"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.22.5.tgz#8564dd588182ce0047d55d7a75e93921107b57ec"
   integrity sha512-ecjvYlnAaZ/KVneE/OdKYBYfgXV3Ptu6zQWmgEF7vwKhQnvVS6bjMD2XYgj+SNvQ1GfK/pjgokfPkC/2CO8CuA==
   dependencies:
     regenerator-runtime "^0.13.11"
@@ -1029,7 +1029,7 @@
 
 "@emotion/babel-plugin@^11.11.0":
   version "11.11.0"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/babel-plugin/-/babel-plugin-11.11.0.tgz#c2d872b6a7767a9d176d007f5b31f7d504bb5d6c"
+  resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.11.0.tgz#c2d872b6a7767a9d176d007f5b31f7d504bb5d6c"
   integrity sha512-m4HEDZleaaCH+XgDDsPF15Ht6wTLsgDTeR3WYj9Q/k76JtWhrJjcP4+/XlG8LGT/Rol9qUfOIztXeA84ATpqPQ==
   dependencies:
     "@babel/helper-module-imports" "^7.16.7"
@@ -1057,7 +1057,7 @@
 
 "@emotion/cache@^11.11.0":
   version "11.11.0"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/cache/-/cache-11.11.0.tgz#809b33ee6b1cb1a625fef7a45bc568ccd9b8f3ff"
+  resolved "https://registry.yarnpkg.com/@emotion/cache/-/cache-11.11.0.tgz#809b33ee6b1cb1a625fef7a45bc568ccd9b8f3ff"
   integrity sha512-P34z9ssTCBi3e9EI1ZsWpNHcfY1r09ZO0rZbRO2ob3ZQMnFI35jB536qoXbkdesr5EUhYi22anuEJuyxifaqAQ==
   dependencies:
     "@emotion/memoize" "^0.8.1"
@@ -1073,7 +1073,7 @@
 
 "@emotion/hash@^0.9.1":
   version "0.9.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/hash/-/hash-0.9.1.tgz#4ffb0055f7ef676ebc3a5a91fb621393294e2f43"
+  resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.9.1.tgz#4ffb0055f7ef676ebc3a5a91fb621393294e2f43"
   integrity sha512-gJB6HLm5rYwSLI6PQa+X1t5CFGrv1J1TWG+sOyMCeKz2ojaj6Fnl/rZEspogG+cvqbt4AE/2eIyD2QfLKTBNlQ==
 
 "@emotion/is-prop-valid@^1.2.0":
@@ -1085,7 +1085,7 @@
 
 "@emotion/is-prop-valid@^1.2.1":
   version "1.2.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/is-prop-valid/-/is-prop-valid-1.2.1.tgz#23116cf1ed18bfeac910ec6436561ecb1a3885cc"
+  resolved "https://registry.yarnpkg.com/@emotion/is-prop-valid/-/is-prop-valid-1.2.1.tgz#23116cf1ed18bfeac910ec6436561ecb1a3885cc"
   integrity sha512-61Mf7Ufx4aDxx1xlDeOm8aFFigGHE4z+0sKCa+IHCeZKiyP9RLD0Mmx7m8b9/Cf37f7NAvQOOJAbQQGVr5uERw==
   dependencies:
     "@emotion/memoize" "^0.8.1"
@@ -1097,12 +1097,12 @@
 
 "@emotion/memoize@^0.8.1":
   version "0.8.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/memoize/-/memoize-0.8.1.tgz#c1ddb040429c6d21d38cc945fe75c818cfb68e17"
+  resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.8.1.tgz#c1ddb040429c6d21d38cc945fe75c818cfb68e17"
   integrity sha512-W2P2c/VRW1/1tLox0mVUalvnWXxavmv/Oum2aPsRcoDJuob75FC3Y8FbpfLwUegRcxINtGUMPq0tFCvYNTBXNA==
 
 "@emotion/react@^11.10.5":
   version "11.11.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/react/-/react-11.11.1.tgz#b2c36afac95b184f73b08da8c214fdf861fa4157"
+  resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.11.1.tgz#b2c36afac95b184f73b08da8c214fdf861fa4157"
   integrity sha512-5mlW1DquU5HaxjLkfkGN1GA/fvVGdyHURRiX/0FHl2cfIfRxSOfmxEH5YS43edp0OldZrZ+dkBKbngxcNCdZvA==
   dependencies:
     "@babel/runtime" "^7.18.3"
@@ -1141,7 +1141,7 @@
 
 "@emotion/serialize@^1.1.2":
   version "1.1.2"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/serialize/-/serialize-1.1.2.tgz#017a6e4c9b8a803bd576ff3d52a0ea6fa5a62b51"
+  resolved "https://registry.yarnpkg.com/@emotion/serialize/-/serialize-1.1.2.tgz#017a6e4c9b8a803bd576ff3d52a0ea6fa5a62b51"
   integrity sha512-zR6a/fkFP4EAcCMQtLOhIgpprZOwNmCldtpaISpvz348+DP4Mz8ZoKaGGCQpbzepNIUWbq4w6hNZkwDyKoS+HA==
   dependencies:
     "@emotion/hash" "^0.9.1"
@@ -1157,12 +1157,12 @@
 
 "@emotion/sheet@^1.2.2":
   version "1.2.2"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/sheet/-/sheet-1.2.2.tgz#d58e788ee27267a14342303e1abb3d508b6d0fec"
+  resolved "https://registry.yarnpkg.com/@emotion/sheet/-/sheet-1.2.2.tgz#d58e788ee27267a14342303e1abb3d508b6d0fec"
   integrity sha512-0QBtGvaqtWi+nx6doRwDdBIzhNdZrXUppvTM4dtZZWEGTXL/XE/yJxLMGlDT1Gt+UHH5IX1n+jkXyytE/av7OA==
 
 "@emotion/styled@^11.10.5":
   version "11.11.0"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/styled/-/styled-11.11.0.tgz#26b75e1b5a1b7a629d7c0a8b708fbf5a9cdce346"
+  resolved "https://registry.yarnpkg.com/@emotion/styled/-/styled-11.11.0.tgz#26b75e1b5a1b7a629d7c0a8b708fbf5a9cdce346"
   integrity sha512-hM5Nnvu9P3midq5aaXj4I+lnSfNi7Pmd4EWk1fOZ3pxookaQTNew6bp4JaCBYM4HVFZF9g7UjJmsUmC2JlxOng==
   dependencies:
     "@babel/runtime" "^7.18.3"
@@ -1191,7 +1191,7 @@
 
 "@emotion/unitless@^0.8.1":
   version "0.8.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/unitless/-/unitless-0.8.1.tgz#182b5a4704ef8ad91bde93f7a860a88fd92c79a3"
+  resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.8.1.tgz#182b5a4704ef8ad91bde93f7a860a88fd92c79a3"
   integrity sha512-KOEGMu6dmJZtpadb476IsZBclKvILjopjUii3V+7MnXIQCYh8W3NgNcgwo21n9LXZX6EDIKvqfjYxXebDwxKmQ==
 
 "@emotion/use-insertion-effect-with-fallbacks@^1.0.0":
@@ -1201,7 +1201,7 @@
 
 "@emotion/use-insertion-effect-with-fallbacks@^1.0.1":
   version "1.0.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/use-insertion-effect-with-fallbacks/-/use-insertion-effect-with-fallbacks-1.0.1.tgz#08de79f54eb3406f9daaf77c76e35313da963963"
+  resolved "https://registry.yarnpkg.com/@emotion/use-insertion-effect-with-fallbacks/-/use-insertion-effect-with-fallbacks-1.0.1.tgz#08de79f54eb3406f9daaf77c76e35313da963963"
   integrity sha512-jT/qyKZ9rzLErtrjGgdkMBn2OP8wl0G3sQlBb3YPryvKHsjvINUhVaPFfP+fpBcOkmrVOVEEHQFJ7nbj2TH2gw==
 
 "@emotion/utils@^1.2.0":
@@ -1211,7 +1211,7 @@
 
 "@emotion/utils@^1.2.1":
   version "1.2.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/utils/-/utils-1.2.1.tgz#bbab58465738d31ae4cb3dbb6fc00a5991f755e4"
+  resolved "https://registry.yarnpkg.com/@emotion/utils/-/utils-1.2.1.tgz#bbab58465738d31ae4cb3dbb6fc00a5991f755e4"
   integrity sha512-Y2tGf3I+XVnajdItskUCn6LX+VUDmP6lTL4fcqsXAv43dnlbZiuW4MWQW38rW/BVWSE7Q/7+XQocmpnRYILUmg==
 
 "@emotion/weak-memoize@^0.3.0":
@@ -1221,7 +1221,7 @@
 
 "@emotion/weak-memoize@^0.3.1":
   version "0.3.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@emotion/weak-memoize/-/weak-memoize-0.3.1.tgz#d0fce5d07b0620caa282b5131c297bb60f9d87e6"
+  resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.3.1.tgz#d0fce5d07b0620caa282b5131c297bb60f9d87e6"
   integrity sha512-EsBwpc7hBUJWAsNPBmJy4hxWx12v6bshQsldrVmjxJoc3isbxhOrF2IcCpaXxfvq03NwkI7sbsOLXbYuqF/8Ww==
 
 "@jridgewell/gen-mapping@^0.1.0":
@@ -1293,7 +1293,7 @@
 
 "@mui/base@5.0.0-beta.5":
   version "5.0.0-beta.5"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@mui/base/-/base-5.0.0-beta.5.tgz#b566f3beb1eb2823139eabaf52014cf7be900015"
+  resolved "https://registry.yarnpkg.com/@mui/base/-/base-5.0.0-beta.5.tgz#b566f3beb1eb2823139eabaf52014cf7be900015"
   integrity sha512-vy3TWLQYdGNecTaufR4wDNQFV2WEg6wRPi6BVbx6q1vP3K1mbxIn1+XOqOzfYBXjFHvMx0gZAo2TgWbaqfgvAA==
   dependencies:
     "@babel/runtime" "^7.22.5"
@@ -1312,12 +1312,12 @@
 
 "@mui/core-downloads-tracker@^5.13.4":
   version "5.13.4"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@mui/core-downloads-tracker/-/core-downloads-tracker-5.13.4.tgz#7e4b491d8081b6d45ae51556d82cb16b31315a19"
+  resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-5.13.4.tgz#7e4b491d8081b6d45ae51556d82cb16b31315a19"
   integrity sha512-yFrMWcrlI0TqRN5jpb6Ma9iI7sGTHpytdzzL33oskFHNQ8UgrtPas33Y1K7sWAMwCrr1qbWDrOHLAQG4tAzuSw==
 
 "@mui/icons-material@^5.11.0":
   version "5.11.16"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@mui/icons-material/-/icons-material-5.11.16.tgz#417fa773c56672e39d6ccfed9ac55591985f0d38"
+  resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-5.11.16.tgz#417fa773c56672e39d6ccfed9ac55591985f0d38"
   integrity sha512-oKkx9z9Kwg40NtcIajF9uOXhxiyTZrrm9nmIJ4UjkU2IdHpd4QVLbCc/5hZN/y0C6qzi2Zlxyr9TGddQx2vx2A==
   dependencies:
     "@babel/runtime" "^7.21.0"
@@ -1331,7 +1331,7 @@
 
 "@mui/material@^5.11.6":
   version "5.13.6"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@mui/material/-/material-5.13.6.tgz#caaba1e071e394c415208404ce6964e6c14c16d6"
+  resolved "https://registry.yarnpkg.com/@mui/material/-/material-5.13.6.tgz#caaba1e071e394c415208404ce6964e6c14c16d6"
   integrity sha512-/c2ZApeQm2sTYdQXjqEnldaBMBcUEiyu2VRS6bS39ZeNaAcCLBQbYocLR46R+f0S5dgpBzB0T4AsOABPOFYZ5Q==
   dependencies:
     "@babel/runtime" "^7.22.5"
@@ -1376,7 +1376,7 @@
 
 "@mui/private-theming@^5.13.1":
   version "5.13.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@mui/private-theming/-/private-theming-5.13.1.tgz#c3e9a0b44f9c5a51b92cfcfb660536060cb61ed7"
+  resolved "https://registry.yarnpkg.com/@mui/private-theming/-/private-theming-5.13.1.tgz#c3e9a0b44f9c5a51b92cfcfb660536060cb61ed7"
   integrity sha512-HW4npLUD9BAkVppOUZHeO1FOKUJWAwbpy0VQoGe3McUYTlck1HezGHQCfBQ5S/Nszi7EViqiimECVl9xi+/WjQ==
   dependencies:
     "@babel/runtime" "^7.21.0"
@@ -1395,7 +1395,7 @@
 
 "@mui/styled-engine@^5.13.2":
   version "5.13.2"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@mui/styled-engine/-/styled-engine-5.13.2.tgz#c87bd61c0ab8086d34828b6defe97c02bcd642ef"
+  resolved "https://registry.yarnpkg.com/@mui/styled-engine/-/styled-engine-5.13.2.tgz#c87bd61c0ab8086d34828b6defe97c02bcd642ef"
   integrity sha512-VCYCU6xVtXOrIN8lcbuPmoG+u7FYuOERG++fpY74hPpEWkyFQG97F+/XfTQVYzlR2m7nPjnwVUgATcTCMEaMvw==
   dependencies:
     "@babel/runtime" "^7.21.0"
@@ -1419,7 +1419,7 @@
 
 "@mui/system@^5.13.6":
   version "5.13.6"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@mui/system/-/system-5.13.6.tgz#5bf4f84fad0c9ed771458f821e384f61abfa33ca"
+  resolved "https://registry.yarnpkg.com/@mui/system/-/system-5.13.6.tgz#5bf4f84fad0c9ed771458f821e384f61abfa33ca"
   integrity sha512-G3Xr28uLqU3DyF6r2LQkHGw/ku4P0AHzlKVe7FGXOPl7X1u+hoe2xxj8Vdiq/69II/mh9OP21i38yBWgWb7WgQ==
   dependencies:
     "@babel/runtime" "^7.22.5"
@@ -1438,7 +1438,7 @@
 
 "@mui/types@^7.2.4":
   version "7.2.4"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@mui/types/-/types-7.2.4.tgz#b6fade19323b754c5c6de679a38f068fd50b9328"
+  resolved "https://registry.yarnpkg.com/@mui/types/-/types-7.2.4.tgz#b6fade19323b754c5c6de679a38f068fd50b9328"
   integrity sha512-LBcwa8rN84bKF+f5sDyku42w1NTxaPgPyYKODsh01U1fVstTClbUoSA96oyRBnSNyEiAVjKm6Gwx9vjR+xyqHA==
 
 "@mui/utils@^5.11.9":
@@ -1454,7 +1454,7 @@
 
 "@mui/utils@^5.13.1", "@mui/utils@^5.13.6":
   version "5.13.6"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@mui/utils/-/utils-5.13.6.tgz#aa29d75de59577585b9f23891b03592d40459ed7"
+  resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-5.13.6.tgz#aa29d75de59577585b9f23891b03592d40459ed7"
   integrity sha512-ggNlxl5NPSbp+kNcQLmSig6WVB0Id+4gOxhx644987v4fsji+CSXc+MFYLocFB/x4oHtzCUlSzbVHlJfP/fXoQ==
   dependencies:
     "@babel/runtime" "^7.22.5"
@@ -1470,7 +1470,7 @@
 
 "@popperjs/core@^2.11.8":
   version "2.11.8"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
 "@remix-run/router@1.3.3":
@@ -1480,7 +1480,7 @@
 
 "@ringcentral/video-sdk-react@^0.4.0":
   version "0.4.0"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@ringcentral/video-sdk-react/-/video-sdk-react-0.4.0.tgz#d0ddc8a2f0a19604a0caa6dfd1fbcf44cbd72eb8"
+  resolved "https://registry.yarnpkg.com/@ringcentral/video-sdk-react/-/video-sdk-react-0.4.0.tgz#d0ddc8a2f0a19604a0caa6dfd1fbcf44cbd72eb8"
   integrity sha512-St5+3NpDTXJzSNqyftMjknMUVdWmQp0MrDPNBwVBBpVci52AFxrfDLuDBvP87G0JrUY8OnM8aYq6Nz2W0vBDOQ==
   dependencies:
     "@emotion/react" "^11.10.5"
@@ -1493,7 +1493,7 @@
 
 "@ringcentral/video-sdk@^0.11.3":
   version "0.11.3"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@ringcentral/video-sdk/-/video-sdk-0.11.3.tgz#12583915ed4454eef3d6982483f21ad98288e4a9"
+  resolved "https://registry.yarnpkg.com/@ringcentral/video-sdk/-/video-sdk-0.11.3.tgz#12583915ed4454eef3d6982483f21ad98288e4a9"
   integrity sha512-84mxlMXlCVnwDDNVcXW/CGxtPrUIbvSck6FHRx+QngXiSbPNniwrMHYEoy8t03rWaawjOtuC5iGGAIWY0cimrA==
 
 "@types/body-parser@*":
@@ -1627,7 +1627,7 @@
 
 "@types/react-is@^18.2.0":
   version "18.2.1"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@types/react-is/-/react-is-18.2.1.tgz#61d01c2a6fc089a53520c0b66996d458fdc46863"
+  resolved "https://registry.yarnpkg.com/@types/react-is/-/react-is-18.2.1.tgz#61d01c2a6fc089a53520c0b66996d458fdc46863"
   integrity sha512-wyUkmaaSZEzFZivD8F2ftSyAfk6L+DfFliVj/mYdOXbVjRcS87fQJLTnhk6dRZPuJjI+9g6RZJO4PNCngUrmyw==
   dependencies:
     "@types/react" "*"
@@ -1641,7 +1641,7 @@
 
 "@types/react-transition-group@^4.4.6":
   version "4.4.6"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@types/react-transition-group/-/react-transition-group-4.4.6.tgz#18187bcda5281f8e10dfc48f0943e2fdf4f75e2e"
+  resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.6.tgz#18187bcda5281f8e10dfc48f0943e2fdf4f75e2e"
   integrity sha512-VnCdSxfcm08KjsJVQcfBmhEQAPnLB8G08hAxn39azX1qYBQ/5RVQuoHuKIcfKOdncuaUvEpFKFzEvbtIMsfVew==
   dependencies:
     "@types/react" "*"
@@ -2256,7 +2256,7 @@ copy-anything@^2.0.1:
 
 copy-to-clipboard@^3.3.3:
   version "3.3.3"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/copy-to-clipboard/-/copy-to-clipboard-3.3.3.tgz#55ac43a1db8ae639a4bd99511c148cdd1b83a1b0"
+  resolved "https://registry.yarnpkg.com/copy-to-clipboard/-/copy-to-clipboard-3.3.3.tgz#55ac43a1db8ae639a4bd99511c148cdd1b83a1b0"
   integrity sha512-2KV8NhB5JqC3ky0r9PMCAZKbUHSwtEo4CwCs0KXgruG43gX5PMqDEBbVU4OUzw2MuAWUfsuFmWvEKG5QRfSnJA==
   dependencies:
     toggle-selection "^1.0.6"
@@ -2335,7 +2335,7 @@ csstype@^3.0.2, csstype@^3.1.1:
 
 csstype@^3.1.2:
   version "3.1.2"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
 
 debug@2.6.9:
@@ -3743,7 +3743,7 @@ raw-body@2.5.1:
 
 re-resizable@6.9.9:
   version "6.9.9"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/re-resizable/-/re-resizable-6.9.9.tgz#99e8b31c67a62115dc9c5394b7e55892265be216"
+  resolved "https://registry.yarnpkg.com/re-resizable/-/re-resizable-6.9.9.tgz#99e8b31c67a62115dc9c5394b7e55892265be216"
   integrity sha512-l+MBlKZffv/SicxDySKEEh42hR6m5bAHfNu3Tvxks2c4Ah+ldnWjfnVRwxo/nxF27SsUsxDS0raAzFuJNKABXA==
 
 react-dom@^18.2.0:
@@ -3756,7 +3756,7 @@ react-dom@^18.2.0:
 
 react-draggable@4.4.5:
   version "4.4.5"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/react-draggable/-/react-draggable-4.4.5.tgz#9e37fe7ce1a4cf843030f521a0a4cc41886d7e7c"
+  resolved "https://registry.yarnpkg.com/react-draggable/-/react-draggable-4.4.5.tgz#9e37fe7ce1a4cf843030f521a0a4cc41886d7e7c"
   integrity sha512-OMHzJdyJbYTZo4uQE393fHcqqPYsEtkjfMgvCHr6rejT+Ezn4OZbNyGH50vv+SunC1RMvwOTSWkEODQLzw1M9g==
   dependencies:
     clsx "^1.1.1"
@@ -4226,7 +4226,7 @@ stylis@4.1.3:
 
 stylis@4.2.0:
   version "4.2.0"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/stylis/-/stylis-4.2.0.tgz#79daee0208964c8fe695a42fcffcac633a211a51"
+  resolved "https://registry.yarnpkg.com/stylis/-/stylis-4.2.0.tgz#79daee0208964c8fe695a42fcffcac633a211a51"
   integrity sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==
 
 supports-color@^5.3.0:
@@ -4293,7 +4293,7 @@ to-regex-range@^5.0.1:
 
 toggle-selection@^1.0.6:
   version "1.0.6"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/toggle-selection/-/toggle-selection-1.0.6.tgz#6e45b1263f2017fa0acc7d89d78b15b8bf77da32"
+  resolved "https://registry.yarnpkg.com/toggle-selection/-/toggle-selection-1.0.6.tgz#6e45b1263f2017fa0acc7d89d78b15b8bf77da32"
   integrity sha512-BiZS+C1OS8g/q2RRbJmy59xpyghNBqrr6k5L/uKBGRsTfxmu3ffiRnd8mlGPUVayg8pvfi5urfnu8TU7DVOkLQ==
 
 toidentifier@1.0.1:

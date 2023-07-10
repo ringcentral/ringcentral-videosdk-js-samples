@@ -1257,7 +1257,7 @@
 
 "@ringcentral/video-sdk@^0.12.0":
   version "0.12.0"
-  resolved "https://nexus.int.rclabenv.com/nexus/content/groups/npm-all/@ringcentral/video-sdk/-/video-sdk-0.12.0.tgz#33e4292c779d343a5b9949f9bd97fc25377b966f"
+  resolved "https://registry.yarnpkg.com/@ringcentral/video-sdk/-/video-sdk-0.12.0.tgz#33e4292c779d343a5b9949f9bd97fc25377b966f"
   integrity sha512-7O775h0fHJ0i4lrQ+rp6Y9gl+W1gS4l1LMjglW4p+8YizermCzYbEFRHE8XGVg7GcBZtFlTpkMG5q80x349Ttg==
 
 "@types/body-parser@*":
