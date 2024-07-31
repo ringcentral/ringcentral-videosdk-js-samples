@@ -26,15 +26,13 @@ In this project you will find the following sample applications:
 
 1. Open the unzipped folder, open a sample project in an IDE (e.g. Visual Studio Code), or open a **terminal** and enter the path of the sample project.
 
-2. Create an **app.config.js** file and place your client id, client secret, RingCentral extension user name, and password.
+2. Create an **app.config.js** file and place your client id, client secret, RingCentral JWT credential.
 
 ```
 window.initConfig = {
     clientId: '', 
     clientSecret: '', 
-    userName: '', // authorize by password & userName 
-    password: '',
-    jwt: '' // or authorize by jwt
+    jwt: ''
 }
 ```
 
